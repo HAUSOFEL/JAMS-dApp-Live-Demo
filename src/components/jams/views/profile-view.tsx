@@ -8,6 +8,7 @@ import {
   EyeIcon,
   GridIcon,
   HeartIcon,
+  PinIcon,
   ReelsIcon,
   ShareIcon,
   TipIcon,
@@ -129,7 +130,9 @@ export function ProfileView({ creatorId }: { creatorId: string }) {
             ) : null}
             <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{profile.bio}</p>
             {profile.location ? (
-              <p className="mt-1 text-[11px] text-muted-foreground">📍 {profile.location}</p>
+              <p className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
+                <PinIcon className="h-3 w-3 text-primary" /> {profile.location}
+              </p>
             ) : null}
           </div>
 
