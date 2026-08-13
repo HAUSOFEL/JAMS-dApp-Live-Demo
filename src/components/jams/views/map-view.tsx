@@ -1,49 +1,207 @@
-import { useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useMapMarkers } from "@/lib/jams/data"
 import type { MapMarker } from "@/lib/jams/types"
 import { useJams } from "../jams-context"
-import { PinIcon, CloseIcon, BookmarkIcon } from "../icons"
+import { PinIcon, CloseIcon, BookmarkIcon, PlusIcon } from "../icons"
+import { MapBasemap, MAP_LAYERS, type MapLayerId } from "../map/map-layers"
+
+const MIN_ZOOM = 0.75
+const MAX_ZOOM = 5
+
+const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v))
 
 export function MapView() {
   const markers = useMapMarkers()
   const { openStream, navigate, toggleSavedEvent, savedEventIds, showToast } = useJams()
   const [selected, setSelected] = useState<MapMarker | null>(null)
+  const [layer, setLayer] = useState<MapLayerId>("street")
+  const [zoom, setZoom] = useState(1)
+  const [offset, setOffset] = useState({ x: 0, y: 0 })
+  const containerRef = useRef<HTMLDivElement>(null)
+  const dragRef = useRef<{ id: number; x: number; y: number } | null>(null)
   const saved = selected ? savedEventIds.includes(selected.id) : false
+
+  const zoomAt = useCallback((nextZoomRaw: number, px: number, py: number) => {
+    setZoom((z) => {
+      const next = clamp(nextZoomRaw, MIN_ZOOM, MAX_ZOOM)
+      const k = next / z
+      setOffset((o) => ({ x: px - (px - o.x) * k, y: py - (py - o.y) * k }))
+      return next
+    })
+  }, [])
+
+  // Native non-passive wheel listener: React's onWheel is passive.
+  const wheelRef = useRef<(e: WheelEvent) => void>(() => {})
+  wheelRef.current = (e: WheelEvent) => {
+    const el = containerRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    const dy = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 100 : 1)
+    setZoom((z) => {
+      const next = clamp(z * Math.exp(-dy * 0.0018), MIN_ZOOM, MAX_ZOOM)
+      const k = next / z
+      const px = e.clientX - rect.left
+      const py = e.clientY - rect.top
+      setOffset((o) => ({ x: px - (px - o.x) * k, y: py - (py - o.y) * k }))
+      return next
+    })
+  }
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault()
+      wheelRef.current(e)
+    }
+    el.addEventListener("wheel", onWheel, { passive: false })
+    return () => el.removeEventListener("wheel", onWheel)
+  }, [])
+
+  const zoomByButton = (factor: number) => {
+    const el = containerRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    zoomAt(zoom * factor, rect.width / 2, rect.height / 2)
+  }
+
+  const resetView = () => {
+    setZoom(1)
+    setOffset({ x: 0, y: 0 })
+  }
 
   return (
     <div className="absolute inset-0 flex flex-col bg-surface">
       {/* Unified interactive map canvas */}
       <div
-        className="relative flex-1 overflow-hidden bg-surface-2"
-        style={{
-          backgroundImage:
-            "radial-gradient(color-mix(in oklab, var(--foreground) 18%, transparent) 1px, transparent 1px), linear-gradient(color-mix(in oklab, var(--foreground) 6%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in oklab, var(--foreground) 6%, transparent) 1px, transparent 1px)",
-          backgroundSize: "24px 24px, 30px 30px, 30px 30px",
+        ref={containerRef}
+        className="relative flex-1 touch-none overflow-hidden bg-surface-2"
+        onPointerDown={(e) => {
+          if ((e.target as HTMLElement).closest("button")) return
+          dragRef.current = { id: e.pointerId, x: e.clientX, y: e.clientY }
+          e.currentTarget.setPointerCapture(e.pointerId)
+        }}
+        onPointerMove={(e) => {
+          const d = dragRef.current
+          if (!d || d.id !== e.pointerId) return
+          const dx = e.clientX - d.x
+          const dy = e.clientY - d.y
+          dragRef.current = { id: d.id, x: e.clientX, y: e.clientY }
+          setOffset((o) => ({ x: o.x + dx, y: o.y + dy }))
+        }}
+        onPointerUp={() => {
+          dragRef.current = null
+        }}
+        onPointerCancel={() => {
+          dragRef.current = null
         }}
       >
-        {markers.map((marker) => {
-          const active = selected?.id === marker.id
-          return (
-            <button
-              key={marker.id}
-              type="button"
-              onClick={() => setSelected(marker)}
-              className="absolute z-[5] flex -translate-x-1/2 -translate-y-full flex-col items-center transition-transform active:scale-95"
-              style={{ top: `${marker.y}%`, left: `${marker.x}%` }}
-              aria-label={marker.title}
-              aria-pressed={active}
-            >
-              <span
-                className={`flex items-center gap-1.5 rounded-full border-2 border-foreground/70 px-3 py-2 text-[11px] font-extrabold shadow-lg ${
-                  marker.variant === "live" ? "bg-primary text-primary-foreground" : "bg-foreground text-background"
-                } ${active ? "ring-2 ring-primary/60" : ""}`}
+        {/* Transformed map surface (basemap + markers share one coordinate space) */}
+        <div
+          className="absolute inset-0"
+          style={{
+            transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
+            transformOrigin: "0 0",
+          }}
+        >
+          <MapBasemap layer={layer} />
+
+          {markers.map((marker) => {
+            const active = selected?.id === marker.id
+            return (
+              <button
+                key={marker.id}
+                type="button"
+                onClick={() => setSelected(marker)}
+                className="absolute z-[5] flex -translate-x-1/2 -translate-y-full flex-col items-center transition-transform active:scale-95"
+                style={{
+                  top: `${marker.y}%`,
+                  left: `${marker.x}%`,
+                  // keep pin chrome at a readable size regardless of zoom
+                  scale: `${1 / zoom}`,
+                }}
+                aria-label={marker.title}
+                aria-pressed={active}
               >
-                <PinIcon className="h-3.5 w-3.5" />
-                {marker.label}
-              </span>
-            </button>
-          )
-        })}
+                <span
+                  className={`flex items-center gap-1.5 rounded-full border-2 border-foreground/70 px-3 py-2 text-[11px] font-extrabold shadow-lg ${
+                    marker.variant === "live" ? "bg-primary text-primary-foreground" : "bg-foreground text-background"
+                  } ${active ? "ring-2 ring-primary/60" : ""}`}
+                >
+                  <PinIcon className="h-3.5 w-3.5" />
+                  {marker.label}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Layer control */}
+        <div className="absolute left-4 top-4 z-[12] rounded-2xl border border-border bg-surface/95 p-1.5 shadow-lg backdrop-blur">
+          <p className="px-1.5 pb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Layers</p>
+          <div className="flex flex-col gap-1" role="group" aria-label="Map layers">
+            {MAP_LAYERS.map((l) => (
+              <button
+                key={l.id}
+                type="button"
+                onClick={() => {
+                  setLayer(l.id)
+                  showToast(`${l.label} layer: ${l.hint}`)
+                }}
+                aria-pressed={layer === l.id}
+                title={l.hint}
+                className={`rounded-xl px-2.5 py-1.5 text-left text-[11px] font-bold transition-colors ${
+                  layer === l.id
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                }`}
+              >
+                {l.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Zoom control */}
+        <div className="absolute right-4 top-4 z-[12] flex flex-col gap-1 rounded-2xl border border-border bg-surface/95 p-1.5 shadow-lg backdrop-blur">
+          <button
+            type="button"
+            onClick={() => zoomByButton(1.4)}
+            aria-label="Zoom in"
+            className="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary text-foreground transition-colors hover:bg-accent"
+          >
+            <PlusIcon className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => zoomByButton(1 / 1.4)}
+            aria-label="Zoom out"
+            className="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary text-lg font-bold leading-none text-foreground transition-colors hover:bg-accent"
+          >
+            −
+          </button>
+          <button
+            type="button"
+            onClick={resetView}
+            aria-label="Reset map view"
+            className="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary text-[9px] font-bold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          >
+            {Math.round(zoom * 100)}
+          </button>
+        </div>
+
+        {/* Terrain legend (topo layer only) */}
+        {layer === "topo" ? (
+          <div className="absolute right-4 top-[136px] z-[12] rounded-2xl border border-border bg-surface/95 p-2.5 shadow-lg backdrop-blur">
+            <p className="mb-1.5 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Elevation</p>
+            <div className="h-1.5 w-24 rounded-full" style={{ background: "linear-gradient(90deg,#5a828c,#8b9658,#b07a3a)" }} />
+            <div className="mt-1 flex justify-between text-[9px] font-semibold text-muted-foreground">
+              <span>240m</span>
+              <span>410m</span>
+            </div>
+            <p className="mt-1.5 text-[9px] text-muted-foreground">Contours · 20m interval</p>
+          </div>
+        ) : null}
 
         {/* Event details card overlay */}
         {selected ? (
@@ -111,7 +269,7 @@ export function MapView() {
         ) : (
           <div className="absolute inset-x-0 bottom-0 z-[10] p-4">
             <p className="rounded-2xl border border-border bg-surface-2/80 px-4 py-3 text-center text-[12px] text-muted-foreground backdrop-blur">
-              Tap a pin to see event details.
+              Tap a pin for details · scroll to zoom · drag to pan
             </p>
           </div>
         )}
