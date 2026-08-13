@@ -64,6 +64,8 @@ export interface MapMarker {
   y: number
   variant: "live" | "hub"
   linkedStreamId?: string
+  /** Human-readable schedule badge, e.g. "Today · 6:00 PM". */
+  time?: string
 }
 
 /** Maps to a `chat_channels` row. */
