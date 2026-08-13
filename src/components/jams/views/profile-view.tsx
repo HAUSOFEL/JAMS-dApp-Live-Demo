@@ -39,7 +39,7 @@ export function ProfileView({ creatorId }: { creatorId: string }) {
   const following = followedCreatorIds.includes(creator.id);
 
   const visiblePosts: ProfilePost[] =
-    tab === "grid" ? posts : tab === "reels" ? posts.filter((p) => p.isReel) : [];
+    tab === "grid" ? posts : tab === "reels" ? posts.filter((p: ProfilePost) => p.isReel) : [];
 
   function handlePostTap(post: ProfilePost) {
     if (post.streamId) {

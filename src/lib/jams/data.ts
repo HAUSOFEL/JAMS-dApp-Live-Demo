@@ -7,12 +7,14 @@ import {
   mockMapMarkers,
   mockPortals,
   mockReels,
+  mockProfiles,
   mockSponsors,
   mockStories,
   mockWallet,
 } from "./mock-data"
 import type {
   ChatChannel,
+  CreatorProfile,
   Comment,
   CrewPortal,
   JamEvent,
@@ -153,6 +155,22 @@ export function useStreamComments(streamId: string | null) {
   }
 
   return { comments, postComment }
+}
+
+/**
+ * Instagram-style creator profile (header stats + post grid).
+ * Swap for: supabase.from("profiles").select("*, posts(*)").eq("id", creatorId).single()
+ */
+export function useCreatorProfile(creatorId: string | null): CreatorProfile | null {
+  const [profile, setProfile] = useState<CreatorProfile | null>(
+    creatorId ? mockProfiles[creatorId] ?? null : null,
+  )
+
+  useEffect(() => {
+    setProfile(creatorId ? mockProfiles[creatorId] ?? null : null)
+  }, [creatorId])
+
+  return profile
 }
 
 export { BLINK_ENDPOINT }

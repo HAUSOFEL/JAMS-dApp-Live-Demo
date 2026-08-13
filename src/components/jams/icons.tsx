@@ -139,3 +139,19 @@ export function ExternalLinkIcon(props: IconProps) {
     </svg>
   )
 }
+
+export function ChevronLeftIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
+      <path d="M15 18l-6-6 6-6" />
+    </svg>
+  )
+}
+
+export function GridIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinejoin="round" aria-hidden="true" {...props}>
+      <path d="M3 3h18v18H3zM9 3v18M15 3v18M3 9h18M3 15h18" />
+    </svg>
+  )
+}
