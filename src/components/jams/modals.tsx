@@ -21,7 +21,7 @@ export function AppModals() {
           <button
             type="button"
             onClick={() => showToast("Redirecting to MoonPay fiat ramp...")}
-            className="w-full rounded-xl bg-[#6b21a8] px-4 py-3 text-sm font-bold text-white"
+            className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground"
           >
             Buy SOL via MoonPay
           </button>

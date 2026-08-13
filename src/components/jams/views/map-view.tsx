@@ -14,11 +14,10 @@ export function MapView() {
     <div className="absolute inset-0 flex flex-col bg-surface">
       {/* Unified interactive map canvas */}
       <div
-        className="relative flex-1 overflow-hidden"
+        className="relative flex-1 overflow-hidden bg-surface-2"
         style={{
-          backgroundColor: "#15181c",
           backgroundImage:
-            "radial-gradient(#262626 1px, transparent 1px), linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)",
+            "radial-gradient(color-mix(in oklab, var(--foreground) 18%, transparent) 1px, transparent 1px), linear-gradient(color-mix(in oklab, var(--foreground) 6%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in oklab, var(--foreground) 6%, transparent) 1px, transparent 1px)",
           backgroundSize: "24px 24px, 30px 30px, 30px 30px",
         }}
       >
@@ -35,9 +34,9 @@ export function MapView() {
               aria-pressed={active}
             >
               <span
-                className={`flex items-center gap-1.5 rounded-full border-2 border-black px-3 py-2 text-[11px] font-extrabold shadow-lg ${
-                  marker.variant === "live" ? "bg-primary text-primary-foreground" : "bg-[#3b82f6] text-white"
-                } ${active ? "ring-2 ring-white/70" : ""}`}
+                className={`flex items-center gap-1.5 rounded-full border-2 border-foreground/70 px-3 py-2 text-[11px] font-extrabold shadow-lg ${
+                  marker.variant === "live" ? "bg-primary text-primary-foreground" : "bg-foreground text-background"
+                } ${active ? "ring-2 ring-primary/60" : ""}`}
               >
                 <PinIcon className="h-3.5 w-3.5" />
                 {marker.label}

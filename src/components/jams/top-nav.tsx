@@ -32,7 +32,7 @@ export function TopNav() {
           onClick={() => openModal("wallet")}
           className="flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-accent"
         >
-          <span className="h-1.5 w-1.5 rounded-full bg-[#22c55e]" aria-hidden="true" />
+          <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />
           <span>
             {wallet.address} ({wallet.chain})
           </span>

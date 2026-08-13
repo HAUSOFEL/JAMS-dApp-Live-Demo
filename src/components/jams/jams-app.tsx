@@ -35,7 +35,7 @@ function Shell() {
   const { authed, profileCreatorId } = useJams()
 
   return (
-    <div className="relative flex h-[840px] w-full max-w-[412px] flex-col overflow-hidden rounded-[36px] border-[6px] border-[#222] bg-surface shadow-[0_20px_40px_rgba(0,0,0,0.8)]">
+    <div className="relative flex h-[840px] w-full max-w-[412px] flex-col overflow-hidden rounded-[36px] border-[6px] border-foreground/80 bg-surface shadow-[0_20px_40px_rgba(0,0,0,0.8)]">
       {authed ? <TopNav /> : null}
 
       <div className="relative flex flex-1 flex-col overflow-hidden">
