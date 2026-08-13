@@ -5,10 +5,20 @@ import { useJams } from "../jams-context"
 import { PinIcon, CloseIcon, BookmarkIcon, PlusIcon } from "../icons"
 import { MapBasemap, MAP_LAYERS, type MapLayerId } from "../map/map-layers"
 
-const MIN_ZOOM = 0.75
+const MIN_ZOOM = 1
 const MAX_ZOOM = 5
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v))
+
+/** Keep the basemap covering the viewport so panning never reveals empty gutters. */
+function clampOffset(o: { x: number; y: number }, z: number, el: HTMLElement | null) {
+  if (!el) return o
+  const { width, height } = el.getBoundingClientRect()
+  return {
+    x: clamp(o.x, width * (1 - z), 0),
+    y: clamp(o.y, height * (1 - z), 0),
+  }
+}
 
 export function MapView() {
   const markers = useMapMarkers()
@@ -25,7 +35,7 @@ export function MapView() {
     setZoom((z) => {
       const next = clamp(nextZoomRaw, MIN_ZOOM, MAX_ZOOM)
       const k = next / z
-      setOffset((o) => ({ x: px - (px - o.x) * k, y: py - (py - o.y) * k }))
+      setOffset((o) => clampOffset({ x: px - (px - o.x) * k, y: py - (py - o.y) * k }, next, containerRef.current))
       return next
     })
   }, [])
@@ -42,7 +52,7 @@ export function MapView() {
       const k = next / z
       const px = e.clientX - rect.left
       const py = e.clientY - rect.top
-      setOffset((o) => ({ x: px - (px - o.x) * k, y: py - (py - o.y) * k }))
+      setOffset((o) => clampOffset({ x: px - (px - o.x) * k, y: py - (py - o.y) * k }, next, containerRef.current))
       return next
     })
   }
@@ -87,7 +97,7 @@ export function MapView() {
           const dx = e.clientX - d.x
           const dy = e.clientY - d.y
           dragRef.current = { id: d.id, x: e.clientX, y: e.clientY }
-          setOffset((o) => ({ x: o.x + dx, y: o.y + dy }))
+          setOffset((o) => clampOffset({ x: o.x + dx, y: o.y + dy }, zoom, containerRef.current))
         }}
         onPointerUp={() => {
           dragRef.current = null
