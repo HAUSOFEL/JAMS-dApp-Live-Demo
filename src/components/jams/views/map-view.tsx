@@ -1,14 +1,14 @@
-
 import { useState } from "react"
 import { useMapMarkers } from "@/lib/jams/data"
 import type { MapMarker } from "@/lib/jams/types"
 import { useJams } from "../jams-context"
-import { PinIcon } from "../icons"
+import { PinIcon, CloseIcon, BookmarkIcon } from "../icons"
 
 export function MapView() {
   const markers = useMapMarkers()
-  const { openStream, navigate, toggleSavedEvent, showToast } = useJams()
-  const [selected, setSelected] = useState<MapMarker | null>(markers[0] ?? null)
+  const { openStream, navigate, toggleSavedEvent, savedEventIds, showToast } = useJams()
+  const [selected, setSelected] = useState<MapMarker | null>(null)
+  const saved = selected ? savedEventIds.includes(selected.id) : false
 
   return (
     <div className="absolute inset-0 flex flex-col bg-surface">
@@ -29,7 +29,7 @@ export function MapView() {
               key={marker.id}
               type="button"
               onClick={() => setSelected(marker)}
-              className="absolute z-[5] flex -translate-x-1/2 -translate-y-full flex-col items-center"
+              className="absolute z-[5] flex -translate-x-1/2 -translate-y-full flex-col items-center transition-transform active:scale-95"
               style={{ top: `${marker.y}%`, left: `${marker.x}%` }}
               aria-label={marker.title}
               aria-pressed={active}
@@ -45,42 +45,77 @@ export function MapView() {
             </button>
           )
         })}
-      </div>
 
-      {/* Details card */}
-      <div className="shrink-0 border-t border-border bg-surface-2 px-5 pb-6 pt-4">
-        <span className="mb-2 inline-block rounded-xl border border-border px-2 py-1 text-[10px] font-semibold text-muted-foreground">
-          Fact-Verified Location Hub
-        </span>
-        <h3 className="mb-1 text-base font-bold">{selected?.title ?? "Select a pin"}</h3>
-        <p className="mb-3 text-[13px] text-muted-foreground">
-          {selected?.description ?? "Tap a marker on the map to see event details."}
-        </p>
+        {/* Event details card overlay */}
         {selected ? (
-          <div className="flex gap-2.5">
-            <button
-              type="button"
-              onClick={() => {
-                if (selected.linkedStreamId) {
-                  openStream(selected.linkedStreamId)
-                } else {
-                  navigate("chat")
-                  showToast("Opened event chat")
-                }
-              }}
-              className="flex-1 rounded-xl bg-primary py-2.5 text-xs font-bold text-primary-foreground"
-            >
-              {selected.linkedStreamId ? "Tune In Live" : "Join Chat"}
-            </button>
-            <button
-              type="button"
-              onClick={() => toggleSavedEvent(selected.id)}
-              className="flex-1 rounded-xl bg-secondary py-2.5 text-xs font-bold text-foreground"
-            >
-              Save Event
-            </button>
+          <div className="absolute inset-x-0 bottom-0 z-[10] p-4">
+            <div className="animate-fade-in rounded-2xl border border-border bg-surface-2/95 p-4 shadow-2xl backdrop-blur">
+              <div className="mb-2 flex items-start justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span
+                    className={`inline-flex items-center gap-1.5 rounded-xl px-2 py-1 text-[10px] font-bold ${
+                      selected.variant === "live"
+                        ? "bg-primary/15 text-primary"
+                        : "bg-secondary text-muted-foreground"
+                    }`}
+                  >
+                    {selected.variant === "live" ? (
+                      <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse-live" />
+                    ) : null}
+                    {selected.time ?? "Schedule TBA"}
+                  </span>
+                  <span className="inline-block rounded-xl border border-border px-2 py-1 text-[10px] font-semibold text-muted-foreground">
+                    Fact-Verified Location Hub
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelected(null)}
+                  aria-label="Close event details"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <CloseIcon className="h-4 w-4" />
+                </button>
+              </div>
+
+              <h3 className="mb-1 text-base font-bold">{selected.title}</h3>
+              <p className="mb-3 text-[13px] text-muted-foreground">{selected.description}</p>
+
+              <div className="flex gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => toggleSavedEvent(selected.id)}
+                  className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-bold transition-colors ${
+                    saved ? "bg-primary/15 text-primary" : "bg-secondary text-foreground"
+                  }`}
+                >
+                  <BookmarkIcon className="h-3.5 w-3.5" />
+                  {saved ? "Saved" : "Save Event"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (selected.linkedStreamId) {
+                      openStream(selected.linkedStreamId)
+                    } else {
+                      navigate("chat")
+                      showToast("Opened event chat")
+                    }
+                  }}
+                  className="flex-1 rounded-xl bg-primary py-2.5 text-xs font-bold text-primary-foreground"
+                >
+                  {selected.linkedStreamId ? "Tune In Live" : "Join Chat"}
+                </button>
+              </div>
+            </div>
           </div>
-        ) : null}
+        ) : (
+          <div className="absolute inset-x-0 bottom-0 z-[10] p-4">
+            <p className="rounded-2xl border border-border bg-surface-2/80 px-4 py-3 text-center text-[12px] text-muted-foreground backdrop-blur">
+              Tap a pin to see event details.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )
