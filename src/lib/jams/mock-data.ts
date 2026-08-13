@@ -120,6 +120,7 @@ export const mockMapMarkers: MapMarker[] = [
     y: 34,
     variant: "live",
     linkedStreamId: "r1",
+    time: "Live now · until 9:00 PM",
   },
   {
     id: "m2",
@@ -129,6 +130,7 @@ export const mockMapMarkers: MapMarker[] = [
     x: 68,
     y: 60,
     variant: "hub",
+    time: "Today · 6:00 PM – 10:00 PM",
   },
   {
     id: "m3",
@@ -138,6 +140,7 @@ export const mockMapMarkers: MapMarker[] = [
     x: 52,
     y: 78,
     variant: "hub",
+    time: "Sat · 8:00 PM – Late",
   },
 ]
 
