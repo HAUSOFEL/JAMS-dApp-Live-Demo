@@ -15,7 +15,7 @@ import type {
 // Seed data mirroring the shape of the eventual Supabase tables.
 // Replace the `data.ts` hooks with real queries/subscriptions to go live.
 
-const creators: Record<string, Creator> = {
+const creators = {
   kwb: { id: "kwb", handle: "kwbreakers", displayName: "KW Breakers", initials: "K" },
   aria: { id: "aria", handle: "bgirl_aria", displayName: "BGirl Aria", initials: "A", accentColor: "#eab308" },
   urban: { id: "urban", handle: "urban_cypher", displayName: "Urban Cypher", initials: "U" },
@@ -23,7 +23,7 @@ const creators: Record<string, Creator> = {
   shadow: { id: "shadow", handle: "dj_shadow", displayName: "DJ Shadow", initials: "D" },
   vans: { id: "vans", handle: "vans_undgrd", displayName: "Vans Undgrd", initials: "V" },
   to: { id: "to", handle: "to_cypher", displayName: "TO Cypher", initials: "TO" },
-}
+} satisfies Record<string, Creator>
 
 export const mockStories: Story[] = [
   { id: "s1", creator: creators.kwb, isLive: true, streamId: "r1" },
@@ -195,11 +195,11 @@ const gridGradients = [
 function buildPosts(seed: number, count: number, liveStreamId?: string): ProfilePost[] {
   return Array.from({ length: count }, (_, i) => ({
     id: `p-${seed}-${i}`,
-    gradient: gridGradients[(seed + i) % gridGradients.length],
+    gradient: gridGradients[(seed + i) % gridGradients.length]!,
     likes: 120 + ((seed * 37 + i * 53) % 4000),
     isReel: (i + seed) % 3 === 0,
     isLive: i === 0 && Boolean(liveStreamId),
-    streamId: i === 0 ? liveStreamId : undefined,
+    ...(i === 0 && liveStreamId ? { streamId: liveStreamId } : {}),
   }))
 }
 
