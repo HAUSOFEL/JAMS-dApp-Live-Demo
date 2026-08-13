@@ -15,7 +15,7 @@ interface ReelCardProps {
 }
 
 export function ReelCard({ reel, onOpenComments }: ReelCardProps) {
-  const { navigate, openModal, showToast } = useJams()
+  const { openProfile, openModal, showToast } = useJams()
   const [liked, setLiked] = useState(false)
 
   async function handleShare() {
@@ -66,6 +66,13 @@ export function ReelCard({ reel, onOpenComments }: ReelCardProps) {
         <span className="mb-2 inline-block rounded-xl border border-border px-2 py-1 text-[10px] font-semibold text-muted-foreground">
           {reel.isLive ? "Live Session" : reel.tag}
         </span>
+        <button
+          type="button"
+          onClick={() => openProfile(reel.creator.id)}
+          className="mb-1 block text-[13px] font-bold text-foreground"
+        >
+          @{reel.creator.handle}
+        </button>
         <h3 className="mb-1 text-[15px] font-bold text-white">{reel.title}</h3>
         <p className="text-xs text-[#aaa]">{reel.subtitle}</p>
       </div>
@@ -74,7 +81,7 @@ export function ReelCard({ reel, onOpenComments }: ReelCardProps) {
       <div className="absolute bottom-28 right-4 z-[5] flex flex-col items-center gap-4">
         <button
           type="button"
-          onClick={() => navigate("home")}
+          onClick={() => openProfile(reel.creator.id)}
           title={`${reel.creator.displayName} profile`}
           className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-primary bg-secondary text-sm font-bold text-white"
         >

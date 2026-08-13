@@ -9,6 +9,7 @@ import { ChatView } from "./views/chat-view"
 import { HomeView } from "./views/home-view"
 import { LoginView } from "./views/login-view"
 import { MapView } from "./views/map-view"
+import { ProfileView } from "./views/profile-view"
 import { ReelsView } from "./views/reels-view"
 
 /** Views that render their own full-bleed layout (no padded scroll wrapper). */
@@ -31,7 +32,7 @@ function ActiveView() {
 }
 
 function Shell() {
-  const { authed } = useJams()
+  const { authed, profileCreatorId } = useJams()
 
   return (
     <div className="relative flex h-[840px] w-full max-w-[412px] flex-col overflow-hidden rounded-[36px] border-[6px] border-[#222] bg-surface shadow-[0_20px_40px_rgba(0,0,0,0.8)]">
@@ -39,6 +40,7 @@ function Shell() {
 
       <div className="relative flex flex-1 flex-col overflow-hidden">
         {authed ? <ActiveView /> : <LoginView />}
+        {authed && profileCreatorId ? <ProfileView creatorId={profileCreatorId} /> : null}
       </div>
 
       {authed ? <BottomNav /> : null}

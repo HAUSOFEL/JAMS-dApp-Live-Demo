@@ -2,9 +2,10 @@
 import { useWallet } from "@/lib/jams/data"
 import { BottomSheet } from "./bottom-sheet"
 import { useJams } from "./jams-context"
+import { BlinksIcon } from "./icons"
 
 export function AppModals() {
-  const { modal, closeModal, logout, navigate, showToast } = useJams()
+  const { modal, closeModal, logout, navigate, openProfile, showToast } = useJams()
   const wallet = useWallet()
 
   return (
@@ -33,7 +34,10 @@ export function AppModals() {
           </button>
           <button
             type="button"
-            onClick={() => showToast("Profile opened")}
+            onClick={() => {
+              closeModal()
+              openProfile("kwb")
+            }}
             className="w-full rounded-xl border border-border px-4 py-3 text-sm font-bold text-foreground"
           >
             View Profile
@@ -45,10 +49,31 @@ export function AppModals() {
       <BottomSheet
         open={modal === "menu"}
         title="JAMS System Menu"
-        description="Manage settings, preferences, or disconnect your session."
+        description="Jump to Blinks, your profile, settings, or disconnect your session."
         onClose={closeModal}
       >
         <div className="flex flex-col gap-2.5">
+          <button
+            type="button"
+            onClick={() => {
+              closeModal()
+              navigate("blinks")
+            }}
+            className="flex items-center gap-3 rounded-xl border border-primary/60 bg-primary/10 px-4 py-3 text-left text-sm font-bold text-primary"
+          >
+            <BlinksIcon className="h-4 w-4" />
+            Blinks & Crew Portal
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              closeModal()
+              openProfile("kwb")
+            }}
+            className="w-full rounded-xl border border-border px-4 py-3 text-left text-sm font-bold text-foreground"
+          >
+            My Creator Profile
+          </button>
           <button
             type="button"
             onClick={() => showToast("Opening settings...")}
