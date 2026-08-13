@@ -14,11 +14,10 @@ export function MapView() {
     <div className="absolute inset-0 flex flex-col bg-surface">
       {/* Unified interactive map canvas */}
       <div
-        className="relative flex-1 overflow-hidden"
+        className="relative flex-1 overflow-hidden bg-surface-2"
         style={{
-          backgroundColor: "#15181c",
           backgroundImage:
-            "radial-gradient(#262626 1px, transparent 1px), linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)",
+            "radial-gradient(color-mix(in oklab, var(--foreground) 18%, transparent) 1px, transparent 1px), linear-gradient(color-mix(in oklab, var(--foreground) 6%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in oklab, var(--foreground) 6%, transparent) 1px, transparent 1px)",
           backgroundSize: "24px 24px, 30px 30px, 30px 30px",
         }}
       >
