@@ -17,7 +17,7 @@ import type {
 
 const creators = {
   kwb: { id: "kwb", handle: "kwbreakers", displayName: "KW Breakers", initials: "K" },
-  aria: { id: "aria", handle: "bgirl_aria", displayName: "BGirl Aria", initials: "A", accentColor: "#eab308" },
+  aria: { id: "aria", handle: "bgirl_aria", displayName: "BGirl Aria", initials: "A", accentColor: "oklch(0.5 0.21 22)" },
   urban: { id: "urban", handle: "urban_cypher", displayName: "Urban Cypher", initials: "U" },
   flex: { id: "flex", handle: "bboyflex", displayName: "Bboy Flex", initials: "F" },
   shadow: { id: "shadow", handle: "dj_shadow", displayName: "DJ Shadow", initials: "D" },
