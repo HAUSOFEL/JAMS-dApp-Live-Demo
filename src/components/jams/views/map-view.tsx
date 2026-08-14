@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useMapMarkers } from "@/lib/jams/data"
 import type { MapMarker } from "@/lib/jams/types"
+import { CITY_POIS, POI_CATEGORIES, type CityPoi } from "@/lib/jams/city-pois"
 import { useJams } from "../jams-context"
 import { PinIcon, CloseIcon, BookmarkIcon, PlusIcon } from "../icons"
 import { MapBasemap, MAP_LAYERS, type MapLayerId } from "../map/map-layers"
+import { BuildingsLayer, PoiMarker } from "../map/city-overlays"
+
 
 const MIN_ZOOM = 1
 const MAX_ZOOM = 5
@@ -24,9 +27,13 @@ export function MapView() {
   const markers = useMapMarkers()
   const { openStream, navigate, toggleSavedEvent, savedEventIds, showToast } = useJams()
   const [selected, setSelected] = useState<MapMarker | null>(null)
+  const [selectedPoi, setSelectedPoi] = useState<CityPoi | null>(null)
+  const [showBuildings, setShowBuildings] = useState(true)
+  const [showPois, setShowPois] = useState(true)
   const [layer, setLayer] = useState<MapLayerId>("street")
   const [zoom, setZoom] = useState(1)
   const [offset, setOffset] = useState({ x: 0, y: 0 })
+
   const containerRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef<{ id: number; x: number; y: number } | null>(null)
   const saved = selected ? savedEventIds.includes(selected.id) : false
@@ -116,13 +123,34 @@ export function MapView() {
         >
           <MapBasemap layer={layer} />
 
+          {showBuildings ? <BuildingsLayer tinted={layer === "topo"} /> : null}
+
+          {showPois
+            ? CITY_POIS.map((poi) => (
+                <PoiMarker
+                  key={poi.id}
+                  poi={poi}
+                  zoom={zoom}
+                  active={selectedPoi?.id === poi.id}
+                  onSelect={(p) => {
+                    setSelected(null)
+                    setSelectedPoi(p)
+                  }}
+                />
+              ))
+            : null}
+
           {markers.map((marker) => {
             const active = selected?.id === marker.id
             return (
               <button
                 key={marker.id}
                 type="button"
-                onClick={() => setSelected(marker)}
+                onClick={() => {
+                  setSelectedPoi(null)
+                  setSelected(marker)
+                }}
+
                 className="absolute z-[5] flex -translate-x-1/2 -translate-y-full flex-col items-center transition-transform active:scale-95"
                 style={{
                   top: `${marker.y}%`,
@@ -170,6 +198,30 @@ export function MapView() {
               </button>
             ))}
           </div>
+          <div className="mt-1.5 border-t border-border pt-1.5">
+            <p className="px-1.5 pb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+              Overlays
+            </p>
+            <div className="flex flex-col gap-1">
+              {[
+                { id: "buildings", label: "3D Buildings", on: showBuildings, set: setShowBuildings },
+                { id: "pois", label: "Nearby POIs", on: showPois, set: setShowPois },
+              ].map((o) => (
+                <button
+                  key={o.id}
+                  type="button"
+                  onClick={() => o.set(!o.on)}
+                  aria-pressed={o.on}
+                  className={`rounded-xl px-2.5 py-1.5 text-left text-[11px] font-bold transition-colors ${
+                    o.on ? "bg-foreground text-background" : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                  }`}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
         </div>
 
         {/* Zoom control */}
@@ -276,13 +328,36 @@ export function MapView() {
               </div>
             </div>
           </div>
+        ) : selectedPoi ? (
+          <div className="absolute inset-x-0 bottom-0 z-[10] px-4 pb-4">
+            <div className="animate-fade-in rounded-2xl border border-border bg-surface-2/95 p-4 shadow-2xl backdrop-blur">
+              <div className="mb-2 flex items-start justify-between gap-3">
+                <span className="inline-flex items-center gap-1.5 rounded-xl bg-secondary px-2 py-1 text-[10px] font-bold text-muted-foreground">
+                  <span aria-hidden="true">{POI_CATEGORIES[selectedPoi.category].glyph}</span>
+                  {POI_CATEGORIES[selectedPoi.category].label}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedPoi(null)}
+                  aria-label="Close place details"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <CloseIcon className="h-4 w-4" />
+                </button>
+              </div>
+              <h3 className="text-base font-bold">{selectedPoi.name}</h3>
+              <p className="mb-1 text-[11px] font-semibold text-primary">{selectedPoi.area}</p>
+              <p className="text-[13px] text-muted-foreground">{selectedPoi.detail}</p>
+            </div>
+          </div>
         ) : (
           <div className="absolute inset-x-0 bottom-0 z-[10] p-4">
             <p className="rounded-2xl border border-border bg-surface-2/80 px-4 py-3 text-center text-[12px] text-muted-foreground backdrop-blur">
-              Tap a pin for details · scroll to zoom · drag to pan
+              Tap a pin or place for details · scroll to zoom · drag to pan
             </p>
           </div>
         )}
+
       </div>
     </div>
   )
