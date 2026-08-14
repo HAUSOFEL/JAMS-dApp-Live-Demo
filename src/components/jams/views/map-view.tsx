@@ -27,9 +27,13 @@ export function MapView() {
   const markers = useMapMarkers()
   const { openStream, navigate, toggleSavedEvent, savedEventIds, showToast } = useJams()
   const [selected, setSelected] = useState<MapMarker | null>(null)
+  const [selectedPoi, setSelectedPoi] = useState<CityPoi | null>(null)
+  const [showBuildings, setShowBuildings] = useState(true)
+  const [showPois, setShowPois] = useState(true)
   const [layer, setLayer] = useState<MapLayerId>("street")
   const [zoom, setZoom] = useState(1)
   const [offset, setOffset] = useState({ x: 0, y: 0 })
+
   const containerRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef<{ id: number; x: number; y: number } | null>(null)
   const saved = selected ? savedEventIds.includes(selected.id) : false
