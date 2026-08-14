@@ -198,6 +198,30 @@ export function MapView() {
               </button>
             ))}
           </div>
+          <div className="mt-1.5 border-t border-border pt-1.5">
+            <p className="px-1.5 pb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+              Overlays
+            </p>
+            <div className="flex flex-col gap-1">
+              {[
+                { id: "buildings", label: "3D Buildings", on: showBuildings, set: setShowBuildings },
+                { id: "pois", label: "Nearby POIs", on: showPois, set: setShowPois },
+              ].map((o) => (
+                <button
+                  key={o.id}
+                  type="button"
+                  onClick={() => o.set(!o.on)}
+                  aria-pressed={o.on}
+                  className={`rounded-xl px-2.5 py-1.5 text-left text-[11px] font-bold transition-colors ${
+                    o.on ? "bg-foreground text-background" : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                  }`}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
         </div>
 
         {/* Zoom control */}
