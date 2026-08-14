@@ -328,13 +328,36 @@ export function MapView() {
               </div>
             </div>
           </div>
+        ) : selectedPoi ? (
+          <div className="absolute inset-x-0 bottom-0 z-[10] p-4">
+            <div className="animate-fade-in rounded-2xl border border-border bg-surface-2/95 p-4 shadow-2xl backdrop-blur">
+              <div className="mb-2 flex items-start justify-between gap-3">
+                <span className="inline-flex items-center gap-1.5 rounded-xl bg-secondary px-2 py-1 text-[10px] font-bold text-muted-foreground">
+                  <span aria-hidden="true">{POI_CATEGORIES[selectedPoi.category].glyph}</span>
+                  {POI_CATEGORIES[selectedPoi.category].label}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedPoi(null)}
+                  aria-label="Close place details"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <CloseIcon className="h-4 w-4" />
+                </button>
+              </div>
+              <h3 className="text-base font-bold">{selectedPoi.name}</h3>
+              <p className="mb-1 text-[11px] font-semibold text-primary">{selectedPoi.area}</p>
+              <p className="text-[13px] text-muted-foreground">{selectedPoi.detail}</p>
+            </div>
+          </div>
         ) : (
           <div className="absolute inset-x-0 bottom-0 z-[10] p-4">
             <p className="rounded-2xl border border-border bg-surface-2/80 px-4 py-3 text-center text-[12px] text-muted-foreground backdrop-blur">
-              Tap a pin for details · scroll to zoom · drag to pan
+              Tap a pin or place for details · scroll to zoom · drag to pan
             </p>
           </div>
         )}
+
       </div>
     </div>
   )
