@@ -329,7 +329,7 @@ export function MapView() {
             </div>
           </div>
         ) : selectedPoi ? (
-          <div className="absolute inset-x-0 bottom-0 z-[10] p-4">
+          <div className="absolute inset-x-0 bottom-0 z-[10] px-4 pb-4">
             <div className="animate-fade-in rounded-2xl border border-border bg-surface-2/95 p-4 shadow-2xl backdrop-blur">
               <div className="mb-2 flex items-start justify-between gap-3">
                 <span className="inline-flex items-center gap-1.5 rounded-xl bg-secondary px-2 py-1 text-[10px] font-bold text-muted-foreground">

@@ -8,8 +8,8 @@ export function BuildingsLayer({ tinted }: { tinted?: boolean }) {
   return (
     <div className="pointer-events-none absolute inset-0 z-[2]" aria-hidden="true">
       {CITY_BUILDINGS.map((b) => {
-        const lift = b.storeys * 0.42 // % of canvas height the roof is raised by
-        const roofAlpha = tinted ? 0.5 : 0.14 + Math.min(0.24, b.storeys * 0.02)
+        const lift = b.storeys * 0.32 // % of canvas height the roof is raised by
+        const roofAlpha = tinted ? 0.5 : 0.09 + Math.min(0.16, b.storeys * 0.014)
         return (
           <div key={b.id} className="absolute" style={{ left: `${b.x}%`, top: `${b.y}%`, width: `${b.w}%` }}>
             {/* Side wall (extrusion body) */}
@@ -22,7 +22,7 @@ export function BuildingsLayer({ tinted }: { tinted?: boolean }) {
                 height: `${lift}vh`,
                 background: tinted
                   ? "linear-gradient(180deg, rgba(60,44,26,0.55), rgba(60,44,26,0.28))"
-                  : "linear-gradient(180deg, color-mix(in oklab, var(--foreground) 26%, transparent), color-mix(in oklab, var(--foreground) 12%, transparent))",
+                  : "linear-gradient(180deg, color-mix(in oklab, var(--foreground) 17%, transparent), color-mix(in oklab, var(--foreground) 7%, transparent))",
                 borderLeft: "1px solid color-mix(in oklab, var(--foreground) 22%, transparent)",
                 borderRight: "1px solid color-mix(in oklab, var(--foreground) 22%, transparent)",
               }}
