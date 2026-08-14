@@ -123,13 +123,34 @@ export function MapView() {
         >
           <MapBasemap layer={layer} />
 
+          {showBuildings ? <BuildingsLayer tinted={layer === "topo"} /> : null}
+
+          {showPois
+            ? CITY_POIS.map((poi) => (
+                <PoiMarker
+                  key={poi.id}
+                  poi={poi}
+                  zoom={zoom}
+                  active={selectedPoi?.id === poi.id}
+                  onSelect={(p) => {
+                    setSelected(null)
+                    setSelectedPoi(p)
+                  }}
+                />
+              ))
+            : null}
+
           {markers.map((marker) => {
             const active = selected?.id === marker.id
             return (
               <button
                 key={marker.id}
                 type="button"
-                onClick={() => setSelected(marker)}
+                onClick={() => {
+                  setSelectedPoi(null)
+                  setSelected(marker)
+                }}
+
                 className="absolute z-[5] flex -translate-x-1/2 -translate-y-full flex-col items-center transition-transform active:scale-95"
                 style={{
                   top: `${marker.y}%`,
