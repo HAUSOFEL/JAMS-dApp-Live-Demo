@@ -22,7 +22,7 @@ function formatCount(n: number) {
 
 type ProfileTab = "grid" | "reels" | "saved";
 
-export function ProfileView({ creatorId }: { creatorId: string }) {
+export function ProfileView({ creatorId, showBack = true }: { creatorId: string; showBack?: boolean }) {
   const profile = useCreatorProfile(creatorId);
   const reels = useReels();
   const { closeProfile, openStream, openModal, followedCreatorIds, toggleFollow, showToast } =
