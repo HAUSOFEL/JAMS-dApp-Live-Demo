@@ -13,12 +13,15 @@ import { ProfileView } from "./views/profile-view"
 import { ReelsView } from "./views/reels-view"
 
 /** Views that render their own full-bleed layout (no padded scroll wrapper). */
-const FULL_BLEED = new Set(["reels", "map"])
+const FULL_BLEED = new Set(["reels", "map", "profile"])
 
 function ActiveView() {
   const { activeTab } = useJams()
 
   if (FULL_BLEED.has(activeTab)) {
+    if (activeTab === "profile") {
+      return <ProfileView creatorId="me" showBack={false} />
+    }
     return activeTab === "reels" ? <ReelsView /> : <MapView />
   }
 
