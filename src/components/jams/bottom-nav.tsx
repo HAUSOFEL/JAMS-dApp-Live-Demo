@@ -3,7 +3,11 @@ import meAvatar from "@/assets/me-avatar.jpg"
 import { useJams } from "./jams-context";
 import { ChatIcon, HomeIcon, MapIcon, ReelsIcon } from "./icons";
 
-const items: { id: TabId; label: string; Icon?: typeof HomeIcon; isAvatar?: true }[] = [
+type NavItem =
+  | { id: TabId; label: string; Icon: typeof HomeIcon }
+  | { id: TabId; label: string; isAvatar: true };
+
+const items: NavItem[] = [
   { id: "home", label: "Home", Icon: HomeIcon },
   { id: "reels", label: "Reels", Icon: ReelsIcon },
   { id: "profile", label: "Profile", isAvatar: true },
@@ -16,7 +20,8 @@ export function BottomNav() {
 
   return (
     <nav className="absolute inset-x-0 bottom-0 z-[35] flex shrink-0 justify-between border-t border-border bg-surface px-5 pb-6 pt-3">
-      {items.map(({ id, label, Icon, isAvatar }) => {
+      {items.map((item) => {
+        const { id, label } = item;
         const active = activeTab === id && !profileCreatorId;
         return (
           <button
@@ -27,7 +32,7 @@ export function BottomNav() {
             aria-current={active ? "page" : undefined}
             className={`flex flex-1 flex-col items-center gap-1 ${active ? "text-primary" : "text-muted-foreground"}`}
           >
-            {isAvatar ? (
+            {"isAvatar" in item ? (
               <span
                 className={`relative flex h-8 w-8 items-center justify-center rounded-full transition-all ${
                   active
@@ -45,7 +50,7 @@ export function BottomNav() {
                 />
               </span>
             ) : (
-              <Icon className="h-6 w-6" />
+              <item.Icon className="h-6 w-6" />
             )}
             <span className="text-[10px] font-semibold">{label}</span>
           </button>
@@ -54,3 +59,4 @@ export function BottomNav() {
     </nav>
   );
 }
+
