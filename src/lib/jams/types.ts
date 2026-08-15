@@ -3,7 +3,7 @@
 // data layer in `data.ts` can be swapped for real-time queries with no changes
 // to the UI components that consume them.
 
-export type TabId = "home" | "reels" | "map" | "chat" | "blinks"
+export type TabId = "home" | "reels" | "profile" | "chat" | "map" | "blinks"
 
 export type ModalId = "wallet" | "menu" | "creator" | "tip" | null
 
@@ -15,6 +15,8 @@ export interface Creator {
   /** Single-letter / short avatar fallback used by the story + reel rings. */
   initials: string
   accentColor?: string
+  /** Optional profile picture for the creator. */
+  avatarUrl?: string
 }
 
 /** Maps to a `stories` view joined with live `streams`. Drives the IG-style rail. */
