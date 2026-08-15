@@ -50,7 +50,10 @@ export function BottomNav() {
                 />
               </span>
             ) : (
-              <item.Icon className="h-6 w-6" />
+              (() => {
+                const Icon = item.Icon;
+                return <Icon className="h-6 w-6" />;
+              })()
             )}
             <span className="text-[10px] font-semibold">{label}</span>
           </button>
