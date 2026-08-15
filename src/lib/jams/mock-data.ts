@@ -1,3 +1,4 @@
+import meAvatar from "@/assets/me-avatar.jpg"
 import type {
   ChatChannel,
   Creator,
@@ -16,6 +17,7 @@ import type {
 // Replace the `data.ts` hooks with real queries/subscriptions to go live.
 
 const creators = {
+  me: { id: "me", handle: "dancer_jams", displayName: "Alex JAMS", initials: "A", avatarUrl: meAvatar },
   kwb: { id: "kwb", handle: "kwbreakers", displayName: "KW Breakers", initials: "K" },
   aria: { id: "aria", handle: "bgirl_aria", displayName: "BGirl Aria", initials: "A", accentColor: "oklch(0.5 0.21 22)" },
   urban: { id: "urban", handle: "urban_cypher", displayName: "Urban Cypher", initials: "U" },
@@ -207,6 +209,14 @@ function buildPosts(seed: number, count: number, liveStreamId?: string): Profile
 }
 
 export const mockProfiles: Record<string, CreatorProfile> = {
+  me: {
+    creator: creators.me,
+    crew: "JAMS Crew",
+    location: "Kitchener–Waterloo, ON",
+    bio: "Dancer, event host, and JAMS early user. Tracking the local scene one jam at a time.",
+    stats: { posts: 47, followers: 1240, following: 210 },
+    posts: buildPosts(8, 9),
+  },
   kwb: {
     creator: creators.kwb,
     crew: "KW Breakers Inc.",

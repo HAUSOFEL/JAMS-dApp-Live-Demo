@@ -22,7 +22,7 @@ function formatCount(n: number) {
 
 type ProfileTab = "grid" | "reels" | "saved";
 
-export function ProfileView({ creatorId }: { creatorId: string }) {
+export function ProfileView({ creatorId, showBack = true }: { creatorId: string; showBack?: boolean }) {
   const profile = useCreatorProfile(creatorId);
   const reels = useReels();
   const { closeProfile, openStream, openModal, followedCreatorIds, toggleFollow, showToast } =
@@ -54,14 +54,16 @@ export function ProfileView({ creatorId }: { creatorId: string }) {
     <div className="animate-slide-in-right absolute inset-0 z-30 flex flex-col bg-background">
       {/* Header */}
       <header className="flex shrink-0 items-center gap-3 border-b border-border bg-surface px-4 py-3">
-        <button
-          type="button"
-          onClick={closeProfile}
-          aria-label="Back"
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-foreground"
-        >
-          <ChevronLeftIcon className="h-4 w-4" />
-        </button>
+        {showBack ? (
+          <button
+            type="button"
+            onClick={closeProfile}
+            aria-label="Back"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-foreground"
+          >
+            <ChevronLeftIcon className="h-4 w-4" />
+          </button>
+        ) : null}
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-bold text-foreground">@{creator.handle}</p>
           {profile.crew ? (
@@ -95,14 +97,26 @@ export function ProfileView({ creatorId }: { creatorId: string }) {
               }`}
             >
               <span
-                className="flex h-full w-full items-center justify-center rounded-full border-[3px] border-background bg-surface-2 text-3xl font-extrabold text-foreground"
+                className={`flex h-full w-full items-center justify-center overflow-hidden rounded-full border-[3px] border-background ${
+                  creator.avatarUrl ? "" : "bg-surface-2 text-3xl font-extrabold text-foreground"
+                }`}
                 style={
-                  creator.accentColor
-                    ? { background: creator.accentColor, color: "var(--primary-foreground)" }
-                    : undefined
+                  creator.avatarUrl
+                    ? undefined
+                    : creator.accentColor
+                      ? { background: creator.accentColor, color: "var(--primary-foreground)" }
+                      : undefined
                 }
               >
-                {creator.initials}
+                {creator.avatarUrl ? (
+                  <img
+                    src={creator.avatarUrl}
+                    alt={creator.displayName}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  creator.initials
+                )}
               </span>
             </button>
 
