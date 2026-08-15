@@ -1,3 +1,4 @@
+import meAvatar from "@/assets/me-avatar.jpg"
 import type {
   ChatChannel,
   Creator,
