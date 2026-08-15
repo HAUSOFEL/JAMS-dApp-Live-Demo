@@ -97,14 +97,26 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
               }`}
             >
               <span
-                className="flex h-full w-full items-center justify-center rounded-full border-[3px] border-background bg-surface-2 text-3xl font-extrabold text-foreground"
+                className={`flex h-full w-full items-center justify-center overflow-hidden rounded-full border-[3px] border-background ${
+                  creator.avatarUrl ? "" : "bg-surface-2 text-3xl font-extrabold text-foreground"
+                }`}
                 style={
-                  creator.accentColor
-                    ? { background: creator.accentColor, color: "var(--primary-foreground)" }
-                    : undefined
+                  creator.avatarUrl
+                    ? undefined
+                    : creator.accentColor
+                      ? { background: creator.accentColor, color: "var(--primary-foreground)" }
+                      : undefined
                 }
               >
-                {creator.initials}
+                {creator.avatarUrl ? (
+                  <img
+                    src={creator.avatarUrl}
+                    alt={creator.displayName}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  creator.initials
+                )}
               </span>
             </button>
 
