@@ -25,13 +25,28 @@ type ProfileTab = "grid" | "reels" | "saved";
 export function ProfileView({ creatorId, showBack = true }: { creatorId: string; showBack?: boolean }) {
   const profile = useCreatorProfile(creatorId);
   const reels = useReels();
-  const { closeProfile, openStream, openModal, followedCreatorIds, toggleFollow, showToast } =
-    useJams();
+  const events = useEvents();
+  const {
+    closeProfile,
+    openStream,
+    openModal,
+    followedCreatorIds,
+    toggleFollow,
+    savedEventIds,
+    toggleSavedEvent,
+    showToast,
+  } = useJams();
   const [tab, setTab] = useState<ProfileTab>("grid");
 
   const liveReel = useMemo(
     () => reels.find((r) => r.creator.id === creatorId && r.isLive),
     [reels, creatorId],
+  );
+
+  const isOwnProfile = creatorId === "me";
+  const savedEvents = useMemo(
+    () => (isOwnProfile ? events.filter((e) => savedEventIds.includes(e.id)) : []),
+    [events, savedEventIds, isOwnProfile],
   );
 
   if (!profile) return null;
