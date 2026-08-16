@@ -36,7 +36,7 @@ export function AppModals() {
             type="button"
             onClick={() => {
               closeModal()
-              openProfile("kwb")
+              openProfile("me")
             }}
             className="w-full rounded-xl border border-border px-4 py-3 text-sm font-bold text-foreground"
           >
@@ -68,7 +68,7 @@ export function AppModals() {
             type="button"
             onClick={() => {
               closeModal()
-              openProfile("kwb")
+              openProfile("me")
             }}
             className="w-full rounded-xl border border-border px-4 py-3 text-left text-sm font-bold text-foreground"
           >
