@@ -26,8 +26,8 @@ export function HomeView() {
       <SponsorTicker />
 
       <SectionHeader>Featured Activation</SectionHeader>
-      <div className="mb-5 rounded-2xl border border-border bg-card p-[18px]">
-        <span className="mb-2.5 inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-2.5 py-1 text-[10px] font-bold uppercase text-primary">
+      <div className="surface-card mb-5 rounded-2xl p-[18px]">
+        <span className="mb-2.5 inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-gold">
           Upcoming Activation
         </span>
         <h3 className="mb-1 text-[15px] font-bold text-card-foreground">{featured?.title}</h3>
@@ -39,14 +39,14 @@ export function HomeView() {
           <button
             type="button"
             onClick={() => openStream("r1")}
-            className="flex-1 rounded-xl bg-primary py-3 text-[13px] font-bold text-primary-foreground"
+            className="bg-gradient-primary flex-1 rounded-xl py-3 text-[13px] font-bold text-primary-foreground transition-shadow hover:glow-primary"
           >
             Tune In Live
           </button>
           <button
             type="button"
             onClick={() => navigate("map")}
-            className="flex-1 rounded-xl border border-primary py-3 text-[13px] font-bold text-primary"
+            className="flex-1 rounded-xl border border-primary/60 py-3 text-[13px] font-bold text-primary transition-all hover:border-primary hover:glow-primary"
           >
             View On Map
           </button>
@@ -59,10 +59,10 @@ export function HomeView() {
         return (
           <div
             key={event.id}
-            className="mb-3 flex items-center justify-between gap-3.5 rounded-xl border border-transparent bg-surface-2 p-3 transition-colors hover:border-border"
+            className="surface-card mb-3 flex items-center justify-between gap-3.5 rounded-xl bg-surface-2 p-3"
           >
             <div className="flex items-center gap-3.5">
-              <div className="flex h-[50px] w-[50px] flex-col items-center justify-center rounded-lg bg-secondary text-xs font-bold leading-tight">
+              <div className="flex h-[50px] w-[50px] flex-col items-center justify-center rounded-lg border border-border bg-secondary text-xs font-bold leading-tight text-gold">
                 <span>{event.month}</span>
                 <span className="text-base">{event.day}</span>
               </div>
@@ -79,7 +79,7 @@ export function HomeView() {
               aria-label={saved ? "Remove saved event" : "Save event"}
               aria-pressed={saved}
               className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary ${
-                saved ? "text-primary" : "text-muted-foreground"
+                saved ? "text-gold" : "text-muted-foreground"
               }`}
             >
               <BookmarkIcon className="h-5 w-5" />
@@ -100,7 +100,7 @@ export function HomeView() {
             navigate("chat")
             showToast("Opened LFG / Propose a Jam channel")
           }}
-          className="w-full rounded-xl border border-primary py-3 text-[13px] font-bold text-primary"
+          className="w-full rounded-xl border border-primary/60 py-3 text-[13px] font-bold text-primary transition-all hover:border-primary hover:glow-primary"
         >
           Propose a Jam
         </button>
