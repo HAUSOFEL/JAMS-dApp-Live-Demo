@@ -169,14 +169,16 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
           <div className="mt-4 flex gap-2">
             <button
               type="button"
-              onClick={() => toggleFollow(creator.id)}
+              onClick={() =>
+                isOwnProfile ? showToast("Profile editing coming soon") : toggleFollow(creator.id)
+              }
               className={`flex-1 rounded-xl py-2.5 text-[13px] font-bold transition-colors ${
-                following
+                isOwnProfile || following
                   ? "border border-border bg-secondary text-foreground"
                   : "bg-primary text-primary-foreground"
               }`}
             >
-              {following ? "Following" : "Follow"}
+              {isOwnProfile ? "Edit Profile" : following ? "Following" : "Follow"}
             </button>
             <button
               type="button"
