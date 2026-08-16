@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useCreatorProfile, useReels } from "@/lib/jams/data";
+import { useCreatorProfile, useEvents, useReels } from "@/lib/jams/data";
 import type { ProfilePost } from "@/lib/jams/types";
 import { useJams } from "../jams-context";
 import {
@@ -25,13 +25,28 @@ type ProfileTab = "grid" | "reels" | "saved";
 export function ProfileView({ creatorId, showBack = true }: { creatorId: string; showBack?: boolean }) {
   const profile = useCreatorProfile(creatorId);
   const reels = useReels();
-  const { closeProfile, openStream, openModal, followedCreatorIds, toggleFollow, showToast } =
-    useJams();
+  const events = useEvents();
+  const {
+    closeProfile,
+    openStream,
+    openModal,
+    followedCreatorIds,
+    toggleFollow,
+    savedEventIds,
+    toggleSavedEvent,
+    showToast,
+  } = useJams();
   const [tab, setTab] = useState<ProfileTab>("grid");
 
   const liveReel = useMemo(
     () => reels.find((r) => r.creator.id === creatorId && r.isLive),
     [reels, creatorId],
+  );
+
+  const isOwnProfile = creatorId === "me";
+  const savedEvents = useMemo(
+    () => (isOwnProfile ? events.filter((e) => savedEventIds.includes(e.id)) : []),
+    [events, savedEventIds, isOwnProfile],
   );
 
   if (!profile) return null;
@@ -154,14 +169,16 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
           <div className="mt-4 flex gap-2">
             <button
               type="button"
-              onClick={() => toggleFollow(creator.id)}
+              onClick={() =>
+                isOwnProfile ? showToast("Profile editing coming soon") : toggleFollow(creator.id)
+              }
               className={`flex-1 rounded-xl py-2.5 text-[13px] font-bold transition-colors ${
-                following
+                isOwnProfile || following
                   ? "border border-border bg-secondary text-foreground"
                   : "bg-primary text-primary-foreground"
               }`}
             >
-              {following ? "Following" : "Follow"}
+              {isOwnProfile ? "Edit Profile" : following ? "Following" : "Follow"}
             </button>
             <button
               type="button"
@@ -230,8 +247,48 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
           ))}
         </div>
 
-        {/* Grid */}
-        {visiblePosts.length ? (
+        {/* Saved events */}
+        {tab === "saved" ? (
+          savedEvents.length ? (
+            <ul className="flex flex-col gap-2.5 p-4">
+              {savedEvents.map((event) => (
+                <li
+                  key={event.id}
+                  className="flex items-center justify-between gap-3 rounded-xl bg-surface-2 p-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-[46px] w-[46px] flex-col items-center justify-center rounded-lg bg-secondary text-[11px] font-bold leading-tight text-foreground">
+                      {event.month}
+                      <span className="text-sm">{event.day}</span>
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block truncate text-[13px] font-bold text-foreground">
+                        {event.title}
+                      </span>
+                      <span className="block truncate text-[11px] text-muted-foreground">
+                        {event.location} • {event.time}
+                      </span>
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => toggleSavedEvent(event.id)}
+                    aria-label="Remove saved event"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-primary"
+                  >
+                    <BookmarkIcon className="h-4 w-4" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="px-6 py-12 text-center text-xs text-muted-foreground">
+              {isOwnProfile
+                ? "Save events from the home feed and they'll collect here."
+                : "This creator's saved jams are private."}
+            </p>
+          )
+        ) : visiblePosts.length ? (
           <div className="grid grid-cols-3 gap-0.5 p-0.5">
             {visiblePosts.map((post) => (
               <button
@@ -268,11 +325,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
             ))}
           </div>
         ) : (
-          <p className="px-6 py-12 text-center text-xs text-muted-foreground">
-            {tab === "saved"
-              ? "Saved posts from this creator will show up here."
-              : "No reels posted yet."}
-          </p>
+          <p className="px-6 py-12 text-center text-xs text-muted-foreground">No reels posted yet.</p>
         )}
       </div>
     </div>
