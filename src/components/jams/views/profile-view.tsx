@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useCreatorProfile, useReels } from "@/lib/jams/data";
+import { useCreatorProfile, useEvents, useReels } from "@/lib/jams/data";
 import type { ProfilePost } from "@/lib/jams/types";
 import { useJams } from "../jams-context";
 import {
