@@ -230,8 +230,48 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
           ))}
         </div>
 
-        {/* Grid */}
-        {visiblePosts.length ? (
+        {/* Saved events */}
+        {tab === "saved" ? (
+          savedEvents.length ? (
+            <ul className="flex flex-col gap-2.5 p-4">
+              {savedEvents.map((event) => (
+                <li
+                  key={event.id}
+                  className="flex items-center justify-between gap-3 rounded-xl bg-surface-2 p-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-[46px] w-[46px] flex-col items-center justify-center rounded-lg bg-secondary text-[11px] font-bold leading-tight text-foreground">
+                      {event.month}
+                      <span className="text-sm">{event.day}</span>
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block truncate text-[13px] font-bold text-foreground">
+                        {event.title}
+                      </span>
+                      <span className="block truncate text-[11px] text-muted-foreground">
+                        {event.location} • {event.time}
+                      </span>
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => toggleSavedEvent(event.id)}
+                    aria-label="Remove saved event"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-primary"
+                  >
+                    <BookmarkIcon className="h-4 w-4" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="px-6 py-12 text-center text-xs text-muted-foreground">
+              {isOwnProfile
+                ? "Save events from the home feed and they'll collect here."
+                : "This creator's saved jams are private."}
+            </p>
+          )
+        ) : visiblePosts.length ? (
           <div className="grid grid-cols-3 gap-0.5 p-0.5">
             {visiblePosts.map((post) => (
               <button
@@ -268,11 +308,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
             ))}
           </div>
         ) : (
-          <p className="px-6 py-12 text-center text-xs text-muted-foreground">
-            {tab === "saved"
-              ? "Saved posts from this creator will show up here."
-              : "No reels posted yet."}
-          </p>
+          <p className="px-6 py-12 text-center text-xs text-muted-foreground">No reels posted yet.</p>
         )}
       </div>
     </div>
