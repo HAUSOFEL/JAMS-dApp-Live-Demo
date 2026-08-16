@@ -19,7 +19,7 @@ export function BottomNav() {
   const { activeTab, navigate, profileCreatorId } = useJams();
 
   return (
-    <nav className="absolute inset-x-0 bottom-0 z-[35] flex shrink-0 justify-between border-t border-border bg-surface px-5 pb-6 pt-3">
+    <nav className="absolute inset-x-0 bottom-0 z-[35] flex shrink-0 justify-between border-t border-border bg-surface/95 px-5 pb-6 pt-3 backdrop-blur">
       {items.map((item) => {
         const { id, label } = item;
         const active = activeTab === id && !profileCreatorId;
@@ -30,13 +30,19 @@ export function BottomNav() {
             onClick={() => navigate(id)}
             aria-label={label}
             aria-current={active ? "page" : undefined}
-            className={`flex flex-1 flex-col items-center gap-1 ${active ? "text-primary" : "text-muted-foreground"}`}
+            className={`relative flex flex-1 flex-col items-center gap-1 transition-colors ${active ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
           >
+            {active ? (
+              <span
+                aria-hidden="true"
+                className="bg-gradient-primary absolute -top-3 h-0.5 w-8 rounded-full"
+              />
+            ) : null}
             {"isAvatar" in item ? (
               <span
                 className={`relative flex h-8 w-8 items-center justify-center rounded-full transition-all ${
                   active
-                    ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                    ? "glow-primary ring-2 ring-primary ring-offset-2 ring-offset-background"
                     : "ring-1 ring-transparent"
                 }`}
               >
@@ -55,7 +61,7 @@ export function BottomNav() {
                 return <Icon className="h-6 w-6" />;
               })()
             )}
-            <span className="text-[10px] font-semibold">{label}</span>
+            <span className="text-[10px] font-semibold tracking-wide">{label}</span>
           </button>
         );
       })}
