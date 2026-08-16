@@ -17,7 +17,7 @@ export function SponsorTicker() {
             <span className="text-primary" aria-hidden="true">
               ●
             </span>
-            {sponsor.label}: <span className="text-primary">{sponsor.highlight}</span>
+            {sponsor.label}: <span className="text-gold">{sponsor.highlight}</span>
           </span>
         ))}
       </div>
