@@ -83,9 +83,21 @@ export function ReelCard({ reel, onOpenComments }: ReelCardProps) {
           type="button"
           onClick={() => openProfile(reel.creator.id)}
           title={`${reel.creator.displayName} profile`}
-          className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-primary bg-secondary text-sm font-bold text-white"
+          aria-label={`${reel.creator.displayName} profile`}
+          className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-secondary text-sm font-bold text-white"
+          style={reel.creator.accentColor ? { background: reel.creator.accentColor } : undefined}
         >
-          {reel.creator.initials}
+          {reel.creator.avatarUrl ? (
+            <img
+              src={reel.creator.avatarUrl}
+              alt=""
+              className="h-full w-full object-cover"
+              width={44}
+              height={44}
+            />
+          ) : (
+            reel.creator.initials
+          )}
         </button>
 
         <SideAction
