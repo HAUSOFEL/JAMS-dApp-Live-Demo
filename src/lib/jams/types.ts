@@ -112,9 +112,10 @@ export interface CreatorProfile {
 /** Maps to a `sponsors` row for the marquee ticker. */
 export interface Sponsor {
   id: string
-  label: string
-  highlight: string
+  name: string
+  featured?: boolean
 }
+
 
 /** Maps to a realtime `stream_comments` row. */
 export interface Comment {

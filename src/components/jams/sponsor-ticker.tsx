@@ -7,17 +7,26 @@ export function SponsorTicker() {
   const loop = [...sponsors, ...sponsors]
 
   return (
-    <div className="mb-6 w-full overflow-hidden border-y border-border/60 bg-secondary/60 py-2.5">
+    <div className="mb-6 w-full overflow-hidden border-y border-border/60 bg-secondary/60 py-3">
+      <div className="mb-2 px-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+        Community & Ecosystem Partners
+      </div>
       <div className="inline-block animate-scroll-ticker whitespace-nowrap">
         {loop.map((sponsor, i) => (
           <span
             key={`${sponsor.id}-${i}`}
-            className="inline-flex items-center gap-2 px-5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"
+            className={`mx-2 inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-xs font-bold uppercase tracking-wide text-black shadow-sm ${
+              sponsor.featured
+                ? "border-gold bg-white"
+                : "border-border/40 bg-white"
+            }`}
           >
-            <span className="text-primary" aria-hidden="true">
-              ●
-            </span>
-            {sponsor.label}: <span className="text-gold">{sponsor.highlight}</span>
+            {sponsor.featured && (
+              <span className="text-gold" aria-hidden="true">
+                ★
+              </span>
+            )}
+            {sponsor.name}
           </span>
         ))}
       </div>

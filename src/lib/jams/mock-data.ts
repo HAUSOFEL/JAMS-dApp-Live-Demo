@@ -181,11 +181,12 @@ export const mockPortals: CrewPortal[] = [
 ]
 
 export const mockSponsors: Sponsor[] = [
-  { id: "sp1", label: "Official Partner", highlight: "Red Bull" },
-  { id: "sp2", label: "Collab", highlight: "Solana Culture" },
-  { id: "sp3", label: "Powered By", highlight: "Vans Underground" },
-  { id: "sp4", label: "Community", highlight: "Kitchener Arts Council" },
+  { id: "sp1", name: "Red Bull Canada", featured: true },
+  { id: "sp2", name: "Blockchain Breakers" },
+  { id: "sp3", name: "KWB (Knowledge Without Borders)" },
+  { id: "sp4", name: "KW Famous" },
 ]
+
 
 // Gradient palette reused for profile grid tiles until real thumbnails are wired.
 const gridGradients = [
