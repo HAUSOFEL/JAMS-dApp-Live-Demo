@@ -2,45 +2,67 @@
 import { useWallet } from "@/lib/jams/data"
 import { BottomSheet } from "./bottom-sheet"
 import { useJams } from "./jams-context"
-import { BlinksIcon } from "./icons"
+import { BlinksIcon, CopyIcon } from "./icons"
 
 export function AppModals() {
   const { modal, closeModal, logout, navigate, openProfile, showToast } = useJams()
   const wallet = useWallet()
+
+  async function copyAddress() {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      await navigator.clipboard.writeText(wallet.address)
+      showToast("Wallet address copied")
+    }
+  }
 
   return (
     <>
       {/* Wallet Hub */}
       <BottomSheet
         open={modal === "wallet"}
-        title="Solana Mobile Wallet Hub"
-        description={`Connected via Privy / Seeker Seed Vault\nAddress: ${wallet.address}  •  Balance: ${wallet.balanceSol} SOL`}
+        title="Solana Wallet Hub"
+        description="Connected via Privy / Seeker Seed Vault"
         onClose={closeModal}
       >
-        <div className="flex flex-col gap-2.5">
-          <button
-            type="button"
-            onClick={() => showToast("Redirecting to MoonPay fiat ramp...")}
-            className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground"
-          >
-            Buy SOL via MoonPay
-          </button>
-          <button
-            type="button"
-            onClick={() => showToast("Opening wallet manager...")}
-            className="w-full rounded-xl border border-primary px-4 py-3 text-sm font-bold text-primary"
-          >
-            Switch / Manage Wallets
-          </button>
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2 rounded-2xl border border-border bg-secondary p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">Address</span>
+              <button
+                type="button"
+                onClick={copyAddress}
+                className="flex items-center gap-1 text-xs font-bold text-primary transition-colors hover:text-gold"
+              >
+                <CopyIcon className="h-3.5 w-3.5" />
+                Copy
+              </button>
+            </div>
+            <div className="break-all font-mono text-xs text-foreground">{wallet.address}</div>
+          </div>
+
+          <div className="flex items-center justify-between rounded-2xl border border-border bg-secondary px-4 py-3">
+            <span className="text-xs text-muted-foreground">Network</span>
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-green-500" />
+              <span className="text-xs font-bold text-foreground">{wallet.chain}</span>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between rounded-2xl border border-border bg-secondary px-4 py-3">
+            <span className="text-xs text-muted-foreground">Balance</span>
+            <span className="text-xs font-bold text-foreground">{wallet.balanceSol} SOL</span>
+          </div>
+
           <button
             type="button"
             onClick={() => {
               closeModal()
-              openProfile("me")
+              logout()
+              showToast("Wallet disconnected")
             }}
-            className="w-full rounded-xl border border-border px-4 py-3 text-sm font-bold text-foreground"
+            className="w-full rounded-xl border border-live/50 px-4 py-3 text-sm font-bold text-live"
           >
-            View Profile
+            Disconnect Wallet
           </button>
         </div>
       </BottomSheet>
@@ -49,7 +71,7 @@ export function AppModals() {
       <BottomSheet
         open={modal === "menu"}
         title="JAMS System Menu"
-        description="Jump to Blinks, your profile, settings, or disconnect your session."
+        description="Jump to your Crew Portal, settings, or disconnect your session."
         onClose={closeModal}
       >
         <div className="flex flex-col gap-2.5">
@@ -62,17 +84,7 @@ export function AppModals() {
             className="flex items-center gap-3 rounded-xl border border-primary/60 bg-primary/10 px-4 py-3 text-left text-sm font-bold text-primary"
           >
             <BlinksIcon className="h-4 w-4" />
-            Blinks & Crew Portal
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              closeModal()
-              openProfile("me")
-            }}
-            className="w-full rounded-xl border border-border px-4 py-3 text-left text-sm font-bold text-foreground"
-          >
-            My Creator Profile
+            Crew Portal
           </button>
           <button
             type="button"
