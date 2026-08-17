@@ -3,7 +3,6 @@ import { useEvents } from "@/lib/jams/data"
 import { useJams } from "../jams-context"
 import { SponsorTicker } from "../sponsor-ticker"
 import { StoriesRail } from "../stories-rail"
-import { BookmarkIcon } from "../icons"
 
 function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
@@ -13,17 +12,14 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
 
 export function HomeView() {
   const events = useEvents()
-  const { navigate, openStream, toggleSavedEvent, savedEventIds, showToast } = useJams()
+  const { navigate, openStream, showToast } = useJams()
 
   const featured = events.find((e) => e.isFeatured) ?? events[0]
-  const upcoming = events.filter((e) => e.id !== featured?.id)
 
   return (
     <div className="animate-fade-in">
       <SectionHeader>Live Feed &amp; Stories</SectionHeader>
       <StoriesRail />
-
-      <SponsorTicker />
 
       <SectionHeader>Featured Activation</SectionHeader>
       <div className="surface-card mb-5 rounded-2xl p-[18px]">
@@ -53,40 +49,7 @@ export function HomeView() {
         </div>
       </div>
 
-      <SectionHeader>Upcoming Breaker Sessions</SectionHeader>
-      {upcoming.map((event) => {
-        const saved = savedEventIds.includes(event.id)
-        return (
-          <div
-            key={event.id}
-            className="surface-card mb-3 flex items-center justify-between gap-3.5 rounded-xl bg-surface-2 p-3"
-          >
-            <div className="flex items-center gap-3.5">
-              <div className="flex h-[50px] w-[50px] flex-col items-center justify-center rounded-lg border border-border bg-secondary text-xs font-bold leading-tight text-gold">
-                <span>{event.month}</span>
-                <span className="text-base">{event.day}</span>
-              </div>
-              <div>
-                <h4 className="mb-0.5 text-sm font-bold">{event.title}</h4>
-                <p className="text-xs text-muted-foreground">
-                  {event.location} • {event.time}
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => toggleSavedEvent(event.id)}
-              aria-label={saved ? "Remove saved event" : "Save event"}
-              aria-pressed={saved}
-              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary ${
-                saved ? "text-gold" : "text-muted-foreground"
-              }`}
-            >
-              <BookmarkIcon className="h-5 w-5" />
-            </button>
-          </div>
-        )
-      })}
+      <SponsorTicker />
 
       <SectionHeader>Host Your Own</SectionHeader>
       <div className="mb-2 rounded-2xl border border-dashed border-border bg-secondary/60 p-[18px] text-center">
@@ -108,3 +71,4 @@ export function HomeView() {
     </div>
   )
 }
+
