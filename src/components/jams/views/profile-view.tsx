@@ -250,7 +250,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
         </div>
 
         {/* Tabs */}
-        <div className="mt-4 grid grid-cols-4 border-y border-border">
+        <div className="mt-4 flex w-full flex-row items-center justify-around border-b border-white/10">
           {(
             [
               ["grid", "Posts", GridIcon],
@@ -265,7 +265,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
               onClick={() => setTab(id)}
               aria-label={label}
               aria-selected={tab === id}
-              className={`flex items-center justify-center gap-1.5 py-3 text-[11px] font-semibold ${
+              className={`flex-1 flex items-center justify-center gap-1.5 py-3 text-sm font-medium ${
                 tab === id
                   ? "border-b-2 border-primary text-primary"
                   : "border-b-2 border-transparent text-muted-foreground"
