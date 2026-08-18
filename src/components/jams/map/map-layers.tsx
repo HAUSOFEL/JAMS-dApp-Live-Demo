@@ -6,22 +6,50 @@ export const MAP_LAYERS: { id: MapLayerId; label: string; hint: string }[] = [
   { id: "topo", label: "Terrain 3D", hint: "Topographic mesh + contours" },
 ]
 
-/** Standard street basemap: block grid + arterial roads. */
+/** Standard street basemap: block grid + arterial roads + labelled major streets. */
 function StreetLayer() {
+  const labels = [
+    { name: "Cypher Way", x: 18, y: 28, rotate: -12 },
+    { name: "Community St", x: 44, y: 50, rotate: 8 },
+    { name: "Culture Ave", x: 72, y: 62, rotate: -6 },
+  ]
+
   return (
-    <div
-      className="absolute inset-0 bg-surface-2"
-      style={{
-        backgroundImage: [
-          "radial-gradient(color-mix(in oklab, var(--foreground) 16%, transparent) 1px, transparent 1px)",
-          "linear-gradient(color-mix(in oklab, var(--foreground) 7%, transparent) 1px, transparent 1px)",
-          "linear-gradient(90deg, color-mix(in oklab, var(--foreground) 7%, transparent) 1px, transparent 1px)",
-          "linear-gradient(color-mix(in oklab, var(--foreground) 14%, transparent) 3px, transparent 3px)",
-          "linear-gradient(90deg, color-mix(in oklab, var(--foreground) 14%, transparent) 3px, transparent 3px)",
-        ].join(", "),
-        backgroundSize: "24px 24px, 30px 30px, 30px 30px, 150px 150px, 150px 150px",
-      }}
-    />
+    <div className="absolute inset-0 bg-surface-2">
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: [
+            "radial-gradient(color-mix(in oklab, var(--foreground) 16%, transparent) 1px, transparent 1px)",
+            "linear-gradient(color-mix(in oklab, var(--foreground) 10%, transparent) 1px, transparent 1px)",
+            "linear-gradient(90deg, color-mix(in oklab, var(--foreground) 10%, transparent) 1px, transparent 1px)",
+            "linear-gradient(color-mix(in oklab, var(--foreground) 20%, transparent) 3px, transparent 3px)",
+            "linear-gradient(90deg, color-mix(in oklab, var(--foreground) 20%, transparent) 3px, transparent 3px)",
+          ].join(", "),
+          backgroundSize: "24px 24px, 30px 30px, 30px 30px, 150px 150px, 150px 150px",
+        }}
+      />
+      {/* Major street labels */}
+      <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        {labels.map((l) => (
+          <text
+            key={l.name}
+            x={l.x}
+            y={l.y}
+            transform={`rotate(${l.rotate}, ${l.x}, ${l.y})`}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fill="#E2E8F0"
+            stroke="#0F172A"
+            strokeWidth={0.45}
+            paintOrder="stroke"
+            style={{ fontSize: "2.2px", fontWeight: 700, letterSpacing: "0.04em" }}
+          >
+            {l.name}
+          </text>
+        ))}
+      </svg>
+    </div>
   )
 }
 
