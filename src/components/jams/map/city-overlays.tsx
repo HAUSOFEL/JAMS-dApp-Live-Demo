@@ -4,7 +4,7 @@ import { CITY_BUILDINGS, POI_CATEGORIES, type CityPoi } from "@/lib/jams/city-po
  * Faux-3D building footprints: each block is an extruded slab drawn with a
  * roof face plus a shaded side wall offset by the storey height.
  */
-export function BuildingsLayer({ tinted }: { tinted?: boolean }) {
+export function BuildingsLayer() {
   return (
     <div className="pointer-events-none absolute inset-0 z-[2]" aria-hidden="true">
       {CITY_BUILDINGS.map((b) => {
