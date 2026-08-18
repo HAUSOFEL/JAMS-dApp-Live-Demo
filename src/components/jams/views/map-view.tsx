@@ -267,7 +267,7 @@ export function MapView() {
 
         {/* Event details card overlay */}
         {selected ? (
-          <div className="fixed bottom-20 left-1/2 z-40 w-[calc(100%-24px)] max-w-[370px] -translate-x-1/2 box-border">
+          <div className="fixed bottom-[72px] left-1/2 z-40 w-[calc(100%-24px)] max-w-[360px] -translate-x-1/2 pointer-events-auto">
             <div className="max-h-[38vh] overflow-y-auto rounded-2xl border border-white/10 bg-slate-900/95 p-3 shadow-2xl backdrop-blur-xl">
               <div className="mb-2 flex items-start justify-between gap-3">
                 <div className="flex flex-wrap items-center gap-2">
@@ -329,7 +329,7 @@ export function MapView() {
             </div>
           </div>
         ) : selectedPoi ? (
-          <div className="fixed bottom-20 left-1/2 z-40 w-[calc(100%-24px)] max-w-[370px] -translate-x-1/2 box-border">
+          <div className="fixed bottom-[72px] left-1/2 z-40 w-[calc(100%-24px)] max-w-[360px] -translate-x-1/2 pointer-events-auto">
             <div className="max-h-[38vh] overflow-y-auto rounded-2xl border border-white/10 bg-slate-900/95 p-3 shadow-2xl backdrop-blur-xl">
               <div className="mb-2 flex items-start justify-between gap-3">
                 <span className="inline-flex items-center gap-1.5 rounded-xl bg-secondary px-2 py-1 text-[10px] font-bold text-muted-foreground">
@@ -350,13 +350,7 @@ export function MapView() {
               <p className="text-[13px] text-muted-foreground">{selectedPoi.detail}</p>
             </div>
           </div>
-        ) : (
-          <div className="fixed bottom-20 left-1/2 z-40 w-[calc(100%-24px)] max-w-[370px] -translate-x-1/2 box-border">
-            <p className="rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-center text-[12px] text-muted-foreground backdrop-blur-xl">
-              Tap a pin or place for details · scroll to zoom · drag to pan
-            </p>
-          </div>
-        )}
+        ) : null}
 
       </div>
     </div>
