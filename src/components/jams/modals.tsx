@@ -110,7 +110,7 @@ export function AppModals() {
       <BottomSheet
         open={modal === "creator"}
         title="Creator Studio"
-        description="Broadcast a live stream session or drop content into the JAMS engine."
+        description="Broadcast a live stream or upload content below."
         onClose={closeModal}
       >
         <div className="flex flex-col gap-3">
@@ -124,7 +124,7 @@ export function AppModals() {
             className="flex items-center gap-3 rounded-2xl border border-border bg-secondary px-4 py-4 text-left text-sm font-bold text-foreground transition-colors hover:border-primary"
           >
             <span className="h-2.5 w-2.5 rounded-full bg-live" aria-hidden="true" />
-            Go Live (Cypher Stream)
+            Go Live Now!
           </button>
           <button
             type="button"
@@ -137,7 +137,7 @@ export function AppModals() {
             <span className="text-primary" aria-hidden="true">
               ▲
             </span>
-            Drop Reel / Photo Clip
+            Upload Content now
           </button>
         </div>
       </BottomSheet>
