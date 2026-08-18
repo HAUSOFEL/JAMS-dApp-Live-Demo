@@ -214,7 +214,7 @@ export const mockProfiles: Record<string, CreatorProfile> = {
     creator: creators.me,
     crew: "JAMS Crew",
     location: "Kitchener–Waterloo, ON",
-    bio: "Dancer, event host, and JAMS early user. Tracking the local scene one jam at a time.",
+    bio: "Hi! Welcome to JAMS — the all-in-one home for the culture.",
     stats: { posts: 47, followers: 1240, following: 210 },
     posts: buildPosts(8, 9),
   },

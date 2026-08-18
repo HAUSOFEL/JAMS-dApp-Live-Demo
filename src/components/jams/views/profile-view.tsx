@@ -10,6 +10,7 @@ import {
   HeartIcon,
   PinIcon,
   ReelsIcon,
+  SearchIcon,
   ShareIcon,
   TipIcon,
 } from "../icons";
@@ -20,7 +21,7 @@ function formatCount(n: number) {
   return `${n}`;
 }
 
-type ProfileTab = "grid" | "reels" | "saved";
+type ProfileTab = "grid" | "reels" | "collectibles" | "saved";
 
 export function ProfileView({ creatorId, showBack = true }: { creatorId: string; showBack?: boolean }) {
   const profile = useCreatorProfile(creatorId);
@@ -55,7 +56,23 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
   const following = followedCreatorIds.includes(creator.id);
 
   const visiblePosts: ProfilePost[] =
-    tab === "grid" ? posts : tab === "reels" ? posts.filter((p: ProfilePost) => p.isReel) : [];
+    tab === "grid"
+      ? posts
+      : tab === "reels"
+        ? posts.filter((p: ProfilePost) => p.isReel)
+        : [];
+
+  const collectibles = [
+    { id: "c1", name: "Founding Bboy", rarity: "legendary", color: "#F5C518" },
+    { id: "c2", name: "Cypher King", rarity: "rare", color: "#DC2626" },
+    { id: "c3", name: "Windmill Master", rarity: "legendary", color: "#F5C518" },
+    { id: "c4", name: "Floor General", rarity: "rare", color: "#DC2626" },
+    { id: "c5", name: "Jam Pioneer", rarity: "legendary", color: "#F5C518" },
+    { id: "c6", name: "Beat Stomper", rarity: "rare", color: "#DC2626" },
+    { id: "c7", name: "Culture Keeper", rarity: "legendary", color: "#F5C518" },
+    { id: "c8", name: "Street Scholar", rarity: "rare", color: "#DC2626" },
+    { id: "c9", name: "Golden Frame", rarity: "legendary", color: "#F5C518" },
+  ]
 
   function handlePostTap(post: ProfilePost) {
     if (post.streamId) {
@@ -67,6 +84,18 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
 
   return (
     <div className="animate-slide-in-right absolute inset-0 z-30 flex flex-col bg-background">
+      {/* Search bar */}
+      <div className="shrink-0 px-4 pt-3 pb-2">
+        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-slate-900/80 px-4 py-2 backdrop-blur-md">
+          <SearchIcon className="h-4 w-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search creators, reels, or tags..."
+            className="flex-1 border-0 bg-transparent text-xs text-foreground placeholder:text-muted-foreground focus:outline-none"
+          />
+        </div>
+      </div>
+
       {/* Header */}
       <header className="flex shrink-0 items-center gap-3 border-b border-border bg-surface px-4 py-3">
         {showBack ? (
@@ -221,11 +250,12 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
         </div>
 
         {/* Tabs */}
-        <div className="mt-4 grid grid-cols-3 border-y border-border">
+        <div className="mt-4 grid grid-cols-4 border-y border-border">
           {(
             [
               ["grid", "Posts", GridIcon],
               ["reels", "Reels", ReelsIcon],
+              ["collectibles", "Collectibles", null],
               ["saved", "Saved", BookmarkIcon],
             ] as const
           ).map(([id, label, Icon]) => (
@@ -241,14 +271,51 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
                   : "border-b-2 border-transparent text-muted-foreground"
               }`}
             >
-              <Icon className="h-4 w-4" />
+              {Icon ? <Icon className="h-4 w-4" /> : null}
               {label}
             </button>
           ))}
         </div>
 
-        {/* Saved events */}
-        {tab === "saved" ? (
+        {/* Collectibles */}
+        {tab === "collectibles" ? (
+          <div className="p-3">
+            <div className="grid grid-cols-3 gap-2">
+              {collectibles.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex flex-col items-center gap-1.5 rounded-xl border border-white/10 bg-slate-900 p-2.5"
+                  style={{ backgroundColor: "#161B22" }}
+                >
+                  <div
+                    className="flex h-14 w-14 items-center justify-center rounded-lg text-2xl"
+                    style={{
+                      background: `linear-gradient(135deg, ${item.color}33, ${item.color}11)`,
+                      border: `1px solid ${item.color}55`,
+                    }}
+                  >
+                    <span style={{ color: item.color }} className="text-lg font-black">
+                      {item.name.charAt(0)}
+                    </span>
+                  </div>
+                  <p className="text-center text-[9px] font-bold leading-tight text-foreground">
+                    {item.name}
+                  </p>
+                  <span
+                    className="rounded-full px-1.5 py-0.5 text-[7px] font-black uppercase"
+                    style={{
+                      color: item.color,
+                      border: `1px solid ${item.color}44`,
+                    }}
+                  >
+                    {item.rarity}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : /* Saved events */
+        tab === "saved" ? (
           savedEvents.length ? (
             <ul className="flex flex-col gap-2.5 p-4">
               {savedEvents.map((event) => (

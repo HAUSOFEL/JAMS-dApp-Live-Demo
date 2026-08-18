@@ -5,6 +5,7 @@ import type { Reel } from "@/lib/jams/types"
 import { useJams } from "../jams-context"
 import { CommentsSheet } from "../reels/comments-sheet"
 import { ReelCard } from "../reels/reel-card"
+import { SearchIcon } from "../icons"
 
 interface FeedItem {
   key: string
@@ -53,6 +54,18 @@ export function ReelsView() {
 
   return (
     <div className="absolute inset-0 bg-black">
+      {/* Search bar */}
+      <div className="absolute inset-x-0 top-0 z-20 px-4 pt-3 pb-2">
+        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-slate-900/80 px-4 py-2 backdrop-blur-md">
+          <SearchIcon className="h-4 w-4 text-white/60" />
+          <input
+            type="text"
+            placeholder="Search creators, reels, or tags..."
+            className="flex-1 border-0 bg-transparent text-xs text-white placeholder:text-white/50 focus:outline-none"
+          />
+        </div>
+      </div>
+
       <div className="no-scrollbar h-full w-full snap-y-mandatory overflow-y-scroll">
         {feed.map((item) => (
           <div key={item.key} className="h-full w-full snap-start">
