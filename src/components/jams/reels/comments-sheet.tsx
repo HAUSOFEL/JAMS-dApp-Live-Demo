@@ -26,7 +26,7 @@ export function CommentsSheet({ streamId, onClose }: CommentsSheetProps) {
   }
 
   return (
-    <div className="absolute inset-x-0 bottom-[70px] z-[100] flex h-1/2 flex-col rounded-t-2xl border-t border-border bg-[rgba(5,19,41,0.95)] p-4 backdrop-blur">
+    <div className="absolute inset-x-0 bottom-[70px] z-[100] flex h-1/2 flex-col rounded-t-2xl border-t border-border bg-[rgba(20,20,20,0.95)] p-4 backdrop-blur">
       <div className="flex items-center justify-between border-b border-border pb-2.5 text-sm font-bold">
         <h4>Live Stream Comments</h4>
         <button type="button" onClick={onClose} aria-label="Close comments" className="text-white">
@@ -41,7 +41,7 @@ export function CommentsSheet({ streamId, onClose }: CommentsSheetProps) {
           comments.map((c) => (
             <div key={c.id} className="mb-2">
               <strong className="text-primary">{c.author}:</strong>{" "}
-              <span className="text-foreground">{c.text}</span>
+              <span className="text-[#ddd]">{c.text}</span>
             </div>
           ))
         )}

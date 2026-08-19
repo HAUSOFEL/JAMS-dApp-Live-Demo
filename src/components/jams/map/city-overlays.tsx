@@ -4,12 +4,12 @@ import { CITY_BUILDINGS, POI_CATEGORIES, type CityPoi } from "@/lib/jams/city-po
  * Faux-3D building footprints: each block is an extruded slab drawn with a
  * roof face plus a shaded side wall offset by the storey height.
  */
-export function BuildingsLayer() {
+export function BuildingsLayer({ tinted }: { tinted?: boolean }) {
   return (
     <div className="pointer-events-none absolute inset-0 z-[2]" aria-hidden="true">
       {CITY_BUILDINGS.map((b) => {
-        const lift = b.storeys * 0.12 // low extrusion for decluttered canvas
-        const slate = "#0F172A"
+        const lift = b.storeys * 0.32 // % of canvas height the roof is raised by
+        const roofAlpha = tinted ? 0.5 : 0.09 + Math.min(0.16, b.storeys * 0.014)
         return (
           <div key={b.id} className="absolute" style={{ left: `${b.x}%`, top: `${b.y}%`, width: `${b.w}%` }}>
             {/* Side wall (extrusion body) */}
@@ -20,9 +20,11 @@ export function BuildingsLayer() {
                 right: 0,
                 bottom: 0,
                 height: `${lift}vh`,
-                background: `linear-gradient(180deg, rgba(15, 23, 42, 0.35), rgba(15, 23, 42, 0.22))`,
-                borderLeft: "1px solid rgba(15, 23, 42, 0.42)",
-                borderRight: "1px solid rgba(15, 23, 42, 0.42)",
+                background: tinted
+                  ? "linear-gradient(180deg, rgba(60,44,26,0.55), rgba(60,44,26,0.28))"
+                  : "linear-gradient(180deg, color-mix(in oklab, var(--foreground) 17%, transparent), color-mix(in oklab, var(--foreground) 7%, transparent))",
+                borderLeft: "1px solid color-mix(in oklab, var(--foreground) 22%, transparent)",
+                borderRight: "1px solid color-mix(in oklab, var(--foreground) 22%, transparent)",
               }}
             />
             {/* Roof face */}
@@ -33,10 +35,12 @@ export function BuildingsLayer() {
                 right: 0,
                 bottom: `${lift}vh`,
                 height: `${b.h}vh`,
-                background: `rgba(15, 23, 42, 0.35)`,
-                border: "1px solid rgba(15, 23, 42, 0.45)",
+                background: tinted
+                  ? `rgba(232, 222, 200, ${roofAlpha})`
+                  : `color-mix(in oklab, var(--foreground) ${Math.round(roofAlpha * 100)}%, transparent)`,
+                border: "1px solid color-mix(in oklab, var(--foreground) 30%, transparent)",
                 borderRadius: 1,
-                boxShadow: "0 1px 0 rgba(15, 23, 42, 0.28)",
+                boxShadow: "0 1px 0 color-mix(in oklab, var(--foreground) 18%, transparent)",
               }}
             />
           </div>
