@@ -13,7 +13,7 @@ export function StoriesRail() {
             className={`relative h-[68px] w-[68px] rounded-full p-[3px] ${
               story.isLive
                 ? "animate-pulse-ring bg-[linear-gradient(45deg,var(--live),var(--primary),var(--chart-3))]"
-                : "bg-secondary"
+                : "bg-[#091B36]"
             }`}
           >
             {/* Avatar tap opens the creator profile overlay. */}
