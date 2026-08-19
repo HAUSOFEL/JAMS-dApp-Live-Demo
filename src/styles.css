@@ -63,53 +63,54 @@
   color-scheme: dark;
   --radius: 0.75rem;
 
-  /* Red Bull BC One — deep-navy stage (#051329 / #091B36), crimson + gold spotlights */
+  /* Red Bull BC One event palette — deep navy stage, electric blue + crimson/gold spotlights */
   --background: #051329;
-  --foreground: oklch(1 0 0);
+  --foreground: #ffffff;
   --surface: #091b36;
-  --surface-2: oklch(0.25 0.015 264);
+  --surface-2: #0e2447;
   --card: #091b36;
-  --card-foreground: oklch(1 0 0);
+  --card-foreground: #ffffff;
   --popover: #091b36;
-  --popover-foreground: oklch(1 0 0);
-  --primary: oklch(0.55 0.229 12);
-  --primary-foreground: oklch(1 0 0);
-  --primary-glow: oklch(0.63 0.215 15);
-  --gold: oklch(0.868 0.181 90);
+  --popover-foreground: #ffffff;
+  --primary: #0055ff;
+  --primary-foreground: #ffffff;
+  --primary-glow: #3d82ff;
+  --gold: #ffcc00;
   --gold-foreground: #051329;
-  --secondary: oklch(0.26 0.015 264);
-  --secondary-foreground: oklch(1 0 0);
-  --muted: oklch(0.25 0.014 264);
-  --muted-foreground: oklch(0.665 0.021 253);
-  --accent: oklch(0.29 0.017 264);
-  --accent-foreground: oklch(1 0 0);
-  --live: oklch(0.55 0.229 12);
-  --live-foreground: oklch(1 0 0);
-  --destructive: oklch(0.55 0.229 12);
-  --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.3 0.016 264);
-  --input: oklch(0.3 0.016 264);
-  --ring: oklch(0.55 0.229 12);
-  --chart-1: oklch(0.55 0.229 12);
-  --chart-2: oklch(0.868 0.181 90);
-  --chart-3: oklch(0.62 0.18 350);
-  --chart-4: oklch(0.55 0.16 259);
-  --chart-5: oklch(0.6 0.16 145);
+  --secondary: #0e2447;
+  --secondary-foreground: #ffffff;
+  --muted: #0e2447;
+  --muted-foreground: #8ca3c7;
+  --accent: #db0a40;
+  --accent-foreground: #ffffff;
+  --live: #db0a40;
+  --live-foreground: #ffffff;
+  --destructive: #db0a40;
+  --destructive-foreground: #ffffff;
+  --border: #16305c;
+  --input: #16305c;
+  --ring: #0055ff;
+  --chart-1: #0055ff;
+  --chart-2: #ffcc00;
+  --chart-3: #db0a40;
+  --chart-4: #3d82ff;
+  --chart-5: #34d399;
   --sidebar: #091b36;
-  --sidebar-foreground: oklch(1 0 0);
-  --sidebar-primary: oklch(0.55 0.229 12);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.26 0.015 264);
-  --sidebar-accent-foreground: oklch(1 0 0);
-  --sidebar-border: oklch(0.3 0.016 264);
-  --sidebar-ring: oklch(0.55 0.229 12);
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #0055ff;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #0e2447;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #16305c;
+  --sidebar-ring: #0055ff;
 
   /* Gradients & glows */
   --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-glow));
-  --gradient-gold: linear-gradient(135deg, var(--gold), oklch(0.78 0.15 70));
-  --gradient-crown: linear-gradient(135deg, var(--primary), var(--gold));
-  --glow-primary: 0 0 0 1px oklch(0.55 0.229 12 / 0.5), 0 8px 26px -8px oklch(0.55 0.229 12 / 0.65);
-  --glow-gold: 0 0 0 1px oklch(0.868 0.181 90 / 0.5), 0 8px 26px -8px oklch(0.868 0.181 90 / 0.55);
+  --gradient-gold: linear-gradient(135deg, var(--gold), #f0a500);
+  --gradient-crown: linear-gradient(135deg, var(--accent), var(--gold));
+  --glow-primary: 0 0 0 1px rgba(0, 85, 255, 0.5), 0 8px 26px -8px rgba(0, 85, 255, 0.7);
+  --glow-gold: 0 0 0 1px rgba(255, 204, 0, 0.5), 0 8px 26px -8px rgba(255, 204, 0, 0.55);
+  --glow-accent: 0 0 0 1px rgba(219, 10, 64, 0.5), 0 8px 26px -8px rgba(219, 10, 64, 0.65);
 }
 
 @layer base {
@@ -138,13 +139,13 @@
 
 @keyframes jams-pulse-ring {
   0% {
-    box-shadow: 0 0 0 0 oklch(0.55 0.229 12 / 0.45);
+    box-shadow: 0 0 0 0 rgba(0, 85, 255, 0.45);
   }
   70% {
-    box-shadow: 0 0 0 6px oklch(0.55 0.229 12 / 0);
+    box-shadow: 0 0 0 6px rgba(0, 85, 255, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 oklch(0.55 0.229 12 / 0);
+    box-shadow: 0 0 0 0 rgba(0, 85, 255, 0);
   }
 }
 
@@ -242,7 +243,11 @@
   border: 1px solid var(--color-border);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   &:hover {
-    border-color: oklch(0.55 0.229 12 / 0.6);
+    border-color: rgba(0, 85, 255, 0.6);
     box-shadow: var(--glow-primary);
   }
+}
+
+@utility glow-accent {
+  box-shadow: var(--glow-accent);
 }
