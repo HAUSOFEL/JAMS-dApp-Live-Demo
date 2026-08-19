@@ -97,7 +97,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
       </div>
 
       {/* Header */}
-      <header className="flex shrink-0 items-center gap-3 border-b border-border bg-surface px-4 py-3">
+      <header className="flex shrink-0 items-center justify-between gap-3 border-b border-border bg-surface px-4 py-3">
         {showBack ? (
           <button
             type="button"
@@ -108,17 +108,11 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
             <ChevronLeftIcon className="h-4 w-4" />
           </button>
         ) : null}
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-bold text-foreground">@{creator.handle}</p>
-          {profile.crew ? (
-            <p className="truncate text-[11px] text-muted-foreground">{profile.crew}</p>
-          ) : null}
-        </div>
         {liveReel ? (
           <button
             type="button"
             onClick={() => openStream(liveReel.id)}
-            className="flex items-center gap-1.5 rounded-full bg-live px-2.5 py-1 text-[10px] font-black uppercase text-live-foreground"
+            className="ml-auto flex items-center gap-1.5 rounded-full bg-live px-2.5 py-1 text-[10px] font-black uppercase text-live-foreground"
           >
             <span className="h-1.5 w-1.5 animate-pulse-live rounded-full bg-live-foreground" />
             Live
@@ -183,9 +177,14 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
           {/* Bio */}
           <div className="mt-3.5">
             <h2 className="text-sm font-bold text-foreground">{creator.displayName}</h2>
-            {profile.crew ? (
-              <p className="text-[11px] font-semibold text-primary">{profile.crew}</p>
-            ) : null}
+            <div className="mt-1 flex items-center gap-2">
+              <p className="text-[11px] font-semibold text-foreground">@{creator.handle}</p>
+              {profile.crew ? (
+                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                  {profile.crew}
+                </span>
+              ) : null}
+            </div>
             <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{profile.bio}</p>
             {profile.location ? (
               <p className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
