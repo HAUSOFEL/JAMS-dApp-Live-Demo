@@ -285,7 +285,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
                 <div
                   key={item.id}
                   className="flex flex-col items-center gap-1.5 rounded-xl border border-white/10 bg-slate-900 p-2.5"
-                  style={{ backgroundColor: "#091B36" }}
+                  style={{ backgroundColor: "#161B22" }}
                 >
                   <div
                     className="flex h-14 w-14 items-center justify-center rounded-lg text-2xl"
