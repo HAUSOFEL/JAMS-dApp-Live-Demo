@@ -46,7 +46,7 @@ export const mockReels: Reel[] = [
     isLive: true,
     viewers: 1200,
     likes: 3400,
-    gradient: "linear-gradient(135deg, #220000, #111)",
+    gradient: "linear-gradient(135deg, #0b1e3d, #051329)",
   },
   {
     id: "r2",
@@ -57,7 +57,7 @@ export const mockReels: Reel[] = [
     isLive: true,
     viewers: 842,
     likes: 2100,
-    gradient: "linear-gradient(135deg, #2a1a00, #111)",
+    gradient: "linear-gradient(135deg, #123055, #051329)",
   },
   {
     id: "r3",
@@ -67,7 +67,7 @@ export const mockReels: Reel[] = [
     tag: "Community Clip",
     isLive: false,
     likes: 980,
-    gradient: "linear-gradient(135deg, #002211, #111)",
+    gradient: "linear-gradient(135deg, #091b36, #051329)",
   },
   {
     id: "r4",
@@ -77,7 +77,7 @@ export const mockReels: Reel[] = [
     tag: "Scratch Session",
     isLive: false,
     likes: 1550,
-    gradient: "linear-gradient(135deg, #222200, #111)",
+    gradient: "linear-gradient(135deg, #1a2b52, #051329)",
   },
 ]
 
@@ -190,12 +190,12 @@ export const mockSponsors: Sponsor[] = [
 
 // Gradient palette reused for profile grid tiles until real thumbnails are wired.
 const gridGradients = [
-  "linear-gradient(135deg, #220000, #111)",
-  "linear-gradient(135deg, #2a1a00, #111)",
-  "linear-gradient(135deg, #002211, #111)",
-  "linear-gradient(135deg, #222200, #111)",
-  "linear-gradient(135deg, #1a0022, #111)",
-  "linear-gradient(135deg, #001a2a, #111)",
+  "linear-gradient(135deg, #0b1e3d, #051329)",
+  "linear-gradient(135deg, #123055, #051329)",
+  "linear-gradient(135deg, #091b36, #051329)",
+  "linear-gradient(135deg, #1a2b52, #051329)",
+  "linear-gradient(135deg, #0e2447, #051329)",
+  "linear-gradient(135deg, #062045, #051329)",
 ]
 
 function buildPosts(seed: number, count: number, liveStreamId?: string): ProfilePost[] {
