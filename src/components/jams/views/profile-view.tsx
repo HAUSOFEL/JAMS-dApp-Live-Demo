@@ -85,7 +85,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
   return (
     <div className="animate-slide-in-right absolute inset-0 z-30 flex flex-col bg-background">
       {/* Search bar */}
-      <div className="shrink-0 px-4 pt-3 pb-2">
+      <div className="shrink-0 px-4 pt-2 pb-1">
         <div className="flex items-center gap-2 rounded-full border border-white/10 bg-slate-900/80 px-4 py-2 backdrop-blur-md">
           <SearchIcon className="h-4 w-4 text-muted-foreground" />
           <input
@@ -97,7 +97,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
       </div>
 
       {/* Header */}
-      <header className="flex shrink-0 items-center gap-3 border-b border-border bg-surface px-4 py-3">
+      <header className="flex shrink-0 items-center gap-2 border-b border-border bg-surface px-4 py-2">
         {showBack ? (
           <button
             type="button"
@@ -122,7 +122,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
 
       <div className="no-scrollbar flex-1 overflow-y-auto pb-24">
         {/* Identity block */}
-        <div className="px-4 pt-4">
+        <div className="px-4 pt-2">
           <div className="flex items-center gap-5">
             <button
               type="button"
