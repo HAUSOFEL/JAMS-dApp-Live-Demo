@@ -41,7 +41,7 @@ export function ChatView() {
         <button
           type="button"
           onClick={() => showToast("Opening Dialect thread manager")}
-          className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl bg-secondary py-2.5 text-xs font-bold text-foreground transition-colors hover:bg-accent"
+          className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#091B36] py-2.5 text-xs font-bold text-foreground transition-colors hover:bg-accent"
         >
           Manage Dialect Threads
           <ExternalLinkIcon className="h-3.5 w-3.5" />
@@ -64,7 +64,7 @@ export function ChatView() {
         >
           <span
             className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-lg font-extrabold ${
-              channel.highlighted ? "bg-primary/15 text-primary" : "bg-secondary text-muted-foreground"
+              channel.highlighted ? "bg-primary/15 text-primary" : "bg-[#091B36] text-muted-foreground"
             }`}
           >
             {channel.icon}
