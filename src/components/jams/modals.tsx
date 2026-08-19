@@ -121,7 +121,7 @@ export function AppModals() {
               navigate("reels")
               showToast("Initializing live cypher stream on Solana...")
             }}
-            className="flex items-center gap-3 rounded-2xl border border-border bg-secondary px-4 py-4 text-left text-sm font-bold text-foreground transition-colors hover:border-primary"
+            className="flex items-center gap-3 rounded-2xl border border-border bg-[#091B36] px-4 py-4 text-left text-sm font-bold text-foreground transition-colors hover:border-primary"
           >
             <span className="h-2.5 w-2.5 rounded-full bg-live" aria-hidden="true" />
             Go Live (Cypher Stream)
@@ -132,7 +132,7 @@ export function AppModals() {
               closeModal()
               showToast("Opening device file picker...")
             }}
-            className="flex items-center gap-3 rounded-2xl border border-border bg-secondary px-4 py-4 text-left text-sm font-bold text-foreground transition-colors hover:border-primary"
+            className="flex items-center gap-3 rounded-2xl border border-border bg-[#091B36] px-4 py-4 text-left text-sm font-bold text-foreground transition-colors hover:border-primary"
           >
             <span className="text-primary" aria-hidden="true">
               ▲
