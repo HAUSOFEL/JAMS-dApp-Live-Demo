@@ -34,7 +34,7 @@ export function ReelCard({ reel, onOpenComments }: ReelCardProps) {
 
   return (
     <section
-      className="relative flex h-full w-full shrink-0 snap-start items-center justify-center overflow-hidden bg-[#111]"
+      className="relative flex h-full w-full shrink-0 snap-start items-center justify-center overflow-hidden bg-[#051329]"
       aria-label={reel.title}
     >
       {/* Poster placeholder — swap for an HLS/WebRTC <video> when live feeds are wired. */}
@@ -43,7 +43,7 @@ export function ReelCard({ reel, onOpenComments }: ReelCardProps) {
         className="absolute inset-0 opacity-30"
         style={{
           background:
-            "repeating-linear-gradient(45deg, #111, #111 10px, #1a1a1a 10px, #1a1a1a 20px)",
+            "repeating-linear-gradient(45deg, #051329, #051329 10px, #091B36 10px, #091B36 20px)",
         }}
         aria-hidden="true"
       />
@@ -54,7 +54,7 @@ export function ReelCard({ reel, onOpenComments }: ReelCardProps) {
           <span className="h-2 w-2 animate-pulse-live rounded-full bg-live" aria-hidden="true" />
           LIVE
           {reel.viewers ? (
-            <span className="ml-1.5 flex items-center gap-1 text-[#aaa]">
+            <span className="ml-1.5 flex items-center gap-1 text-muted-foreground">
               <EyeIcon className="h-3.5 w-3.5" /> {formatCount(reel.viewers)}
             </span>
           ) : null}
@@ -74,7 +74,7 @@ export function ReelCard({ reel, onOpenComments }: ReelCardProps) {
           @{reel.creator.handle}
         </button>
         <h3 className="mb-1 text-[15px] font-bold text-white">{reel.title}</h3>
-        <p className="text-xs text-[#aaa]">{reel.subtitle}</p>
+        <p className="text-xs text-muted-foreground">{reel.subtitle}</p>
       </div>
 
       {/* Sidebar actions */}

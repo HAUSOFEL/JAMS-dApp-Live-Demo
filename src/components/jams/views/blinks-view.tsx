@@ -40,7 +40,7 @@ export function BlinksView() {
         </button>
       </div>
 
-      <div className="relative h-[260px] overflow-hidden rounded-2xl border border-border bg-[#111]">
+      <div className="relative h-[260px] overflow-hidden rounded-2xl border border-border bg-[#051329]">
         <iframe
           key={iframeKey}
           src={portal?.url}
