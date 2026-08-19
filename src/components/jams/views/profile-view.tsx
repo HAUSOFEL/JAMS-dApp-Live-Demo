@@ -108,12 +108,6 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
             <ChevronLeftIcon className="h-4 w-4" />
           </button>
         ) : null}
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-bold text-foreground">@{creator.handle}</p>
-          {profile.crew ? (
-            <p className="truncate text-[11px] text-muted-foreground">{profile.crew}</p>
-          ) : null}
-        </div>
         {liveReel ? (
           <button
             type="button"
