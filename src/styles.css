@@ -63,11 +63,11 @@
   color-scheme: dark;
   --radius: 0.75rem;
 
-  /* Deep Navy Red Bull BC One Stage */
+  /* Deep Navy Red Bull BC One Stage Palette */
   --background: #051329;
   --foreground: oklch(1 0 0);
   --surface: #091b36;
-  --surface-2: oklch(0.25 0.015 264);
+  --surface-2: #0d2344;
   --card: #091b36;
   --card-foreground: oklch(1 0 0);
   --popover: #091b36;
@@ -77,9 +77,9 @@
   --primary-glow: oklch(0.63 0.215 15);
   --gold: #FFCC00;
   --gold-foreground: #051329;
-  --secondary: oklch(0.26 0.015 264);
+  --secondary: #0d2344;
   --secondary-foreground: oklch(1 0 0);
-  --muted: oklch(0.25 0.014 264);
+  --muted: #0d2344;
   --muted-foreground: #8CA3C7;
   --accent: #DB0A40;
   --accent-foreground: oklch(1 0 0);
@@ -87,8 +87,8 @@
   --live-foreground: oklch(1 0 0);
   --destructive: oklch(0.55 0.229 12);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.3 0.016 264);
-  --input: oklch(0.3 0.016 264);
+  --border: #132d54;
+  --input: #132d54;
   --ring: oklch(0.55 0.229 12);
   --chart-1: oklch(0.55 0.229 12);
   --chart-2: oklch(0.868 0.181 90);
@@ -99,9 +99,9 @@
   --sidebar-foreground: oklch(1 0 0);
   --sidebar-primary: oklch(0.55 0.229 12);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.26 0.015 264);
+  --sidebar-accent: #0d2344;
   --sidebar-accent-foreground: oklch(1 0 0);
-  --sidebar-border: oklch(0.3 0.016 264);
+  --sidebar-border: #132d54;
   --sidebar-ring: oklch(0.55 0.229 12);
 
   /* Gradients & Glows */
