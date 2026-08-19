@@ -183,9 +183,14 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
           {/* Bio */}
           <div className="mt-3.5">
             <h2 className="text-sm font-bold text-foreground">{creator.displayName}</h2>
-            {profile.crew ? (
-              <p className="text-[11px] font-semibold text-primary">{profile.crew}</p>
-            ) : null}
+            <div className="mt-0.5 flex flex-wrap items-center gap-2">
+              <p className="text-[11px] font-semibold text-muted-foreground">@{creator.handle}</p>
+              {profile.crew ? (
+                <span className="inline-flex items-center rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold text-primary">
+                  {profile.crew}
+                </span>
+              ) : null}
+            </div>
             <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{profile.bio}</p>
             {profile.location ? (
               <p className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
