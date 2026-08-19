@@ -63,7 +63,7 @@
   color-scheme: dark;
   --radius: 0.75rem;
 
-  /* Red Bull BC One — deep-navy stage (#051329 / #091B36), crimson + gold spotlights */
+  /* Red Bull BC One — deep-navy stage */
   --background: #051329;
   --foreground: oklch(1 0 0);
   --surface: #091b36;
@@ -72,13 +72,21 @@
   --card-foreground: oklch(1 0 0);
   --popover: #091b36;
   --popover-foreground: oklch(1 0 0);
-  --primary: oklch(0.55 0.229 12);
-  --primary-foreground: oklch(1 0 0);
+  --primary: #0055FF;
+  --primary-foreground: #FFFFFF;
   --primary-glow: oklch(0.63 0.215 15);
-  --gold: oklch(0.868 0.181 90);
+  --gold: #FFCC00;
   --gold-foreground: #051329;
   --secondary: oklch(0.26 0.015 264);
   --secondary-foreground: oklch(1 0 0);
+  --muted: oklch(0.25 0.014 264);
+  --muted-foreground: #8CA3C7;
+  --accent: #DB0A40;
+  --accent-foreground: oklch(1 0 0);
+  --live: oklch(0.55 0.229 12);
+  --live-foreground: oklch(1 0 0);
+  --sidebar: #091b36;
+}
   --muted: oklch(0.25 0.014 264);
   --muted-foreground: oklch(0.665 0.021 253);
   --accent: oklch(0.29 0.017 264);
