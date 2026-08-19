@@ -52,7 +52,7 @@ export function HomeView() {
       <SponsorTicker />
 
       <SectionHeader>Host Your Own</SectionHeader>
-      <div className="mb-2 rounded-2xl border border-dashed border-border bg-secondary/60 p-[18px] text-center">
+      <div className="mb-2 rounded-2xl border border-dashed border-border bg-[#091B36]/60 p-[18px] text-center">
         <h3 className="mb-1 text-base font-bold">Don&apos;t see your city?</h3>
         <p className="mb-4 text-xs leading-relaxed text-muted-foreground text-pretty">
           Step up and host your own community event. Drop a pin and gather local interest.
