@@ -123,6 +123,9 @@ export const mockMapMarkers: MapMarker[] = [
     variant: "live",
     linkedStreamId: "r1",
     time: "Live now · until 9:00 PM",
+    kind: "event",
+    host: "KW Breakers",
+    passType: "Solana Pass",
   },
   {
     id: "m2",
@@ -133,6 +136,9 @@ export const mockMapMarkers: MapMarker[] = [
     y: 60,
     variant: "hub",
     time: "Today · 6:00 PM – 10:00 PM",
+    kind: "workshop",
+    host: "KWB Crew",
+    passType: "Free Entry",
   },
   {
     id: "m3",
@@ -143,6 +149,9 @@ export const mockMapMarkers: MapMarker[] = [
     y: 78,
     variant: "hub",
     time: "Sat · 8:00 PM – Late",
+    kind: "event",
+    host: "TO Cypher Collective",
+    passType: "Solana Pass",
   },
 ]
 
