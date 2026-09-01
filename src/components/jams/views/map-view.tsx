@@ -5,7 +5,7 @@ import { CITY_POIS, POI_CATEGORIES, type CityPoi } from "@/lib/jams/city-pois"
 import { useJams } from "../jams-context"
 import { PinIcon, CloseIcon, BookmarkIcon, PlusIcon } from "../icons"
 import { MapBasemap, MAP_LAYERS, type MapLayerId } from "../map/map-layers"
-import { BuildingsLayer, PoiMarker } from "../map/city-overlays"
+import { PoiMarker } from "../map/city-overlays"
 
 
 const MIN_ZOOM = 1
