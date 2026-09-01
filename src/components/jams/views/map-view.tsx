@@ -173,54 +173,65 @@ export function MapView() {
           })}
         </div>
 
-        {/* Layer control */}
-        <div className="absolute left-4 top-4 z-[12] rounded-2xl border border-border bg-surface/95 p-1.5 shadow-lg backdrop-blur">
-          <p className="px-1.5 pb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Layers</p>
-          <div className="flex flex-col gap-1" role="group" aria-label="Map layers">
-            {MAP_LAYERS.map((l) => (
-              <button
-                key={l.id}
-                type="button"
-                onClick={() => {
-                  setLayer(l.id)
-                  showToast(`${l.label} layer: ${l.hint}`)
-                }}
-                aria-pressed={layer === l.id}
-                title={l.hint}
-                className={`rounded-xl px-2.5 py-1.5 text-left text-[11px] font-bold transition-colors ${
-                  layer === l.id
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                }`}
-              >
-                {l.label}
-              </button>
-            ))}
-          </div>
-          <div className="mt-1.5 border-t border-border pt-1.5">
-            <p className="px-1.5 pb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
-              Overlays
-            </p>
-            <div className="flex flex-col gap-1">
-              {[
-                { id: "buildings", label: "3D Buildings", on: showBuildings, set: setShowBuildings },
-                { id: "pois", label: "Nearby POIs", on: showPois, set: setShowPois },
-              ].map((o) => (
+        {/* Collapsible map controls */}
+        <div className="absolute left-4 top-4 z-[12] w-[168px]">
+          <button
+            type="button"
+            onClick={() => setControlsOpen((v) => !v)}
+            aria-expanded={controlsOpen}
+            className="flex w-full items-center justify-between gap-2 rounded-2xl border border-border bg-surface/95 px-3 py-2 text-[11px] font-bold text-foreground shadow-lg backdrop-blur transition-colors hover:bg-accent"
+          >
+            Map Controls
+            <span aria-hidden="true" className="text-[10px] text-muted-foreground">
+              {controlsOpen ? "▲" : "▼"}
+            </span>
+          </button>
+
+          {controlsOpen ? (
+            <div className="mt-1.5 rounded-2xl border border-border bg-surface/95 p-1.5 shadow-lg backdrop-blur">
+              <p className="px-1.5 pb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                Base map
+              </p>
+              <div className="flex flex-col gap-1" role="group" aria-label="Map layers">
+                {MAP_LAYERS.map((l) => (
+                  <button
+                    key={l.id}
+                    type="button"
+                    onClick={() => {
+                      setLayer(l.id)
+                      showToast(`${l.label} layer: ${l.hint}`)
+                    }}
+                    aria-pressed={layer === l.id}
+                    title={l.hint}
+                    className={`rounded-xl px-2.5 py-1.5 text-left text-[11px] font-bold transition-colors ${
+                      layer === l.id
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                    }`}
+                  >
+                    {l.label}
+                  </button>
+                ))}
+              </div>
+              <div className="mt-1.5 border-t border-border pt-1.5">
+                <p className="px-1.5 pb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                  Overlays
+                </p>
                 <button
-                  key={o.id}
                   type="button"
-                  onClick={() => o.set(!o.on)}
-                  aria-pressed={o.on}
-                  className={`rounded-xl px-2.5 py-1.5 text-left text-[11px] font-bold transition-colors ${
-                    o.on ? "bg-foreground text-background" : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                  onClick={() => setShowPois((v) => !v)}
+                  aria-pressed={showPois}
+                  className={`w-full rounded-xl px-2.5 py-1.5 text-left text-[11px] font-bold transition-colors ${
+                    showPois
+                      ? "bg-foreground text-background"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
                   }`}
                 >
-                  {o.label}
+                  Nearby POIs
                 </button>
-              ))}
+              </div>
             </div>
-          </div>
-
+          ) : null}
         </div>
 
         {/* Zoom control */}
@@ -251,18 +262,6 @@ export function MapView() {
           </button>
         </div>
 
-        {/* Terrain legend (topo layer only) */}
-        {layer === "topo" ? (
-          <div className="absolute right-4 top-[136px] z-[12] rounded-2xl border border-border bg-surface/95 p-2.5 shadow-lg backdrop-blur">
-            <p className="mb-1.5 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Elevation</p>
-            <div className="h-1.5 w-24 rounded-full" style={{ background: "linear-gradient(90deg,#5a828c,#8b9658,#b07a3a)" }} />
-            <div className="mt-1 flex justify-between text-[9px] font-semibold text-muted-foreground">
-              <span>240m</span>
-              <span>410m</span>
-            </div>
-            <p className="mt-1.5 text-[9px] text-muted-foreground">Contours · 20m interval</p>
-          </div>
-        ) : null}
 
         {/* Event details card overlay */}
         {selected ? (
