@@ -123,7 +123,6 @@ export function MapView() {
         >
           <MapBasemap layer={layer} />
 
-          {showBuildings ? <BuildingsLayer /> : null}
 
           {showPois
             ? CITY_POIS.map((poi) => (
