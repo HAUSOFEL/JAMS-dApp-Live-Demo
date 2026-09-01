@@ -68,6 +68,12 @@ export interface MapMarker {
   linkedStreamId?: string
   /** Human-readable schedule badge, e.g. "Today · 6:00 PM". */
   time?: string
+  /** Drives the CTA: general jams claim a pass, workshops sign up. */
+  kind?: "event" | "workshop"
+  /** Crew / organisation hosting the event. */
+  host?: string
+  /** e.g. "Free Entry", "Solana Pass". */
+  passType?: string
 }
 
 /** Maps to a `chat_channels` row. */

@@ -298,31 +298,40 @@ export function MapView() {
               <h3 className="mb-1 text-base font-bold text-foreground">{selected.title}</h3>
               <p className="mb-3 text-[13px] text-muted-foreground">{selected.description}</p>
 
-              <div className="flex gap-2.5 pb-1">
+              <div className="flex flex-col gap-2 pb-1">
                 <button
                   type="button"
-                  onClick={() => toggleSavedEvent(selected.id)}
-                  className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-bold transition-colors ${
-                    saved ? "bg-primary/15 text-primary" : "bg-secondary text-foreground"
-                  }`}
+                  onClick={() => setClaimMarker(selected)}
+                  className="w-full rounded-xl bg-primary py-2.5 text-xs font-bold text-primary-foreground"
                 >
-                  <BookmarkIcon className="h-3.5 w-3.5" />
-                  {saved ? "Saved" : "Save Event"}
+                  {selected.kind === "workshop" ? "Sign Up for Workshop" : "Claim Event Pass"}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (selected.linkedStreamId) {
-                      openStream(selected.linkedStreamId)
-                    } else {
-                      navigate("chat")
-                      showToast("Opened event chat")
-                    }
-                  }}
-                  className="flex-1 rounded-xl bg-primary py-2.5 text-xs font-bold text-primary-foreground"
-                >
-                  {selected.linkedStreamId ? "Tune In Live" : "Join Chat"}
-                </button>
+                <div className="flex gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => toggleSavedEvent(selected.id)}
+                    className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-bold transition-colors ${
+                      saved ? "bg-primary/15 text-primary" : "bg-secondary text-foreground"
+                    }`}
+                  >
+                    <BookmarkIcon className="h-3.5 w-3.5" />
+                    {saved ? "Saved" : "Save Event"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (selected.linkedStreamId) {
+                        openStream(selected.linkedStreamId)
+                      } else {
+                        navigate("chat")
+                        showToast("Opened event chat")
+                      }
+                    }}
+                    className="flex-1 rounded-xl bg-secondary py-2.5 text-xs font-bold text-foreground"
+                  >
+                    {selected.linkedStreamId ? "Tune In Live" : "Join Chat"}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
