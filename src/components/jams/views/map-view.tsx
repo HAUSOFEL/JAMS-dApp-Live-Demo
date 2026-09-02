@@ -6,6 +6,7 @@ import { useJams } from "../jams-context"
 import { PinIcon, CloseIcon, BookmarkIcon, PlusIcon } from "../icons"
 import { MapBasemap, MAP_LAYERS, type MapLayerId } from "../map/map-layers"
 import { PoiMarker } from "../map/city-overlays"
+import { EventPassClaim } from "../map/event-pass-claim"
 
 
 const MIN_ZOOM = 1
@@ -28,6 +29,7 @@ export function MapView() {
   const { openStream, navigate, toggleSavedEvent, savedEventIds, showToast } = useJams()
   const [selected, setSelected] = useState<MapMarker | null>(null)
   const [selectedPoi, setSelectedPoi] = useState<CityPoi | null>(null)
+  const [claimMarker, setClaimMarker] = useState<MapMarker | null>(null)
   const [showPois, setShowPois] = useState(true)
   const [controlsOpen, setControlsOpen] = useState(false)
   const [layer, setLayer] = useState<MapLayerId>("street")
@@ -359,6 +361,11 @@ export function MapView() {
           </div>
         ) : null}
 
+        <EventPassClaim
+          marker={claimMarker}
+          onClose={() => setClaimMarker(null)}
+          onToast={showToast}
+        />
       </div>
     </div>
   )
