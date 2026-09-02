@@ -29,6 +29,7 @@ export function MapView() {
   const { openStream, navigate, toggleSavedEvent, savedEventIds, showToast } = useJams()
   const [selected, setSelected] = useState<MapMarker | null>(null)
   const [selectedPoi, setSelectedPoi] = useState<CityPoi | null>(null)
+  const [claimMarker, setClaimMarker] = useState<MapMarker | null>(null)
   const [showPois, setShowPois] = useState(true)
   const [controlsOpen, setControlsOpen] = useState(false)
   const [layer, setLayer] = useState<MapLayerId>("street")
