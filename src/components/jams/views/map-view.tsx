@@ -6,6 +6,7 @@ import { useJams } from "../jams-context"
 import { PinIcon, CloseIcon, BookmarkIcon, PlusIcon } from "../icons"
 import { MapBasemap, MAP_LAYERS, type MapLayerId } from "../map/map-layers"
 import { PoiMarker } from "../map/city-overlays"
+import { EventPassClaim } from "../map/event-pass-claim"
 
 
 const MIN_ZOOM = 1
