@@ -1,11 +1,16 @@
 
+import { useState } from "react"
 import { useWallet } from "@/lib/jams/data"
 import { useJams } from "./jams-context"
-import { MenuIcon, PlusIcon } from "./icons"
+import { BellIcon, MenuIcon, PlusIcon } from "./icons"
+import { NotificationHub, UNREAD_NOTIFICATION_COUNT } from "./notification-hub"
 
 export function TopNav() {
   const { navigate, openModal } = useJams()
   const wallet = useWallet()
+  const [notificationsOpen, setNotificationsOpen] = useState(false)
+  const [seen, setSeen] = useState(false)
+  const unread = seen ? 0 : UNREAD_NOTIFICATION_COUNT
 
   return (
     <header className="relative z-10 flex shrink-0 items-center justify-between border-b border-border bg-surface/95 px-5 py-4 backdrop-blur">
@@ -29,6 +34,24 @@ export function TopNav() {
 
         <button
           type="button"
+          onClick={() => {
+            setNotificationsOpen(true)
+            setSeen(true)
+          }}
+          title="Notifications"
+          aria-label={unread ? `Notifications, ${unread} unread` : "Notifications"}
+          className="relative flex h-9 w-9 items-center justify-center rounded-full border border-border bg-secondary text-foreground transition-colors hover:border-primary/50"
+        >
+          <BellIcon className="h-4 w-4" />
+          {unread ? (
+            <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[9px] font-bold text-foreground">
+              {unread}
+            </span>
+          ) : null}
+        </button>
+
+        <button
+          type="button"
           onClick={() => openModal("wallet")}
           className="flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-gold/50 hover:text-foreground"
         >
@@ -47,6 +70,8 @@ export function TopNav() {
           <MenuIcon className="h-4 w-4" />
         </button>
       </div>
+
+      <NotificationHub open={notificationsOpen} onClose={() => setNotificationsOpen(false)} />
     </header>
   )
 }
