@@ -361,6 +361,11 @@ export function MapView() {
           </div>
         ) : null}
 
+        <EventPassClaim
+          marker={claimMarker}
+          onClose={() => setClaimMarker(null)}
+          onToast={showToast}
+        />
       </div>
     </div>
   )
