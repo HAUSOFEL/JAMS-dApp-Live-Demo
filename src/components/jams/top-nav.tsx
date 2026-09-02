@@ -1,16 +1,16 @@
 
 import { useState } from "react"
-import { useWallet } from "@/lib/jams/data"
 import { useJams } from "./jams-context"
 import { BellIcon, MenuIcon, PlusIcon } from "./icons"
 import { NotificationHub, UNREAD_NOTIFICATION_COUNT } from "./notification-hub"
 
+
 export function TopNav() {
   const { navigate, openModal } = useJams()
-  const wallet = useWallet()
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [seen, setSeen] = useState(false)
   const unread = seen ? 0 : UNREAD_NOTIFICATION_COUNT
+
 
   return (
     <header className="relative z-10 flex shrink-0 items-center justify-between border-b border-border bg-surface/95 px-5 py-4 backdrop-blur">
@@ -52,18 +52,8 @@ export function TopNav() {
 
         <button
           type="button"
-          onClick={() => openModal("wallet")}
-          className="flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-gold/50 hover:text-foreground"
-        >
-          <span className="h-1.5 w-1.5 rounded-full bg-gold" aria-hidden="true" />
-          <span>
-            {wallet.address} ({wallet.chain})
-          </span>
-        </button>
-
-        <button
-          type="button"
           onClick={() => openModal("menu")}
+
           aria-label="Open menu"
           className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-secondary text-foreground transition-colors hover:border-primary/50"
         >
