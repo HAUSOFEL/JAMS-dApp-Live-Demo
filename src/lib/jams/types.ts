@@ -5,7 +5,7 @@
 
 export type TabId = "home" | "reels" | "profile" | "chat" | "map" | "blinks"
 
-export type ModalId = "wallet" | "menu" | "creator" | "tip" | null
+export type ModalId = "menu" | "creator" | "tip" | null
 
 /** Maps to a `profiles` / `creators` row. */
 export interface Creator {

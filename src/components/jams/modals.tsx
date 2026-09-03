@@ -2,10 +2,10 @@
 import { useWallet } from "@/lib/jams/data"
 import { BottomSheet } from "./bottom-sheet"
 import { useJams } from "./jams-context"
-import { BlinksIcon, CopyIcon } from "./icons"
+import { BlinksIcon, CopyIcon, DashboardIcon, QrScanIcon, TicketIcon, WalletIcon } from "./icons"
 
 export function AppModals() {
-  const { modal, closeModal, logout, navigate, openProfile, showToast } = useJams()
+  const { modal, closeModal, logout, navigate, showToast } = useJams()
   const wallet = useWallet()
 
   async function copyAddress() {
@@ -15,77 +15,97 @@ export function AppModals() {
     }
   }
 
+  const shortAddress = `${wallet.address.slice(0, 4)}...${wallet.address.slice(-4)}`
+
   return (
     <>
-      {/* Wallet Hub */}
-      <BottomSheet
-        open={modal === "wallet"}
-        title="Solana Wallet Hub"
-        description="Connected via Privy / Seeker Seed Vault"
-        onClose={closeModal}
-      >
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-col gap-2 rounded-2xl border border-border bg-secondary p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">Address</span>
-              <button
-                type="button"
-                onClick={copyAddress}
-                className="flex items-center gap-1 text-xs font-bold text-primary transition-colors hover:text-gold"
-              >
-                <CopyIcon className="h-3.5 w-3.5" />
-                Copy
-              </button>
-            </div>
-            <div className="break-all font-mono text-xs text-foreground">{wallet.address}</div>
-          </div>
-
-          <div className="flex items-center justify-between rounded-2xl border border-border bg-secondary px-4 py-3">
-            <span className="text-xs text-muted-foreground">Network</span>
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-green-500" />
-              <span className="text-xs font-bold text-foreground">{wallet.chain}</span>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between rounded-2xl border border-border bg-secondary px-4 py-3">
-            <span className="text-xs text-muted-foreground">Balance</span>
-            <span className="text-xs font-bold text-foreground">{wallet.balanceSol} SOL</span>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => {
-              closeModal()
-              logout()
-              showToast("Wallet disconnected")
-            }}
-            className="w-full rounded-xl border border-live/50 px-4 py-3 text-sm font-bold text-live"
-          >
-            Disconnect Wallet
-          </button>
-        </div>
-      </BottomSheet>
-
-      {/* System Menu */}
+      {/* Crew Portal / System Menu */}
       <BottomSheet
         open={modal === "menu"}
-        title="JAMS System Menu"
-        description="Jump to your Crew Portal, settings, or disconnect your session."
+        title="Crew Portal"
+        description="Your connected wallet and crew organizer tools."
         onClose={closeModal}
       >
-        <div className="flex flex-col gap-2.5">
-          <button
-            type="button"
-            onClick={() => {
-              closeModal()
-              navigate("blinks")
-            }}
-            className="flex items-center gap-3 rounded-xl border border-primary/60 bg-primary/10 px-4 py-3 text-left text-sm font-bold text-primary"
-          >
-            <BlinksIcon className="h-4 w-4" />
-            Crew Portal
-          </button>
+        <div className="flex flex-col gap-4">
+          {/* Connected Wallet */}
+          <div className="flex flex-col gap-2.5">
+            <div className="flex items-center gap-2">
+              <WalletIcon className="h-3.5 w-3.5 text-primary" />
+              <span className="text-[11px] font-bold tracking-[0.16em] text-muted-foreground">CONNECTED WALLET</span>
+            </div>
+            <div className="flex flex-col gap-2.5 rounded-2xl border border-border bg-secondary p-4">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-bold text-foreground">{shortAddress}</span>
+                <button
+                  type="button"
+                  onClick={copyAddress}
+                  className="flex items-center gap-1 text-xs font-bold text-primary transition-colors hover:text-gold"
+                >
+                  <CopyIcon className="h-3.5 w-3.5" />
+                  Copy
+                </button>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-green-500" />
+                  <span className="text-xs text-muted-foreground">{wallet.chain}</span>
+                </div>
+                <span className="text-xs font-bold text-foreground">{wallet.balanceSol} SOL</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                closeModal()
+                logout()
+                showToast("Wallet disconnected")
+              }}
+              className="w-full rounded-xl border border-live/50 px-4 py-2.5 text-xs font-bold text-live"
+            >
+              Disconnect / Switch Wallet
+            </button>
+          </div>
+
+          {/* Crew tools */}
+          <div className="flex flex-col gap-2.5">
+            <span className="text-[11px] font-bold tracking-[0.16em] text-muted-foreground">CREW TOOLS</span>
+            <button
+              type="button"
+              onClick={() => {
+                closeModal()
+                navigate("blinks")
+              }}
+              className="flex items-center gap-3 rounded-xl border border-primary/60 bg-primary/10 px-4 py-3 text-left text-sm font-bold text-primary"
+            >
+              <BlinksIcon className="h-4 w-4" />
+              Crew Portal Home
+            </button>
+            <button
+              type="button"
+              onClick={() => showToast("Opening Organizer Dashboard...")}
+              className="flex items-center gap-3 rounded-xl border border-border px-4 py-3 text-left text-sm font-bold text-foreground"
+            >
+              <DashboardIcon className="h-4 w-4 text-gold" />
+              Organizer Dashboard
+            </button>
+            <button
+              type="button"
+              onClick={() => showToast("Opening Event Management...")}
+              className="flex items-center gap-3 rounded-xl border border-border px-4 py-3 text-left text-sm font-bold text-foreground"
+            >
+              <TicketIcon className="h-4 w-4 text-gold" />
+              Event Management
+            </button>
+            <button
+              type="button"
+              onClick={() => showToast("Launching QR Gate Scanner...")}
+              className="flex items-center gap-3 rounded-xl border border-border px-4 py-3 text-left text-sm font-bold text-foreground"
+            >
+              <QrScanIcon className="h-4 w-4 text-gold" />
+              QR Gate Scanner
+            </button>
+          </div>
+
           <button
             type="button"
             onClick={() => showToast("Opening settings...")}
