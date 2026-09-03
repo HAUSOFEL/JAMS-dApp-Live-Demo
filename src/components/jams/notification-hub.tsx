@@ -133,7 +133,7 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
         showToast("Live bracket update opened")
         break
       case "tip":
-        openModal("wallet")
+        openModal("menu")
         break
       case "tag":
         navigate("chat")
