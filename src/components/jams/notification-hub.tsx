@@ -148,15 +148,16 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
   if (!open) return null
 
   return (
-    <div className="absolute inset-0 z-[60] flex justify-end bg-black/70 backdrop-blur-sm" onClick={onClose} role="presentation">
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm" onClick={onClose} role="presentation">
       <aside
-        className="animate-slide-up flex h-full w-[88%] max-w-[350px] flex-col border-l border-border bg-surface-2"
+        className="animate-slide-up flex h-full w-[88%] max-w-[360px] flex-col border-l border-border bg-surface-2"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-label="Notification hub"
       >
-        <div className="flex items-center justify-between border-b border-border px-4 py-4">
+        {/* Sticky header */}
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-surface-2 px-4 py-4">
           <div className="flex items-center gap-2">
             <BellIcon className="h-4 w-4 text-primary" />
             <h2 className="text-sm font-bold tracking-[0.16em] text-foreground">NOTIFICATIONS</h2>
@@ -171,16 +172,17 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
           </button>
         </div>
 
-        <div className="flex gap-1.5 overflow-x-auto border-b border-border px-3 py-3 no-scrollbar">
+        {/* Filter tabs */}
+        <div className="sticky top-[57px] z-10 flex gap-2 overflow-x-auto border-b border-border bg-surface-2 px-3 py-3 no-scrollbar">
           {TABS.map((t) => (
             <button
               key={t.id}
               type="button"
               onClick={() => setTab(t.id)}
-              className={`shrink-0 rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-colors ${
+              className={`shrink-0 rounded-full px-3.5 py-2 text-xs font-bold transition-colors ${
                 tab === t.id
-                  ? "border-primary/50 bg-gradient-primary text-primary-foreground"
-                  : "border-border bg-secondary text-muted-foreground hover:text-foreground"
+                  ? "bg-cyan-500 text-white"
+                  : "bg-zinc-800 text-white hover:bg-zinc-700"
               }`}
             >
               {t.label}
@@ -188,40 +190,43 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
           ))}
         </div>
 
-        <div className="no-scrollbar flex-1 space-y-2 overflow-y-auto p-3">
-          {items.map((n) => {
-            const Icon = ICONS[n.icon]
-            const unread = n.unread && !readIds.includes(n.id)
-            return (
-              <button
-                key={n.id}
-                type="button"
-                onClick={() => handleAction(n)}
-                className={`flex w-full gap-3 rounded-2xl border p-3 text-left transition-shadow hover:glow-primary ${
-                  unread ? "border-primary/35 bg-primary/5" : "border-border bg-surface"
-                }`}
-              >
-                <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${iconTone(n.icon)}`}>
-                  <Icon className="h-4 w-4" />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="flex items-center justify-between gap-2">
-                    <span className="truncate text-sm font-semibold text-foreground">{n.title}</span>
-                    <span className="shrink-0 text-[10px] text-muted-foreground">{n.time}</span>
+        {/* Scrollable notification list */}
+        <div className="flex-1 overflow-y-auto p-3 no-scrollbar">
+          <div className="space-y-2">
+            {items.map((n) => {
+              const Icon = ICONS[n.icon]
+              const unread = n.unread && !readIds.includes(n.id)
+              return (
+                <button
+                  key={n.id}
+                  type="button"
+                  onClick={() => handleAction(n)}
+                  className={`flex w-full gap-3 rounded-2xl border p-3 text-left transition-shadow hover:glow-primary ${
+                    unread ? "border-primary/35 bg-primary/5" : "border-border bg-surface"
+                  }`}
+                >
+                  <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${iconTone(n.icon)}`}>
+                    <Icon className="h-4 w-4" />
                   </span>
-                  <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">{n.body}</span>
-                  <span className="mt-1.5 flex items-center gap-1 text-[11px] font-semibold text-primary">
-                    {n.action}
-                    <span aria-hidden="true">→</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center justify-between gap-2">
+                      <span className="truncate text-sm font-semibold text-foreground">{n.title}</span>
+                      <span className="shrink-0 text-[10px] text-muted-foreground">{n.time}</span>
+                    </span>
+                    <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">{n.body}</span>
+                    <span className="mt-1.5 flex items-center gap-1 text-[11px] font-semibold text-primary">
+                      {n.action}
+                      <span aria-hidden="true">→</span>
+                    </span>
                   </span>
-                </span>
-                {unread ? <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-accent" aria-label="Unread" /> : null}
-              </button>
-            )
-          })}
-          {items.length === 0 ? (
-            <p className="px-2 py-8 text-center text-sm text-muted-foreground">Nothing here yet.</p>
-          ) : null}
+                  {unread ? <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-accent" aria-label="Unread" /> : null}
+                </button>
+              )
+            })}
+            {items.length === 0 ? (
+              <p className="px-2 py-8 text-center text-sm text-muted-foreground">Nothing here yet.</p>
+            ) : null}
+          </div>
         </div>
       </aside>
     </div>
