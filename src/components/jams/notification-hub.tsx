@@ -148,14 +148,21 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm" onClick={onClose} role="presentation">
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-md md:items-stretch md:justify-end"
+      onClick={onClose}
+      role="presentation"
+    >
       <aside
-        className="animate-slide-up flex h-full w-[88%] max-w-[360px] flex-col border-l border-border bg-surface-2"
+        className="animate-slide-up flex h-[85vh] w-full flex-col rounded-t-3xl border-t border-border bg-surface-2 md:h-full md:max-w-[360px] md:rounded-none md:border-l md:border-t-0"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-label="Notification hub"
       >
+        {/* Mobile grab handle */}
+        <div className="mx-auto mt-3 h-1.5 w-12 shrink-0 rounded-full bg-muted-foreground/40 md:hidden" />
+
         {/* Sticky header */}
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-surface-2 px-4 py-4">
           <div className="flex items-center gap-2">
