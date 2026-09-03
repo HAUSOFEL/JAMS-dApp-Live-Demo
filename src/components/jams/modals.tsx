@@ -113,16 +113,6 @@ export function AppModals() {
           >
             App Settings
           </button>
-          <button
-            type="button"
-            onClick={() => {
-              logout()
-              showToast("Disconnected")
-            }}
-            className="w-full rounded-xl border border-live/50 px-4 py-3 text-sm font-bold text-live"
-          >
-            Disconnect / Log out
-          </button>
         </div>
       </BottomSheet>
 
