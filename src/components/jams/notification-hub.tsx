@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useJams } from "./jams-context"
 import {
   BellIcon,
@@ -112,11 +112,34 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
   const { navigate, openModal, openStream, showToast } = useJams()
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("all")
   const [readIds, setReadIds] = useState<string[]>([])
+  const sheetRef = useRef<HTMLElement>(null)
+  const touchStartY = useRef<number | null>(null)
+  const touchCurrentY = useRef<number | null>(null)
 
   const items = useMemo(
     () => (tab === "all" ? NOTIFICATIONS : NOTIFICATIONS.filter((n) => n.category === tab)),
     [tab],
   )
+
+  // Escape key dismiss
+  useEffect(() => {
+    if (!open) return
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose()
+    }
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [open, onClose])
+
+  // Lock body scroll while open
+  useEffect(() => {
+    if (!open) return
+    const original = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = original
+    }
+  }, [open])
 
   const handleAction = (n: JamsNotification) => {
     setReadIds((prev) => (prev.includes(n.id) ? prev : [...prev, n.id]))
@@ -145,17 +168,44 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
     }
   }
 
-  if (!open) return null
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0]?.clientY ?? null
+    touchCurrentY.current = touchStartY.current
+  }, [])
+
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    touchCurrentY.current = e.touches[0]?.clientY ?? null
+  }, [])
+
+  const onTouchEnd = useCallback(() => {
+    const start = touchStartY.current
+    const end = touchCurrentY.current
+    if (start != null && end != null && end - start > 80) {
+      onClose()
+    }
+    touchStartY.current = null
+    touchCurrentY.current = null
+  }, [onClose])
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-md md:items-stretch md:justify-end"
+      className={`fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-md transition-opacity duration-200 md:items-stretch md:justify-end ${
+        open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+      }`}
       onClick={onClose}
       role="presentation"
+      aria-hidden={!open}
     >
       <aside
-        className="animate-slide-up flex h-[85vh] w-full flex-col rounded-t-3xl border-t border-border bg-surface-2 md:h-full md:max-w-[360px] md:rounded-none md:border-l md:border-t-0"
+        ref={sheetRef}
+        className={`flex w-full flex-col rounded-t-3xl border-t border-border bg-surface-2 transition-transform duration-200 md:h-full md:max-w-[360px] md:rounded-none md:border-l md:border-t-0 ${
+          open ? "translate-y-0" : "translate-y-full"
+        }`}
+        style={{ maxHeight: "80vh" }}
         onClick={(e) => e.stopPropagation()}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
         role="dialog"
         aria-modal="true"
         aria-label="Notification hub"
@@ -173,7 +223,7 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
             type="button"
             onClick={onClose}
             aria-label="Close notifications"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-foreground"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-secondary text-foreground transition-colors hover:border-primary/50 hover:text-primary"
           >
             <CloseIcon className="h-4 w-4" />
           </button>
