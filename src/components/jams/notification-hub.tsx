@@ -198,7 +198,7 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
 
   const overlay = (
     <div
-      className={`fixed inset-0 z-[100] flex items-end justify-center bg-black/70 backdrop-blur-md transition-opacity duration-200 md:items-stretch md:justify-end ${
+      className={`absolute inset-0 z-[100] flex items-end justify-center overflow-hidden bg-black/70 backdrop-blur-md transition-opacity duration-200 ${
         open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
       }`}
       onClick={onClose}
@@ -207,13 +207,10 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
     >
       <aside
         ref={sheetRef}
-        className={`flex w-full max-w-full flex-col overflow-hidden rounded-t-3xl border-t border-border bg-surface-2 transition-transform duration-200 md:h-[100dvh] md:max-h-none md:max-w-[360px] md:rounded-none md:border-l md:border-t-0 ${
-          open ? "translate-y-0 md:translate-x-0" : "translate-y-full md:translate-y-0 md:translate-x-full"
+        className={`flex max-h-[80%] w-full flex-col overflow-hidden rounded-t-3xl border-t border-border bg-surface-2 transition-transform duration-200 ${
+          open ? "translate-y-0" : "translate-y-full"
         }`}
-        style={{
-          maxHeight: "min(80dvh, calc(100dvh - 4.5rem))",
-          paddingBottom: "env(safe-area-inset-bottom)",
-        }}
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
         onClick={(e) => e.stopPropagation()}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
@@ -223,7 +220,7 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
         aria-label="Notification hub"
       >
         {/* Mobile grab handle */}
-        <div className="mx-auto mt-3 h-1.5 w-12 shrink-0 rounded-full bg-muted-foreground/40 md:hidden" />
+        <div className="mx-auto mt-3 h-1.5 w-12 shrink-0 rounded-full bg-muted-foreground/40" />
 
         {/* Sticky header */}
         <div className="flex shrink-0 items-center justify-between border-b border-border bg-surface-2 px-4 py-4">
@@ -302,7 +299,9 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
   )
 
   if (typeof document === "undefined") return null
-  return createPortal(overlay, document.body)
+  const shell = document.querySelector<HTMLElement>("[data-jams-shell]")
+  if (!shell) return null
+  return createPortal(overlay, shell)
 }
 
 export const UNREAD_NOTIFICATION_COUNT = NOTIFICATIONS.filter((n) => n.unread).length
