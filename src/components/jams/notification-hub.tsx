@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import { useJams } from "./jams-context"
 import {
   BellIcon,
@@ -113,6 +114,7 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("all")
   const [readIds, setReadIds] = useState<string[]>([])
   const sheetRef = useRef<HTMLElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
   const touchStartY = useRef<number | null>(null)
   const touchCurrentY = useRef<number | null>(null)
 
@@ -169,11 +171,18 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
   }
 
   const onTouchStart = useCallback((e: React.TouchEvent) => {
+    const list = listRef.current
+    if (list && list.contains(e.target as Node) && list.scrollTop > 0) {
+      touchStartY.current = null
+      touchCurrentY.current = null
+      return
+    }
     touchStartY.current = e.touches[0]?.clientY ?? null
     touchCurrentY.current = touchStartY.current
   }, [])
 
   const onTouchMove = useCallback((e: React.TouchEvent) => {
+    if (touchStartY.current == null) return
     touchCurrentY.current = e.touches[0]?.clientY ?? null
   }, [])
 
@@ -187,9 +196,9 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
     touchCurrentY.current = null
   }, [onClose])
 
-  return (
+  const overlay = (
     <div
-      className={`fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-md transition-opacity duration-200 md:items-stretch md:justify-end ${
+      className={`fixed inset-0 z-[100] flex items-end justify-center bg-black/70 backdrop-blur-md transition-opacity duration-200 md:items-stretch md:justify-end ${
         open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
       }`}
       onClick={onClose}
@@ -199,7 +208,7 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
       <aside
         ref={sheetRef}
         className={`flex w-full flex-col rounded-t-3xl border-t border-border bg-surface-2 transition-transform duration-200 md:h-full md:max-w-[360px] md:rounded-none md:border-l md:border-t-0 ${
-          open ? "translate-y-0" : "translate-y-full"
+          open ? "translate-y-0 md:translate-x-0" : "translate-y-full md:translate-y-0 md:translate-x-full"
         }`}
         style={{ maxHeight: "80vh" }}
         onClick={(e) => e.stopPropagation()}
@@ -214,7 +223,7 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
         <div className="mx-auto mt-3 h-1.5 w-12 shrink-0 rounded-full bg-muted-foreground/40 md:hidden" />
 
         {/* Sticky header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-surface-2 px-4 py-4">
+        <div className="flex shrink-0 items-center justify-between border-b border-border bg-surface-2 px-4 py-4">
           <div className="flex items-center gap-2">
             <BellIcon className="h-4 w-4 text-primary" />
             <h2 className="text-sm font-bold tracking-[0.16em] text-foreground">NOTIFICATIONS</h2>
@@ -230,7 +239,7 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
         </div>
 
         {/* Filter tabs */}
-        <div className="sticky top-[57px] z-10 flex gap-2 overflow-x-auto border-b border-border bg-surface-2 px-3 py-3 no-scrollbar">
+        <div className="flex shrink-0 gap-2 overflow-x-auto border-b border-border bg-surface-2 px-3 py-3 no-scrollbar">
           {TABS.map((t) => (
             <button
               key={t.id}
@@ -248,7 +257,7 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
         </div>
 
         {/* Scrollable notification list */}
-        <div className="flex-1 overflow-y-auto p-3 no-scrollbar">
+        <div ref={listRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 no-scrollbar">
           <div className="space-y-2">
             {items.map((n) => {
               const Icon = ICONS[n.icon]
@@ -288,6 +297,9 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
       </aside>
     </div>
   )
+
+  if (typeof document === "undefined") return null
+  return createPortal(overlay, document.body)
 }
 
 export const UNREAD_NOTIFICATION_COUNT = NOTIFICATIONS.filter((n) => n.unread).length
