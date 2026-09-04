@@ -207,10 +207,13 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
     >
       <aside
         ref={sheetRef}
-        className={`flex w-full flex-col rounded-t-3xl border-t border-border bg-surface-2 transition-transform duration-200 md:h-full md:max-w-[360px] md:rounded-none md:border-l md:border-t-0 ${
+        className={`flex w-full max-w-full flex-col overflow-hidden rounded-t-3xl border-t border-border bg-surface-2 transition-transform duration-200 md:h-[100dvh] md:max-h-none md:max-w-[360px] md:rounded-none md:border-l md:border-t-0 ${
           open ? "translate-y-0 md:translate-x-0" : "translate-y-full md:translate-y-0 md:translate-x-full"
         }`}
-        style={{ maxHeight: "80vh" }}
+        style={{
+          maxHeight: "min(80dvh, calc(100dvh - 4.5rem))",
+          paddingBottom: "env(safe-area-inset-bottom)",
+        }}
         onClick={(e) => e.stopPropagation()}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
