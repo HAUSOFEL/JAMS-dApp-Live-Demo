@@ -1,5 +1,8 @@
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
-import type { ModalId, TabId } from "@/lib/jams/types";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import type { ClaimedPass, DancerProfile, ModalId, TabId } from "@/lib/jams/types";
+
+const PROFILE_KEY = "jams.dancerProfile";
+const PASSES_KEY = "jams.claimedPasses";
 
 interface JamsContextValue {
   authed: boolean;
@@ -28,11 +31,41 @@ interface JamsContextValue {
   savedEventIds: string[];
   toggleSavedEvent: (id: string) => void;
 
+  /** First-run welcome flow. */
+  dancerProfile: DancerProfile | null;
+  welcomeOpen: boolean;
+  openWelcome: () => void;
+  closeWelcome: () => void;
+  saveDancerProfile: (profile: DancerProfile) => void;
+
+  /** Tickets the dancer has claimed. */
+  claimedPasses: ClaimedPass[];
+  addClaimedPass: (pass: ClaimedPass) => void;
+
   toast: string | null;
   showToast: (message: string) => void;
 }
 
 const JamsContext = createContext<JamsContextValue | null>(null);
+
+function readStorage<T>(key: string, fallback: T): T {
+  if (typeof window === "undefined") return fallback;
+  try {
+    const raw = window.localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function writeStorage(key: string, value: unknown) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    /* storage unavailable — state stays in memory for this session */
+  }
+}
 
 export function JamsProvider({ children }: { children: React.ReactNode }) {
   const [authed, setAuthed] = useState(false);
@@ -42,7 +75,16 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
   const [followedCreatorIds, setFollowedCreatorIds] = useState<string[]>([]);
   const [modal, setModal] = useState<ModalId>(null);
   const [savedEventIds, setSavedEventIds] = useState<string[]>([]);
+  const [dancerProfile, setDancerProfile] = useState<DancerProfile | null>(null);
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
+  const [claimedPasses, setClaimedPasses] = useState<ClaimedPass[]>([]);
   const [toast, setToast] = useState<string | null>(null);
+
+  // Hydrate saved answers/tickets after mount so SSR markup stays stable.
+  useEffect(() => {
+    setDancerProfile(readStorage<DancerProfile | null>(PROFILE_KEY, null));
+    setClaimedPasses(readStorage<ClaimedPass[]>(PASSES_KEY, []));
+  }, []);
 
   const showToast = useCallback((message: string) => {
     setToast(message);
@@ -71,13 +113,36 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(() => {
     setAuthed(true);
     setActiveTab("home");
+    // First-timers get the short welcome flow; returning dancers go straight in.
+    setWelcomeOpen(readStorage<DancerProfile | null>(PROFILE_KEY, null) === null);
   }, []);
 
   const logout = useCallback(() => {
     setAuthed(false);
     setModal(null);
     setProfileCreatorId(null);
+    setWelcomeOpen(false);
     setActiveTab("home");
+  }, []);
+
+  const openWelcome = useCallback(() => {
+    setModal(null);
+    setWelcomeOpen(true);
+  }, []);
+
+  const closeWelcome = useCallback(() => setWelcomeOpen(false), []);
+
+  const saveDancerProfile = useCallback((profile: DancerProfile) => {
+    setDancerProfile(profile);
+    writeStorage(PROFILE_KEY, profile);
+  }, []);
+
+  const addClaimedPass = useCallback((pass: ClaimedPass) => {
+    setClaimedPasses((prev) => {
+      const next = [pass, ...prev.filter((p) => p.id !== pass.id)];
+      writeStorage(PASSES_KEY, next);
+      return next;
+    });
   }, []);
 
   const toggleFollow = useCallback(
@@ -121,6 +186,13 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
       closeModal: () => setModal(null),
       savedEventIds,
       toggleSavedEvent,
+      dancerProfile,
+      welcomeOpen,
+      openWelcome,
+      closeWelcome,
+      saveDancerProfile,
+      claimedPasses,
+      addClaimedPass,
       toast,
       showToast,
     }),
@@ -140,6 +212,13 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
       modal,
       savedEventIds,
       toggleSavedEvent,
+      dancerProfile,
+      welcomeOpen,
+      openWelcome,
+      closeWelcome,
+      saveDancerProfile,
+      claimedPasses,
+      addClaimedPass,
       toast,
       showToast,
     ],

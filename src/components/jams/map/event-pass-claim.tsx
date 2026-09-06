@@ -2,6 +2,7 @@ import { useMemo, useState } from "react"
 import type { MapMarker } from "@/lib/jams/types"
 import { useWallet } from "@/lib/jams/data"
 import { BottomSheet } from "../bottom-sheet"
+import { useJams } from "../jams-context"
 
 type Step = "review" | "claiming" | "success"
 
@@ -36,7 +37,7 @@ function useQrMatrix(payload: string, size = 21) {
   }, [payload, size])
 }
 
-function QrPass({ payload }: { payload: string }) {
+export function QrPass({ payload }: { payload: string }) {
   const { cells, size } = useQrMatrix(payload)
   return (
     <div className="mx-auto w-fit rounded-2xl bg-white p-3 shadow-lg">
@@ -78,34 +79,51 @@ interface EventPassClaimProps {
 
 export function EventPassClaim({ marker, onClose, onToast }: EventPassClaimProps) {
   const wallet = useWallet()
+  const { addClaimedPass } = useJams()
   const [step, setStep] = useState<Step>("review")
+  const [showTech, setShowTech] = useState(false)
 
   if (!marker) return null
 
   const isWorkshop = marker.kind === "workshop"
-  const passType = marker.passType ?? (isWorkshop ? "Free Entry" : "Solana Pass")
+  const passType = marker.passType ?? (isWorkshop ? "Free Entry" : "Entry Pass")
   const host = marker.host ?? "JAMS Crew"
+  const schedule = marker.time ?? "Schedule TBA"
   const payload = `jams:pass:${marker.id}:${wallet.address}`
 
   const close = () => {
     setStep("review")
+    setShowTech(false)
     onClose()
   }
 
   const claim = () => {
     setStep("claiming")
-    window.setTimeout(() => setStep("success"), 1400)
+    window.setTimeout(() => {
+      addClaimedPass({
+        id: marker.id,
+        title: marker.title,
+        host,
+        passType,
+        schedule,
+        venue: marker.label,
+        payload,
+        claimedAt: Date.now(),
+      })
+      setStep("success")
+      onToast(`You're on the list for ${marker.title}`)
+    }, 1400)
   }
 
   return (
     <BottomSheet
       open
       onClose={close}
-      title={step === "success" ? "Pass Confirmed" : isWorkshop ? "Workshop Sign-Up" : "Claim Event Pass"}
+      title={step === "success" ? "You're on the list" : isWorkshop ? "Join this workshop" : "Get your ticket"}
       description={
         step === "success"
-          ? "Show this QR pass at the door for check-in."
-          : "Verify the details, then claim on-chain in one tap."
+          ? "Show this code at the door. It's saved in My Tickets."
+          : "Check the details, then grab your spot in one tap."
       }
     >
       {step === "success" ? (
@@ -113,15 +131,17 @@ export function EventPassClaim({ marker, onClose, onToast }: EventPassClaimProps
           <QrPass payload={payload} />
           <div className="rounded-2xl border border-border bg-surface p-3 text-center">
             <p className="text-sm font-bold text-foreground">{marker.title}</p>
-            <p className="text-[11px] font-semibold text-primary">{passType} · {marker.time ?? "Schedule TBA"}</p>
-            <p className="mt-1 break-all text-[10px] text-muted-foreground">
-              Minted to {wallet.address.slice(0, 6)}…{wallet.address.slice(-4)}
+            <p className="text-[11px] font-semibold text-primary">
+              {passType} · {schedule}
+            </p>
+            <p className="mt-1 text-[10px] text-muted-foreground">
+              Saved to My Tickets on your profile
             </p>
           </div>
           <a
             href={icsHref(marker)}
-            download={`${marker.id}-jams-pass.ics`}
-            onClick={() => onToast("Calendar invite downloaded")}
+            download={`${marker.id}-jams-ticket.ics`}
+            onClick={() => onToast("Added to your calendar")}
             className="block rounded-xl bg-secondary py-3 text-center text-xs font-bold text-foreground"
           >
             Add to Calendar
@@ -140,9 +160,9 @@ export function EventPassClaim({ marker, onClose, onToast }: EventPassClaimProps
             {[
               ["Event", marker.title],
               ["Host", host],
-              ["Pass Type", passType],
-              ["Schedule", marker.time ?? "Schedule TBA"],
-              ["Wallet", `${wallet.address.slice(0, 6)}…${wallet.address.slice(-4)} · ${wallet.chain}`],
+              ["Ticket", passType],
+              ["When", schedule],
+              ["Where", marker.label],
             ].map(([k, v]) => (
               <div key={k} className="flex items-start justify-between gap-3 py-2.5">
                 <dt className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{k}</dt>
@@ -159,17 +179,30 @@ export function EventPassClaim({ marker, onClose, onToast }: EventPassClaimProps
             {step === "claiming" ? (
               <>
                 <span className="h-3 w-3 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
-                Confirming on Solana…
+                Saving your spot…
               </>
             ) : isWorkshop ? (
-              "1-Click Sign-Up"
+              "Sign me up"
             ) : (
-              "1-Click Claim Pass"
+              "Get my ticket"
             )}
           </button>
           <p className="text-center text-[10px] text-muted-foreground">
-            Issues a proof-of-attendance QR pass to your connected wallet.
+            Free to claim. Your ticket lives in the app with a QR code for the door.
           </p>
+          <button
+            type="button"
+            onClick={() => setShowTech((v) => !v)}
+            className="w-full text-center text-[10px] font-semibold text-muted-foreground underline underline-offset-4"
+          >
+            {showTech ? "Hide technical details" : "Show technical details"}
+          </button>
+          {showTech ? (
+            <p className="break-all rounded-xl bg-secondary p-2.5 text-[10px] text-muted-foreground">
+              Proof-of-attendance pass minted to {wallet.address.slice(0, 6)}…
+              {wallet.address.slice(-4)} on {wallet.chain}.
+            </p>
+          ) : null}
         </div>
       )}
     </BottomSheet>
