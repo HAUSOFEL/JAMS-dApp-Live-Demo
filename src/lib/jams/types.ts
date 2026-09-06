@@ -136,3 +136,22 @@ export interface WalletSession {
   chain: string
   balanceSol: number
 }
+
+/** Onboarding answers collected during the first-run welcome flow. */
+export interface DancerProfile {
+  displayName: string
+  styles: string[]
+  city: string
+}
+
+/** A ticket a dancer has claimed for an event or workshop. */
+export interface ClaimedPass {
+  id: string
+  title: string
+  host: string
+  passType: string
+  schedule: string
+  venue: string
+  payload: string
+  claimedAt: number
+}
