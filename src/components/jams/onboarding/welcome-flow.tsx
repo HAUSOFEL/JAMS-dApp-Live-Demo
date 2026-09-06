@@ -3,7 +3,8 @@ import type { DancerProfile } from "@/lib/jams/types"
 import { useJams } from "../jams-context"
 
 const STYLES = ["Breaking", "House", "Popping", "Hip Hop", "Locking", "All Styles"]
-const CITIES = ["Kitchener–Waterloo", "Toronto", "Hamilton", "Montreal", "Vancouver"]
+const DEFAULT_CITY = "Kitchener–Waterloo"
+const CITIES = [DEFAULT_CITY, "Toronto", "Hamilton", "Montreal", "Vancouver"]
 
 /**
  * Three-step first-run welcome. Purely presentational onboarding: answers are
@@ -34,7 +35,7 @@ export function WelcomeFlow() {
     const profile: DancerProfile = {
       displayName: displayName.trim() || "New Dancer",
       styles: styles.length ? styles : ["All Styles"],
-      city: city || CITIES[0],
+      city: city || DEFAULT_CITY,
     }
     saveDancerProfile(profile)
     setStep(3)
@@ -148,7 +149,7 @@ export function WelcomeFlow() {
             <h1 className="mt-6 text-2xl font-extrabold text-foreground">You&apos;re in</h1>
             <p className="mt-2 text-sm text-muted-foreground text-balance">
               Your feed is tuned for {styles.slice(0, 2).join(" & ") || "all styles"} around{" "}
-              {city || CITIES[0]}.
+              {city || DEFAULT_CITY}.
             </p>
           </div>
         ) : null}
