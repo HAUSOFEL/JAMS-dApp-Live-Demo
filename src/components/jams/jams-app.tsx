@@ -2,6 +2,7 @@
 import { BottomNav } from "./bottom-nav"
 import { JamsProvider, useJams } from "./jams-context"
 import { AppModals } from "./modals"
+import { WelcomeFlow } from "./onboarding/welcome-flow"
 import { Toast } from "./toast"
 import { TopNav } from "./top-nav"
 import { BlinksView } from "./views/blinks-view"
@@ -51,6 +52,7 @@ function Shell() {
 
       {authed ? <BottomNav /> : null}
 
+      {authed ? <WelcomeFlow /> : null}
       <AppModals />
       <Toast />
     </div>
