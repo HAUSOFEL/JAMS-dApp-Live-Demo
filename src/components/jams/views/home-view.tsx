@@ -12,12 +12,28 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
 
 export function HomeView() {
   const events = useEvents()
-  const { navigate, openStream, showToast } = useJams()
+  const { navigate, openStream, showToast, openWelcome, dancerProfile } = useJams()
 
   const featured = events.find((e) => e.isFeatured) ?? events[0]
 
   return (
     <div className="animate-fade-in">
+      {dancerProfile ? null : (
+        <div className="mb-5 rounded-2xl border border-gold/40 bg-gold/10 p-[18px]">
+          <h3 className="mb-1 text-[15px] font-bold text-foreground">New here?</h3>
+          <p className="mb-3.5 text-xs leading-relaxed text-muted-foreground">
+            Take three quick steps so we can show jams near you, in your styles.
+          </p>
+          <button
+            type="button"
+            onClick={openWelcome}
+            className="w-full rounded-xl bg-gold py-3 text-[13px] font-bold text-background"
+          >
+            Set up my profile
+          </button>
+        </div>
+      )}
+
       <SectionHeader>Live Feed &amp; Stories</SectionHeader>
       <StoriesRail />
 

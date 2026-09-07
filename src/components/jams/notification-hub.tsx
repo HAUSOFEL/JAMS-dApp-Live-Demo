@@ -41,7 +41,7 @@ const NOTIFICATIONS: JamsNotification[] = [
     category: "social",
     icon: "tip",
     title: "DRiP collectible received",
-    body: "@kwbreakers sent you the 'Windmill Finals' collectible + 0.25 SOL tip.",
+    body: "@kwbreakers sent you the 'Windmill Finals' collectible and a $3 tip.",
     time: "11m ago",
     action: "Open wallet",
     unread: true,
@@ -91,7 +91,7 @@ const NOTIFICATIONS: JamsNotification[] = [
 const TABS = [
   { id: "all", label: "All Activity" },
   { id: "events", label: "Events & Passes" },
-  { id: "social", label: "Social & Web3" },
+  { id: "social", label: "Social" },
 ] as const
 
 const ICONS = {

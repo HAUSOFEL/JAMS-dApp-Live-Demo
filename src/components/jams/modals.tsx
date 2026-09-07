@@ -1,4 +1,5 @@
 
+import { useState } from "react"
 import { useWallet } from "@/lib/jams/data"
 import { BottomSheet } from "./bottom-sheet"
 import { useJams } from "./jams-context"
@@ -7,6 +8,7 @@ import { BlinksIcon, CopyIcon, DashboardIcon, QrScanIcon, TicketIcon, WalletIcon
 export function AppModals() {
   const { modal, closeModal, logout, navigate, showToast } = useJams()
   const wallet = useWallet()
+  const [showAccountDetails, setShowAccountDetails] = useState(false)
 
   async function copyAddress() {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
@@ -16,6 +18,10 @@ export function AppModals() {
   }
 
   const shortAddress = `${wallet.address.slice(0, 4)}...${wallet.address.slice(-4)}`
+  const balanceUsd = (wallet.balanceSol * 148).toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  })
 
   return (
     <>
@@ -23,46 +29,64 @@ export function AppModals() {
       <BottomSheet
         open={modal === "menu"}
         title="Crew Portal"
-        description="Your connected wallet and crew organizer tools."
+        description="Your account and crew organizer tools."
         onClose={closeModal}
       >
         <div className="flex flex-col gap-4">
-          {/* Connected Wallet */}
+          {/* My Account */}
           <div className="flex flex-col gap-2.5">
             <div className="flex items-center gap-2">
               <WalletIcon className="h-3.5 w-3.5 text-primary" />
-              <span className="text-[11px] font-bold tracking-[0.16em] text-muted-foreground">CONNECTED WALLET</span>
+              <span className="text-[11px] font-bold tracking-[0.16em] text-muted-foreground">MY ACCOUNT</span>
             </div>
             <div className="flex flex-col gap-2.5 rounded-2xl border border-border bg-secondary p-4">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold text-foreground">{shortAddress}</span>
-                <button
-                  type="button"
-                  onClick={copyAddress}
-                  className="flex items-center gap-1 text-xs font-bold text-primary transition-colors hover:text-gold"
-                >
-                  <CopyIcon className="h-3.5 w-3.5" />
-                  Copy
-                </button>
+                <span className="text-xs text-muted-foreground">Balance</span>
+                <span className="text-sm font-bold text-foreground">{balanceUsd}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-green-500" />
-                  <span className="text-xs text-muted-foreground">{wallet.chain}</span>
+                  <span className="text-xs text-muted-foreground">Account active</span>
                 </div>
-                <span className="text-xs font-bold text-foreground">{wallet.balanceSol} SOL</span>
+                <button
+                  type="button"
+                  onClick={() => setShowAccountDetails((v) => !v)}
+                  className="text-[11px] font-bold text-primary transition-colors hover:text-gold"
+                >
+                  {showAccountDetails ? "Hide details" : "Show details"}
+                </button>
               </div>
+              {showAccountDetails ? (
+                <div className="flex flex-col gap-2 border-t border-border pt-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-xs font-bold text-foreground">{shortAddress}</span>
+                    <button
+                      type="button"
+                      onClick={copyAddress}
+                      className="flex items-center gap-1 text-xs font-bold text-primary transition-colors hover:text-gold"
+                    >
+                      <CopyIcon className="h-3.5 w-3.5" />
+                      Copy
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] text-muted-foreground">{wallet.chain}</span>
+                    <span className="text-[11px] font-bold text-foreground">{wallet.balanceSol} SOL</span>
+                  </div>
+                </div>
+              ) : null}
             </div>
             <button
               type="button"
               onClick={() => {
                 closeModal()
                 logout()
-                showToast("Wallet disconnected")
+                showToast("Signed out")
               }}
               className="w-full rounded-xl border border-live/50 px-4 py-2.5 text-xs font-bold text-live"
             >
-              Disconnect / Switch Wallet
+              Sign out
             </button>
           </div>
 
@@ -155,22 +179,27 @@ export function AppModals() {
       {/* Tip Modal */}
       <BottomSheet
         open={modal === "tip"}
-        title="Tip Breaker / Creator"
-        description="Send an instant SOL tip via a Solana Blink transaction."
+        title="Send a tip"
+        description="Show love to a dancer or creator. Goes straight to them."
         onClose={closeModal}
       >
         <div className="flex flex-col gap-2.5">
-          {[0.01, 0.1, 0.5].map((amount) => (
+          {[
+            { usd: 1, sol: 0.01 },
+            { usd: 3, sol: 0.02 },
+            { usd: 5, sol: 0.035 },
+          ].map(({ usd, sol }) => (
             <button
-              key={amount}
+              key={usd}
               type="button"
               onClick={() => {
                 closeModal()
-                showToast(`Tip of ${amount} SOL sent successfully`)
+                showToast(`You sent a $${usd} tip`)
               }}
-              className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground"
+              className="flex w-full items-center justify-between rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground"
             >
-              Send {amount} SOL Tip
+              <span>Send a tip — ${usd}</span>
+              <span className="text-[11px] font-semibold opacity-70">{sol} SOL</span>
             </button>
           ))}
         </div>

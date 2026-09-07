@@ -108,6 +108,7 @@ export function EventPassClaim({ marker, onClose, onToast }: EventPassClaimProps
         schedule,
         venue: marker.label,
         payload,
+        calendarHref: icsHref(marker),
         claimedAt: Date.now(),
       })
       setStep("success")

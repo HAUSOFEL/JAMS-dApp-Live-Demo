@@ -153,5 +153,6 @@ export interface ClaimedPass {
   schedule: string
   venue: string
   payload: string
+  calendarHref: string
   claimedAt: number
 }

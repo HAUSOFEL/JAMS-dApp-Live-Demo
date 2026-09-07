@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useCreatorProfile, useEvents, useReels } from "@/lib/jams/data";
 import type { ProfilePost } from "@/lib/jams/types";
 import { useJams } from "../jams-context";
+import { QrPass } from "../map/event-pass-claim";
 import {
   BookmarkIcon,
   ChevronLeftIcon,
@@ -12,6 +13,7 @@ import {
   ReelsIcon,
   SearchIcon,
   ShareIcon,
+  TicketIcon,
   TipIcon,
 } from "../icons";
 
@@ -21,7 +23,7 @@ function formatCount(n: number) {
   return `${n}`;
 }
 
-type ProfileTab = "grid" | "reels" | "collectibles" | "saved";
+type ProfileTab = "grid" | "reels" | "tickets" | "collectibles" | "saved";
 
 export function ProfileView({ creatorId, showBack = true }: { creatorId: string; showBack?: boolean }) {
   const profile = useCreatorProfile(creatorId);
@@ -29,12 +31,14 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
   const events = useEvents();
   const {
     closeProfile,
+    navigate,
     openStream,
     openModal,
     followedCreatorIds,
     toggleFollow,
     savedEventIds,
     toggleSavedEvent,
+    claimedPasses,
     showToast,
   } = useJams();
   const [tab, setTab] = useState<ProfileTab>("grid");
@@ -254,6 +258,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
             [
               ["grid", "Posts", GridIcon],
               ["reels", "Reels", ReelsIcon],
+              ["tickets", "Tickets", TicketIcon],
               ["collectibles", "Collectibles", null],
               ["saved", "Saved", BookmarkIcon],
             ] as const
@@ -276,8 +281,60 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
           ))}
         </div>
 
-        {/* Collectibles */}
-        {tab === "collectibles" ? (
+        {/* My Tickets */}
+        {tab === "tickets" ? (
+          isOwnProfile ? (
+            claimedPasses.length ? (
+              <ul className="flex flex-col gap-3 p-4">
+                {claimedPasses.map((pass) => (
+                  <li key={pass.id} className="rounded-2xl border border-border bg-surface-2 p-4">
+                    <h3 className="text-[14px] font-bold text-foreground">{pass.title}</h3>
+                    <p className="mt-0.5 text-[11px] text-muted-foreground">
+                      {pass.schedule} • {pass.venue}
+                    </p>
+                    <p className="mt-0.5 text-[11px] text-muted-foreground">
+                      {pass.passType} • Hosted by {pass.host}
+                    </p>
+                    <div className="my-3.5">
+                      <QrPass payload={pass.payload} />
+                    </div>
+                    <p className="mb-3 text-center text-[11px] text-muted-foreground">
+                      Show this at the door.
+                    </p>
+                    <a
+                      href={pass.calendarHref}
+                      download={`${pass.title.replace(/\s+/g, "-").toLowerCase()}.ics`}
+                      className="block w-full rounded-xl border border-primary py-2.5 text-center text-[12px] font-bold text-primary"
+                    >
+                      Add to Calendar
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="px-6 py-12 text-center">
+                <p className="text-xs text-muted-foreground">
+                  No tickets yet. Find a jam on the map and grab one.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    closeProfile();
+                    navigate("map");
+                  }}
+                  className="mt-4 rounded-xl bg-primary px-5 py-2.5 text-[12px] font-bold text-primary-foreground"
+                >
+                  Find a jam
+                </button>
+              </div>
+            )
+          ) : (
+            <p className="px-6 py-12 text-center text-xs text-muted-foreground">
+              Tickets are private.
+            </p>
+          )
+        ) : /* Collectibles */
+        tab === "collectibles" ? (
           <div className="p-3">
             <div className="grid grid-cols-3 gap-2">
               {collectibles.map((item) => (
