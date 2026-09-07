@@ -9,12 +9,25 @@ export function BlinksView() {
   const { showToast } = useJams()
   const portal = portals[0]
   const [iframeKey, setIframeKey] = useState(0)
+  const [showTech, setShowTech] = useState(false)
 
   async function copyBlink() {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       await navigator.clipboard.writeText(BLINK_ENDPOINT)
-      showToast("Blink Action URL copied")
+      showToast("Share link copied")
     }
+  }
+
+  async function shareBlink() {
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({ title: "Grab a ticket on JAMS", url: BLINK_ENDPOINT })
+        return
+      } catch {
+        /* dancer dismissed the share sheet */
+      }
+    }
+    await copyBlink()
   }
 
   return (
