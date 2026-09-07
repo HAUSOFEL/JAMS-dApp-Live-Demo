@@ -59,44 +59,61 @@ export function BlinksView() {
       </div>
       <p className="-mt-1 text-xs leading-relaxed text-muted-foreground">{portal?.description}</p>
 
-      {/* One-click economy */}
+      {/* Tickets */}
       <div className="rounded-2xl border border-border bg-card p-4">
         <h3 className="mb-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-          One-Click Economy
+          Tickets
         </h3>
-        <h4 className="mb-1.5 text-[15px] font-bold">Active cNFT Passes</h4>
+        <h4 className="mb-1.5 text-[15px] font-bold">Your active tickets</h4>
         <p className="mb-3.5 text-xs text-muted-foreground">
-          Manage active tickets, governance votes, and sponsor reward drops directly on-chain.
+          Tickets, crew votes, and sponsor rewards all live here. Pull down anytime for the latest.
         </p>
         <button
           type="button"
-          onClick={() => showToast("On-chain Solana state refreshed")}
+          onClick={() => showToast("Everything is up to date")}
           className="w-full rounded-xl bg-primary py-3 text-[13px] font-bold text-primary-foreground"
         >
-          Refresh On-Chain State
+          Refresh
         </button>
       </div>
 
-      {/* Shareable social ticketing */}
+      {/* Share */}
       <div className="rounded-2xl border border-border bg-card p-4">
         <h3 className="mb-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-          Shareable Social Ticketing
+          Share
         </h3>
-        <h4 className="mb-1.5 text-[15px] font-bold">Blink Action Endpoint</h4>
+        <h4 className="mb-1.5 text-[15px] font-bold">Share link</h4>
         <p className="mb-3 text-xs text-muted-foreground">
-          Generate a Blink URL adhering to the Solana Actions Specification to embed registration directly into social
-          channels.
+          Post this link anywhere and people can grab a ticket without leaving the page.
         </p>
-        <div className="mb-3 break-all rounded-lg bg-surface p-2.5 font-mono text-[11px] text-primary">
-          {BLINK_ENDPOINT}
+        <div className="mb-3 flex gap-2">
+          <button
+            type="button"
+            onClick={copyBlink}
+            className="flex-1 rounded-xl bg-primary py-3 text-[13px] font-bold text-primary-foreground"
+          >
+            Copy link
+          </button>
+          <button
+            type="button"
+            onClick={shareBlink}
+            className="flex-1 rounded-xl border border-primary py-3 text-[13px] font-bold text-primary"
+          >
+            Share
+          </button>
         </div>
         <button
           type="button"
-          onClick={copyBlink}
-          className="w-full rounded-xl border border-primary py-3 text-[13px] font-bold text-primary"
+          onClick={() => setShowTech((v) => !v)}
+          className="text-[11px] font-bold text-muted-foreground underline"
         >
-          Copy Blink Action URL
+          {showTech ? "Hide technical details" : "Show technical details"}
         </button>
+        {showTech ? (
+          <div className="mt-2.5 break-all rounded-lg bg-surface p-2.5 font-mono text-[11px] text-primary">
+            {BLINK_ENDPOINT}
+          </div>
+        ) : null}
       </div>
     </div>
   )
