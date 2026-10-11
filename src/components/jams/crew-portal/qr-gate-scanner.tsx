@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { useJams } from "../jams-context"
 import { CrewPanel, CrewSectionLabel } from "./panel"
 
-const CATEGORIES = ["1v1 Bboy", "1v1 Bgirl", "2v2 Crew", "Kids (U12)", "Top Rock"]
+const CATEGORIES: string[] = ["1v1 Bboy", "1v1 Bgirl", "2v2 Crew", "Kids (U12)", "Top Rock"]
 
 interface CheckIn {
   id: string
@@ -22,7 +22,7 @@ export function QrGateScanner({ onClose }: { onClose: () => void }) {
   const [camState, setCamState] = useState<"idle" | "on" | "denied" | "unsupported">("idle")
   const [checkIns, setCheckIns] = useState<CheckIn[]>([])
   const [name, setName] = useState("")
-  const [category, setCategory] = useState(CATEGORIES[0])
+  const [category, setCategory] = useState<string>("1v1 Bboy")
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const seen = useRef(new Set<string>())
@@ -136,10 +136,10 @@ export function QrGateScanner({ onClose }: { onClose: () => void }) {
           {claimedPasses.length > 0 ? (
             <button
               type="button"
-              onClick={() => admit(claimedPasses[0].payload)}
+              onClick={() => admit(claimedPasses[0]?.payload ?? "")}
               className="rounded-xl border border-border px-4 py-2.5 text-xs font-bold text-foreground"
             >
-              Test scan: {claimedPasses[0].title}
+              Test scan: {claimedPasses[0]?.title}
             </button>
           ) : null}
         </div>

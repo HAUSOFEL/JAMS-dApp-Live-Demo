@@ -37,7 +37,7 @@ export function EventManagement({ onClose }: { onClose: () => void }) {
         showToast("Event complete")
         return prev.map((s) => ({ ...s, status: "done" as Status }))
       }
-      showToast(`${prev[live + 1].name} is now live`)
+      showToast(`${prev[live + 1]?.name} is now live`)
       return prev.map((s, i) => ({ ...s, status: i <= live ? "done" : i === live + 1 ? "live" : "next" }))
     })
   }
