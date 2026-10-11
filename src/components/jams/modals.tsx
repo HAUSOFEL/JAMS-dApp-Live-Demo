@@ -6,7 +6,7 @@ import { useJams } from "./jams-context"
 import { BlinksIcon, CopyIcon, DashboardIcon, QrScanIcon, TicketIcon, WalletIcon } from "./icons"
 
 export function AppModals() {
-  const { modal, closeModal, logout, navigate, showToast } = useJams()
+  const { modal, closeModal, logout, navigate, showToast, openCrewTool } = useJams()
   const wallet = useWallet()
   const [showAccountDetails, setShowAccountDetails] = useState(false)
 
@@ -106,7 +106,7 @@ export function AppModals() {
             </button>
             <button
               type="button"
-              onClick={() => showToast("Opening Organizer Dashboard...")}
+              onClick={() => openCrewTool("dashboard")}
               className="flex items-center gap-3 rounded-xl border border-border px-4 py-3 text-left text-sm font-bold text-foreground"
             >
               <DashboardIcon className="h-4 w-4 text-gold" />
@@ -114,7 +114,7 @@ export function AppModals() {
             </button>
             <button
               type="button"
-              onClick={() => showToast("Opening Event Management...")}
+              onClick={() => openCrewTool("events")}
               className="flex items-center gap-3 rounded-xl border border-border px-4 py-3 text-left text-sm font-bold text-foreground"
             >
               <TicketIcon className="h-4 w-4 text-gold" />
@@ -122,7 +122,7 @@ export function AppModals() {
             </button>
             <button
               type="button"
-              onClick={() => showToast("Launching QR Gate Scanner...")}
+              onClick={() => openCrewTool("scanner")}
               className="flex items-center gap-3 rounded-xl border border-border px-4 py-3 text-left text-sm font-bold text-foreground"
             >
               <QrScanIcon className="h-4 w-4 text-gold" />
