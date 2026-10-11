@@ -42,9 +42,15 @@ interface JamsContextValue {
   claimedPasses: ClaimedPass[];
   addClaimedPass: (pass: ClaimedPass) => void;
 
+  crewTool: CrewToolId;
+  openCrewTool: (tool: Exclude<CrewToolId, null>) => void;
+  closeCrewTool: () => void;
+
   toast: string | null;
   showToast: (message: string) => void;
 }
+
+export type CrewToolId = "scanner" | "events" | "dashboard" | null;
 
 const JamsContext = createContext<JamsContextValue | null>(null);
 
@@ -78,6 +84,7 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
   const [dancerProfile, setDancerProfile] = useState<DancerProfile | null>(null);
   const [welcomeOpen, setWelcomeOpen] = useState(false);
   const [claimedPasses, setClaimedPasses] = useState<ClaimedPass[]>([]);
+  const [crewTool, setCrewTool] = useState<CrewToolId>(null);
   const [toast, setToast] = useState<string | null>(null);
 
   // Hydrate saved answers/tickets after mount so SSR markup stays stable.
@@ -193,6 +200,12 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
       saveDancerProfile,
       claimedPasses,
       addClaimedPass,
+      crewTool,
+      openCrewTool: (t) => {
+        setModal(null);
+        setCrewTool(t);
+      },
+      closeCrewTool: () => setCrewTool(null),
       toast,
       showToast,
     }),
@@ -219,6 +232,7 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
       saveDancerProfile,
       claimedPasses,
       addClaimedPass,
+      crewTool,
       toast,
       showToast,
     ],
