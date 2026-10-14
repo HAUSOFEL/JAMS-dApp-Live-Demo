@@ -1,13 +1,36 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useMapMarkers } from "@/lib/jams/data"
 import type { MapMarker } from "@/lib/jams/types"
-import { CITY_POIS, POI_CATEGORIES, type CityPoi } from "@/lib/jams/city-pois"
+import { CITY_POIS, POI_CATEGORIES, type CityPoi, type PoiCategory } from "@/lib/jams/city-pois"
 import { useJams } from "../jams-context"
 import { PinIcon, CloseIcon, BookmarkIcon, PlusIcon } from "../icons"
-import { MapBasemap, MAP_LAYERS, type MapLayerId } from "../map/map-layers"
+import { MapBasemap, type MapLayerId } from "../map/map-layers"
 import { PoiMarker } from "../map/city-overlays"
 import { EventPassClaim } from "../map/event-pass-claim"
 
+
+type FilterId = "all" | "live" | "event" | "workshop" | "food" | "cafe" | "transit" | "park" | "art"
+const FILTERS: { id: FilterId; label: string }[] = [
+  { id: "all", label: "All" },
+  { id: "live", label: "🔴 Live" },
+  { id: "event", label: "Jams" },
+  { id: "workshop", label: "Workshops" },
+  { id: "food", label: "🍜 Food" },
+  { id: "cafe", label: "☕ Cafes" },
+  { id: "transit", label: "🚊 Transit" },
+  { id: "park", label: "🌳 Parks" },
+  { id: "art", label: "🎨 Art" },
+]
+const POI_FILTER: Partial<Record<FilterId, PoiCategory>> = {
+  food: "food", cafe: "cafe", transit: "transit", park: "park", art: "art",
+}
+const ZONES = [
+  { name: "Uptown Main Stage", x: 30, y: 32, r: 30, cls: "border-accent/60 bg-accent/10" },
+  { name: "Midtown Cypher", x: 50, y: 50, r: 22, cls: "border-primary/60 bg-primary/10" },
+  { name: "Downtown Workshops", x: 68, y: 64, r: 30, cls: "border-gold/60 bg-gold/10" },
+]
+const directionsUrl = (q: string) =>
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${q}, Kitchener-Waterloo, ON`)}`
 
 const MIN_ZOOM = 1
 const MAX_ZOOM = 5
@@ -30,9 +53,8 @@ export function MapView() {
   const [selected, setSelected] = useState<MapMarker | null>(null)
   const [selectedPoi, setSelectedPoi] = useState<CityPoi | null>(null)
   const [claimMarker, setClaimMarker] = useState<MapMarker | null>(null)
-  const [showPois, setShowPois] = useState(true)
-  const [controlsOpen, setControlsOpen] = useState(false)
-  const [layer, setLayer] = useState<MapLayerId>("street")
+  const [filter, setFilter] = useState<FilterId>("all")
+  const [layer] = useState<MapLayerId>("street")
   const [zoom, setZoom] = useState(1)
   const [offset, setOffset] = useState({ x: 0, y: 0 })
 
@@ -84,6 +106,23 @@ export function MapView() {
     zoomAt(zoom * factor, rect.width / 2, rect.height / 2)
   }
 
+  const poiFilter = POI_FILTER[filter] ?? (["all"].includes(filter) ? null : "none")
+  const showPois = filter === "all" || POI_FILTER[filter] !== undefined
+  const visibleMarkers = markers.filter((m) =>
+    filter === "all" ? true : filter === "live" ? m.variant === "live" : filter === "event" ? m.kind !== "workshop" : filter === "workshop" ? m.kind === "workshop" : false,
+  )
+
+  const focusMarker = (m: MapMarker) => {
+    setSelectedPoi(null)
+    setSelected(m)
+    const el = containerRef.current
+    if (!el) return
+    const { width, height } = el.getBoundingClientRect()
+    const z = Math.max(zoom, 2)
+    setZoom(z)
+    setOffset(clampOffset({ x: width / 2 - (m.x / 100) * width * z, y: height * 0.4 - (m.y / 100) * height * z }, z, el))
+  }
+
   const resetView = () => {
     setZoom(1)
     setOffset({ x: 0, y: 0 })
@@ -125,9 +164,25 @@ export function MapView() {
         >
           <MapBasemap layer={layer} />
 
+          {ZONES.map((z) => (
+            <div
+              key={z.name}
+              aria-hidden="true"
+              className={`pointer-events-none absolute z-[2] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed ${z.cls}`}
+              style={{ left: `${z.x}%`, top: `${z.y}%`, width: `${z.r}%`, aspectRatio: "1" }}
+            >
+              <span
+                className="absolute left-1/2 top-1 -translate-x-1/2 whitespace-nowrap rounded-full bg-background/80 px-2 py-0.5 text-[8px] font-extrabold uppercase tracking-widest text-foreground"
+                style={{ scale: `${1 / zoom}` }}
+              >
+                {z.name}
+              </span>
+            </div>
+          ))}
+
 
           {showPois
-            ? CITY_POIS.map((poi) => (
+            ? CITY_POIS.filter((p) => poiFilter === null || p.category === poiFilter).map((poi) => (
                 <PoiMarker
                   key={poi.id}
                   poi={poi}
@@ -141,7 +196,7 @@ export function MapView() {
               ))
             : null}
 
-          {markers.map((marker) => {
+          {visibleMarkers.map((marker) => {
             const active = selected?.id === marker.id
             return (
               <button
@@ -162,82 +217,49 @@ export function MapView() {
                 aria-label={marker.title}
                 aria-pressed={active}
               >
+                {marker.variant === "live" ? (
+                  <span aria-hidden="true" className="absolute -inset-1 animate-ping rounded-full bg-accent/40" />
+                ) : null}
                 <span
-                  className={`flex items-center gap-1.5 rounded-full border-2 border-foreground/70 px-3 py-2 text-[11px] font-extrabold shadow-lg ${
-                    marker.variant === "live" ? "bg-primary text-primary-foreground" : "bg-foreground text-background"
-                  } ${active ? "ring-2 ring-primary/60" : ""}`}
+                  className={`relative flex items-center gap-1.5 rounded-full border-2 px-3 py-2 text-[11px] font-extrabold shadow-lg ${
+                    marker.variant === "live"
+                      ? "border-foreground bg-accent text-accent-foreground shadow-glow-accent"
+                      : marker.kind === "workshop"
+                        ? "border-background bg-gold text-gold-foreground"
+                        : "border-foreground/70 bg-primary text-primary-foreground"
+                  } ${active ? "ring-4 ring-foreground/40" : ""}`}
                 >
+                  {marker.variant === "live" ? <span className="text-[9px]">LIVE</span> : null}
                   <PinIcon className="h-3.5 w-3.5" />
                   {marker.label}
                 </span>
+                <span aria-hidden="true" className="h-2 w-0.5 bg-foreground/70" />
               </button>
             )
           })}
         </div>
 
-        {/* Collapsible map controls */}
-        <div className="absolute left-4 top-4 z-[12] w-[168px]">
-          <button
-            type="button"
-            onClick={() => setControlsOpen((v) => !v)}
-            aria-expanded={controlsOpen}
-            className="flex w-full items-center justify-between gap-2 rounded-2xl border border-border bg-surface/95 px-3 py-2 text-[11px] font-bold text-foreground shadow-lg backdrop-blur transition-colors hover:bg-accent"
-          >
-            Map Controls
-            <span aria-hidden="true" className="text-[10px] text-muted-foreground">
-              {controlsOpen ? "▲" : "▼"}
-            </span>
-          </button>
-
-          {controlsOpen ? (
-            <div className="mt-1.5 rounded-2xl border border-border bg-surface/95 p-1.5 shadow-lg backdrop-blur">
-              <p className="px-1.5 pb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
-                Base map
-              </p>
-              <div className="flex flex-col gap-1" role="group" aria-label="Map layers">
-                {MAP_LAYERS.map((l) => (
-                  <button
-                    key={l.id}
-                    type="button"
-                    onClick={() => {
-                      setLayer(l.id)
-                      showToast(`${l.label} layer: ${l.hint}`)
-                    }}
-                    aria-pressed={layer === l.id}
-                    title={l.hint}
-                    className={`rounded-xl px-2.5 py-1.5 text-left text-[11px] font-bold transition-colors ${
-                      layer === l.id
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                    }`}
-                  >
-                    {l.label}
-                  </button>
-                ))}
-              </div>
-              <div className="mt-1.5 border-t border-border pt-1.5">
-                <p className="px-1.5 pb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Overlays
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setShowPois((v) => !v)}
-                  aria-pressed={showPois}
-                  className={`w-full rounded-xl px-2.5 py-1.5 text-left text-[11px] font-bold transition-colors ${
-                    showPois
-                      ? "bg-foreground text-background"
-                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                  }`}
-                >
-                  Nearby POIs
-                </button>
-              </div>
-            </div>
-          ) : null}
+        {/* Filter chips */}
+        <div className="absolute inset-x-0 top-3 z-[12] flex gap-1.5 overflow-x-auto px-3 pr-16 [scrollbar-width:none]" role="group" aria-label="Map filters">
+          {FILTERS.map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              onClick={() => setFilter(f.id)}
+              aria-pressed={filter === f.id}
+              className={`shrink-0 rounded-full border px-3 py-1.5 text-[11px] font-bold shadow-lg backdrop-blur transition-colors ${
+                filter === f.id
+                  ? "border-accent bg-accent text-accent-foreground"
+                  : "border-border bg-surface/95 text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
         </div>
 
         {/* Zoom control */}
-        <div className="absolute right-4 top-4 z-[12] flex flex-col gap-1 rounded-2xl border border-border bg-surface/95 p-1.5 shadow-lg backdrop-blur">
+        <div className="absolute right-3 top-14 z-[12] flex flex-col gap-1 rounded-2xl border border-border bg-surface/95 p-1.5 shadow-lg backdrop-blur">
           <button
             type="button"
             onClick={() => zoomByButton(1.4)}
@@ -268,7 +290,7 @@ export function MapView() {
         {/* Event details card overlay */}
         {selected ? (
           <div className="fixed bottom-[72px] left-1/2 z-40 w-[calc(100%-24px)] max-w-[360px] -translate-x-1/2 pointer-events-auto">
-            <div className="max-h-[38vh] overflow-y-auto rounded-2xl border border-white/10 bg-slate-900/95 p-3 shadow-2xl backdrop-blur-xl">
+            <div className="max-h-[38vh] overflow-y-auto rounded-2xl border border-border bg-surface/95 p-3 shadow-2xl backdrop-blur-xl">
               <div className="mb-2 flex items-start justify-between gap-3">
                 <div className="flex flex-wrap items-center gap-2">
                   <span
@@ -283,7 +305,7 @@ export function MapView() {
                     ) : null}
                     {selected.time ?? "Schedule TBA"}
                   </span>
-                  <span className="inline-block rounded-xl border border-white/10 px-2 py-1 text-[10px] font-semibold text-muted-foreground">
+                  <span className="inline-block rounded-xl border border-border px-2 py-1 text-[10px] font-semibold text-muted-foreground">
                     Fact-Verified Location Hub
                   </span>
                 </div>
@@ -333,13 +355,21 @@ export function MapView() {
                   >
                     {selected.linkedStreamId ? "Tune In Live" : "Join Chat"}
                   </button>
+                  <a
+                    href={directionsUrl(selected.title)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex flex-1 items-center justify-center rounded-xl bg-secondary py-2.5 text-xs font-bold text-foreground"
+                  >
+                    Directions
+                  </a>
                 </div>
               </div>
             </div>
           </div>
         ) : selectedPoi ? (
           <div className="fixed bottom-[72px] left-1/2 z-40 w-[calc(100%-24px)] max-w-[360px] -translate-x-1/2 pointer-events-auto">
-            <div className="max-h-[38vh] overflow-y-auto rounded-2xl border border-white/10 bg-slate-900/95 p-3 shadow-2xl backdrop-blur-xl">
+            <div className="max-h-[38vh] overflow-y-auto rounded-2xl border border-border bg-surface/95 p-3 shadow-2xl backdrop-blur-xl">
               <div className="mb-2 flex items-start justify-between gap-3">
                 <span className="inline-flex items-center gap-1.5 rounded-xl bg-secondary px-2 py-1 text-[10px] font-bold text-muted-foreground">
                   <span aria-hidden="true">{POI_CATEGORIES[selectedPoi.category].glyph}</span>
@@ -356,8 +386,41 @@ export function MapView() {
               </div>
               <h3 className="text-base font-bold text-foreground">{selectedPoi.name}</h3>
               <p className="mb-1 text-[11px] font-semibold text-primary">{selectedPoi.area}</p>
-              <p className="text-[13px] text-muted-foreground">{selectedPoi.detail}</p>
+              <p className="mb-3 text-[13px] text-muted-foreground">{selectedPoi.detail}</p>
+              <a
+                href={directionsUrl(`${selectedPoi.name} ${selectedPoi.area}`)}
+                target="_blank"
+                rel="noreferrer"
+                className="block w-full rounded-xl bg-secondary py-2.5 text-center text-xs font-bold text-foreground"
+              >
+                Get Directions
+              </a>
             </div>
+          </div>
+        ) : visibleMarkers.length ? (
+          <div className="absolute inset-x-0 bottom-3 z-[12] flex snap-x gap-2 overflow-x-auto px-3 [scrollbar-width:none]">
+            {visibleMarkers.map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => focusMarker(m)}
+                className="w-[230px] shrink-0 snap-start rounded-2xl border border-border bg-surface/95 p-3 text-left shadow-lg backdrop-blur transition-colors hover:border-accent"
+              >
+                <span
+                  className={`mb-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-widest ${
+                    m.variant === "live"
+                      ? "bg-accent text-accent-foreground"
+                      : m.kind === "workshop"
+                        ? "bg-gold text-gold-foreground"
+                        : "bg-primary text-primary-foreground"
+                  }`}
+                >
+                  {m.variant === "live" ? "Live now" : m.kind === "workshop" ? "Workshop" : "Event"}
+                </span>
+                <p className="truncate text-sm font-bold text-foreground">{m.title}</p>
+                <p className="truncate text-[11px] text-muted-foreground">{m.time ?? "Schedule TBA"}</p>
+              </button>
+            ))}
           </div>
         ) : null}
 
