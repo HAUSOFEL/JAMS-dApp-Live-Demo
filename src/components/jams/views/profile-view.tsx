@@ -422,6 +422,9 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
                 aria-label={post.isLive ? "Open live stream" : "Open post"}
               >
                 <span className="absolute inset-0" style={{ background: post.gradient }} />
+                {post.imageUrl ? (
+                  <img src={post.imageUrl} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform group-hover:scale-105" />
+                ) : null}
                 <span
                   className="absolute inset-0 opacity-30"
                   style={{
