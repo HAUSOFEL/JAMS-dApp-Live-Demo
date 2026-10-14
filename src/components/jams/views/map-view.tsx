@@ -289,8 +289,8 @@ export function MapView() {
 
         {/* Event details card overlay */}
         {selected ? (
-          <div className="absolute inset-x-3 bottom-3 z-30 mx-auto max-w-[360px] pointer-events-auto animate-in fade-in slide-in-from-bottom-2 duration-200">
-            <div className="max-h-[48vh] overflow-y-auto rounded-2xl border border-border bg-surface/95 p-3 shadow-2xl backdrop-blur-xl">
+          <div className="absolute inset-x-3 bottom-[88px] z-[36] mx-auto max-w-[360px] pointer-events-auto animate-in fade-in slide-in-from-bottom-2 duration-200">
+            <div className="max-h-[min(48vh,420px)] overflow-y-auto rounded-2xl border border-border bg-surface/95 p-3 shadow-2xl backdrop-blur-xl">
               <div className="mb-2 flex items-start justify-between gap-3">
                 <div className="flex flex-wrap items-center gap-2">
                   <span
@@ -368,8 +368,8 @@ export function MapView() {
             </div>
           </div>
         ) : selectedPoi ? (
-          <div className="absolute inset-x-3 bottom-3 z-30 mx-auto max-w-[360px] pointer-events-auto animate-in fade-in slide-in-from-bottom-2 duration-200">
-            <div className="max-h-[48vh] overflow-y-auto rounded-2xl border border-border bg-surface/95 p-3 shadow-2xl backdrop-blur-xl">
+          <div className="absolute inset-x-3 bottom-[88px] z-[36] mx-auto max-w-[360px] pointer-events-auto animate-in fade-in slide-in-from-bottom-2 duration-200">
+            <div className="max-h-[min(48vh,420px)] overflow-y-auto rounded-2xl border border-border bg-surface/95 p-3 shadow-2xl backdrop-blur-xl">
               <div className="mb-2 flex items-start justify-between gap-3">
                 <span className="inline-flex items-center gap-1.5 rounded-xl bg-secondary px-2 py-1 text-[10px] font-bold text-muted-foreground">
                   <span aria-hidden="true">{POI_CATEGORIES[selectedPoi.category].glyph}</span>
@@ -398,7 +398,7 @@ export function MapView() {
             </div>
           </div>
         ) : visibleMarkers.length ? (
-          <div className="absolute inset-x-0 bottom-3 z-[12] flex snap-x gap-2 overflow-x-auto px-3 [scrollbar-width:none]">
+          <div className="absolute inset-x-0 bottom-[88px] z-[12] flex snap-x gap-2 overflow-x-auto px-3 [scrollbar-width:none]">
             {visibleMarkers.map((m) => (
               <button
                 key={m.id}
