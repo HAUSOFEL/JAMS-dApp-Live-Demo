@@ -289,8 +289,8 @@ export function MapView() {
 
         {/* Event details card overlay */}
         {selected ? (
-          <div className="fixed bottom-[72px] left-1/2 z-40 w-[calc(100%-24px)] max-w-[360px] -translate-x-1/2 pointer-events-auto">
-            <div className="max-h-[38vh] overflow-y-auto rounded-2xl border border-border bg-surface/95 p-3 shadow-2xl backdrop-blur-xl">
+          <div className="absolute inset-x-3 bottom-3 z-30 mx-auto max-w-[360px] pointer-events-auto animate-in fade-in slide-in-from-bottom-2 duration-200">
+            <div className="max-h-[48vh] overflow-y-auto rounded-2xl border border-border bg-surface/95 p-3 shadow-2xl backdrop-blur-xl">
               <div className="mb-2 flex items-start justify-between gap-3">
                 <div className="flex flex-wrap items-center gap-2">
                   <span
@@ -368,8 +368,8 @@ export function MapView() {
             </div>
           </div>
         ) : selectedPoi ? (
-          <div className="fixed bottom-[72px] left-1/2 z-40 w-[calc(100%-24px)] max-w-[360px] -translate-x-1/2 pointer-events-auto">
-            <div className="max-h-[38vh] overflow-y-auto rounded-2xl border border-border bg-surface/95 p-3 shadow-2xl backdrop-blur-xl">
+          <div className="absolute inset-x-3 bottom-3 z-30 mx-auto max-w-[360px] pointer-events-auto animate-in fade-in slide-in-from-bottom-2 duration-200">
+            <div className="max-h-[48vh] overflow-y-auto rounded-2xl border border-border bg-surface/95 p-3 shadow-2xl backdrop-blur-xl">
               <div className="mb-2 flex items-start justify-between gap-3">
                 <span className="inline-flex items-center gap-1.5 rounded-xl bg-secondary px-2 py-1 text-[10px] font-bold text-muted-foreground">
                   <span aria-hidden="true">{POI_CATEGORIES[selectedPoi.category].glyph}</span>
