@@ -41,6 +41,10 @@ export interface Reel {
   likes: number
   /** Gradient used as the video poster placeholder until a real HLS/WebRTC feed is wired. */
   gradient: string
+  /** Looping video source for the reel. */
+  videoUrl?: string
+  /** Poster image shown before the video loads. */
+  posterUrl?: string
 }
 
 /** Maps to an `events` row. */
@@ -98,6 +102,8 @@ export interface CrewPortal {
 export interface ProfilePost {
   id: string
   gradient: string
+  /** Thumbnail photo for the grid tile. */
+  imageUrl?: string
   likes: number
   isLive?: boolean
   isReel?: boolean

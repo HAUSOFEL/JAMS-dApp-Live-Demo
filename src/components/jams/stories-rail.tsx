@@ -21,14 +21,18 @@ export function StoriesRail() {
               type="button"
               onClick={() => openProfile(story.creator.id)}
               aria-label={`${story.creator.displayName} profile`}
-              className="flex h-full w-full items-center justify-center rounded-full border-[3px] border-surface bg-surface-2 text-2xl font-extrabold text-foreground"
+              className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-[3px] border-surface bg-surface-2 text-2xl font-extrabold text-foreground"
               style={
                 story.creator.accentColor
                   ? { background: story.creator.accentColor, color: "var(--primary-foreground)" }
                   : undefined
               }
             >
-              {story.creator.initials}
+              {story.creator.avatarUrl ? (
+                <img src={story.creator.avatarUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
+              ) : (
+                story.creator.initials
+              )}
             </button>
 
             {/* Live badge jumps straight into the stream. */}

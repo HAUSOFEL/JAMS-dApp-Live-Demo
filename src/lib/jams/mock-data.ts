@@ -18,13 +18,13 @@ import type {
 
 const creators = {
   me: { id: "me", handle: "dancer_jams", displayName: "Alex JAMS", initials: "A", avatarUrl: meAvatar },
-  kwb: { id: "kwb", handle: "kwbreakers", displayName: "KW Breakers", initials: "K" },
-  aria: { id: "aria", handle: "bgirl_aria", displayName: "BGirl Aria", initials: "A", accentColor: "oklch(0.5 0.21 22)" },
-  urban: { id: "urban", handle: "urban_cypher", displayName: "Urban Cypher", initials: "U" },
-  flex: { id: "flex", handle: "bboyflex", displayName: "Bboy Flex", initials: "F" },
-  shadow: { id: "shadow", handle: "dj_shadow", displayName: "DJ Shadow", initials: "D" },
-  vans: { id: "vans", handle: "vans_undgrd", displayName: "Vans Undgrd", initials: "V" },
-  to: { id: "to", handle: "to_cypher", displayName: "TO Cypher", initials: "TO" },
+  kwb: { id: "kwb", handle: "kwbreakers", displayName: "KW Breakers", initials: "K", avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=70&auto=format&fit=crop&crop=faces" },
+  aria: { id: "aria", handle: "bgirl_aria", displayName: "BGirl Aria", initials: "A", accentColor: "oklch(0.5 0.21 22)", avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=70&auto=format&fit=crop&crop=faces" },
+  urban: { id: "urban", handle: "urban_cypher", displayName: "Urban Cypher", initials: "U", avatarUrl: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&q=70&auto=format&fit=crop&crop=faces" },
+  flex: { id: "flex", handle: "bboyflex", displayName: "Bboy Flex", initials: "F", avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=70&auto=format&fit=crop&crop=faces" },
+  shadow: { id: "shadow", handle: "dj_shadow", displayName: "DJ Shadow", initials: "D", avatarUrl: "https://images.unsplash.com/photo-1520423465871-0866049020b7?w=200&q=70&auto=format&fit=crop&crop=faces" },
+  vans: { id: "vans", handle: "vans_undgrd", displayName: "Vans Undgrd", initials: "V", avatarUrl: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=200&q=70&auto=format&fit=crop&crop=faces" },
+  to: { id: "to", handle: "to_cypher", displayName: "TO Cypher", initials: "TO", avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=70&auto=format&fit=crop&crop=faces" },
 } satisfies Record<string, Creator>
 
 export const mockStories: Story[] = [
@@ -47,6 +47,8 @@ export const mockReels: Reel[] = [
     viewers: 1200,
     likes: 3400,
     gradient: "linear-gradient(135deg, #0b1e3d, #051329)",
+    videoUrl: "https://videos.pexels.com/video-files/8714848/8714848-sd_960_540_25fps.mp4",
+    posterUrl: "https://images.unsplash.com/photo-1757580190711-278838e5d067?w=900&q=70&auto=format&fit=crop",
   },
   {
     id: "r2",
@@ -58,6 +60,8 @@ export const mockReels: Reel[] = [
     viewers: 842,
     likes: 2100,
     gradient: "linear-gradient(135deg, #123055, #051329)",
+    videoUrl: "https://videos.pexels.com/video-files/8714851/8714851-sd_960_540_25fps.mp4",
+    posterUrl: "https://images.unsplash.com/photo-1660727375291-d85cd463a4f6?w=900&q=70&auto=format&fit=crop",
   },
   {
     id: "r3",
@@ -68,6 +72,8 @@ export const mockReels: Reel[] = [
     isLive: false,
     likes: 980,
     gradient: "linear-gradient(135deg, #091b36, #051329)",
+    videoUrl: "https://videos.pexels.com/video-files/8714848/8714848-sd_960_540_25fps.mp4",
+    posterUrl: "https://images.unsplash.com/photo-1533557252203-6ec9555fe200?w=900&q=70&auto=format&fit=crop",
   },
   {
     id: "r4",
@@ -78,6 +84,8 @@ export const mockReels: Reel[] = [
     isLive: false,
     likes: 1550,
     gradient: "linear-gradient(135deg, #1a2b52, #051329)",
+    videoUrl: "https://videos.pexels.com/video-files/8714851/8714851-sd_960_540_25fps.mp4",
+    posterUrl: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=900&q=70&auto=format&fit=crop",
   },
 ]
 
@@ -207,10 +215,26 @@ const gridGradients = [
   "linear-gradient(135deg, #062045, #051329)",
 ]
 
+const gridPhotos = [
+  "https://images.unsplash.com/photo-1757580190711-278838e5d067?w=400&q=70&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1533557252203-6ec9555fe200?w=400&q=70&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1660727375291-d85cd463a4f6?w=400&q=70&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?w=400&q=70&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1547153760-18fc86324498?w=400&q=70&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1504609813442-a8924e83f76e?w=400&q=70&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1535525153412-5a42439a210d?w=400&q=70&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1524594152303-9fd13543fe6e?w=400&q=70&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&q=70&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&q=70&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&q=70&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&q=70&auto=format&fit=crop",
+]
+
 function buildPosts(seed: number, count: number, liveStreamId?: string): ProfilePost[] {
   return Array.from({ length: count }, (_, i) => ({
     id: `p-${seed}-${i}`,
     gradient: gridGradients[(seed + i) % gridGradients.length]!,
+    imageUrl: gridPhotos[(seed * 5 + i) % gridPhotos.length]!,
     likes: 120 + ((seed * 37 + i * 53) % 4000),
     isReel: (i + seed) % 3 === 0,
     isLive: i === 0 && Boolean(liveStreamId),

@@ -39,8 +39,22 @@ export function ReelCard({ reel, onOpenComments }: ReelCardProps) {
     >
       {/* Poster placeholder — swap for an HLS/WebRTC <video> when live feeds are wired. */}
       <div className="absolute inset-0 opacity-50" style={{ background: reel.gradient }} aria-hidden="true" />
+      {reel.videoUrl || reel.posterUrl ? (
+        <video
+          className="absolute inset-0 h-full w-full object-cover"
+          src={reel.videoUrl}
+          poster={reel.posterUrl}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-hidden="true"
+        />
+      ) : null}
+      <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background/80" aria-hidden="true" />
       <div
-        className="absolute inset-0 opacity-30"
+        className={`absolute inset-0 ${reel.videoUrl ? "hidden" : "opacity-30"}`}
         style={{
           background:
             "repeating-linear-gradient(45deg, #051329, #051329 10px, #091B36 10px, #091B36 20px)",
