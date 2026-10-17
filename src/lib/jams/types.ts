@@ -162,3 +162,41 @@ export interface ClaimedPass {
   calendarHref: string
   claimedAt: number
 }
+
+export type BracketRoundId = "quarterfinals" | "semifinals" | "finals"
+export type BracketVote = "red" | "blue" | "tie"
+
+export interface BracketCompetitor {
+  id: string
+  creatorId: string
+  avatarUrl?: string
+  handle: string
+  displayName: string
+  crewName?: string
+  seed: number
+}
+
+export interface BracketMatch {
+  id: string
+  roundId: BracketRoundId
+  matchNumber: number
+  red?: BracketCompetitor
+  blue?: BracketCompetitor
+  sourceMatchIds?: [string, string]
+  score: { red: number; blue: number }
+  status: "live" | "on_deck" | "completed" | "upcoming"
+  winnerId?: string
+  scheduledTime: string
+  extraRound?: boolean
+}
+
+export interface BattleBracket {
+  id: string
+  eventTitle: string
+  category: string
+  currentStage: BracketRoundId
+  rounds: BracketRoundId[]
+  matches: BracketMatch[]
+  prizePool: number
+  viewers: number
+}
