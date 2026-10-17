@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import type { ClaimedPass, DancerProfile, ModalId, TabId } from "@/lib/jams/types";
+import type { BattleBracket, BracketVote, ClaimedPass, DancerProfile, ModalId, TabId } from "@/lib/jams/types";
+import { applyBracketVote, initialBrackets } from "@/lib/jams/brackets";
 
 const PROFILE_KEY = "jams.dancerProfile";
 const PASSES_KEY = "jams.claimedPasses";
@@ -46,6 +47,12 @@ interface JamsContextValue {
   openCrewTool: (tool: Exclude<CrewToolId, null>) => void;
   closeCrewTool: () => void;
 
+  brackets: BattleBracket[];
+  bracketOpen: boolean;
+  openBrackets: () => void;
+  closeBrackets: () => void;
+  judgeBracket: (bracketId: string, matchId: string, vote: BracketVote) => void;
+
   toast: string | null;
   showToast: (message: string) => void;
 }
@@ -85,6 +92,8 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
   const [welcomeOpen, setWelcomeOpen] = useState(false);
   const [claimedPasses, setClaimedPasses] = useState<ClaimedPass[]>([]);
   const [crewTool, setCrewTool] = useState<CrewToolId>(null);
+  const [brackets, setBrackets] = useState(initialBrackets);
+  const [bracketOpen, setBracketOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
   // Hydrate saved answers/tickets after mount so SSR markup stays stable.
@@ -112,6 +121,7 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
 
   const openProfile = useCallback((creatorId: string) => {
     setModal(null);
+    setBracketOpen(false);
     setProfileCreatorId(creatorId);
   }, []);
 
@@ -129,6 +139,8 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
     setModal(null);
     setProfileCreatorId(null);
     setWelcomeOpen(false);
+    setBracketOpen(false);
+    setCrewTool(null);
     setActiveTab("home");
   }, []);
 
@@ -206,6 +218,14 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
         setCrewTool(t);
       },
       closeCrewTool: () => setCrewTool(null),
+      brackets,
+      bracketOpen,
+      openBrackets: () => { setModal(null); setBracketOpen(true); },
+      closeBrackets: () => setBracketOpen(false),
+      judgeBracket: (bracketId, matchId, vote) => {
+        setBrackets((prev) => prev.map((bracket) => bracket.id === bracketId ? applyBracketVote(bracket, matchId, vote) : bracket));
+        showToast(vote === "tie" ? "One more round!" : "Demo result updated — winner advances");
+      },
       toast,
       showToast,
     }),
@@ -233,6 +253,8 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
       claimedPasses,
       addClaimedPass,
       crewTool,
+      brackets,
+      bracketOpen,
       toast,
       showToast,
     ],

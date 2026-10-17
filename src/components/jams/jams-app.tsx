@@ -13,6 +13,7 @@ import { LoginView } from "./views/login-view"
 import { MapView } from "./views/map-view"
 import { ProfileView } from "./views/profile-view"
 import { ReelsView } from "./views/reels-view"
+import { BattleBracketDrawer } from "./bracket/battle-bracket-panel"
 
 /** Views that render their own full-bleed layout (no padded scroll wrapper). */
 const FULL_BLEED = new Set(["reels", "map", "profile"])
@@ -55,6 +56,7 @@ function Shell() {
 
       {authed ? <WelcomeFlow /> : null}
       {authed ? <CrewTools /> : null}
+      {authed ? <BattleBracketDrawer /> : null}
       <AppModals />
       <Toast />
     </div>
