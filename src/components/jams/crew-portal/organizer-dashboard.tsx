@@ -1,8 +1,10 @@
 import { useState } from "react"
 import { useJams } from "../jams-context"
 import { CrewPanel, CrewSectionLabel, CrewTab } from "./panel"
+import { Button } from "@/components/ui/button"
+import { ROUND_LABELS } from "@/lib/jams/brackets"
+import type { BracketVote } from "@/lib/jams/types"
 
-type Vote = "red" | "blue" | "tie"
 interface Battle {
   id: string
   round: string
@@ -10,12 +12,6 @@ interface Battle {
   blue: string
   winner?: string
 }
-
-const BATTLES: Battle[] = [
-  { id: "qf1", round: "Quarterfinal", red: "B-Boy Kilo", blue: "B-Boy Rexx" },
-  { id: "qf2", round: "Quarterfinal", red: "B-Girl Nova", blue: "B-Girl Sky" },
-  { id: "f1", round: "Final (1v1)", red: "Lil Zoo", blue: "Phil Wizard", winner: "Phil Wizard" },
-]
 
 const PRIZES = [
   { place: "1st", name: "Phil Wizard", amount: 500 },
@@ -31,19 +27,20 @@ const STAFF = [
 ]
 
 export function OrganizerDashboard({ onClose }: { onClose: () => void }) {
-  const { showToast } = useJams()
+  const { showToast, brackets, judgeBracket } = useJams()
   const [tab, setTab] = useState<"judges" | "prizes" | "staff">("judges")
-  const [battles, setBattles] = useState(BATTLES)
-  const [votes, setVotes] = useState<Record<string, Vote>>({})
+  const [category, setCategory] = useState("bboy")
+  const bracket = brackets.find(item => item.id === category)
+  const battles: Battle[] = (bracket?.matches ?? []).filter(match => match.status === "live" || match.status === "completed").map(match => ({
+    id: match.id, round: ROUND_LABELS[match.roundId], red: match.red?.displayName ?? "TBD", blue: match.blue?.displayName ?? "TBD",
+    winner: match.winnerId ? [match.red, match.blue].find(dancer => dancer?.id === match.winnerId)?.displayName : undefined,
+  }))
   const [paid, setPaid] = useState(false)
   const [paying, setPaying] = useState(false)
 
-  function vote(b: Battle, v: Vote) {
-    setVotes((p) => ({ ...p, [b.id]: v }))
-    if (v === "tie") return showToast("One more round!")
-    const winner = v === "red" ? b.red : b.blue
-    setBattles((p) => p.map((x) => (x.id === b.id ? { ...x, winner } : x)))
-    showToast(`Vote locked: ${winner}`)
+  function vote(b: Battle, v: BracketVote) {
+    if (!bracket) return
+    judgeBracket(bracket.id, b.id, v)
   }
 
   function payout() {
@@ -74,21 +71,25 @@ export function OrganizerDashboard({ onClose }: { onClose: () => void }) {
       {tab === "judges" ? (
         <div className="flex flex-col gap-3">
           <CrewSectionLabel>LIVE BRACKETS</CrewSectionLabel>
+          <div className="flex gap-2">{brackets.map(item => <Button key={item.id} size="sm" variant={item.id === category ? "default" : "secondary"} aria-pressed={item.id === category} onClick={() => setCategory(item.id)}>{item.category}</Button>)}</div>
+          <p className="text-[11px] text-muted-foreground">Sample tournament · demo judging</p>
           {live.length === 0 ? <p className="text-xs text-muted-foreground">All battles judged.</p> : null}
           {live.map((b) => (
             <div key={b.id} className="rounded-2xl border border-border bg-surface-2 p-3">
               <p className="text-[11px] font-bold text-muted-foreground">{b.round}</p>
               <p className="mt-1 text-sm font-bold text-foreground">{b.red} vs {b.blue}</p>
               <div className="mt-3 grid grid-cols-3 gap-2">
-                <button type="button" onClick={() => vote(b, "red")} className="rounded-xl bg-accent py-2.5 text-xs font-bold text-accent-foreground">Red Corner</button>
-                <button type="button" onClick={() => vote(b, "blue")} className="rounded-xl bg-primary py-2.5 text-xs font-bold text-primary-foreground">Blue Corner</button>
-                <button
+                <Button size="sm" variant="destructive" onClick={() => vote(b, "red")}>Red Corner</Button>
+                <Button size="sm" onClick={() => vote(b, "blue")}>Blue Corner</Button>
+                <Button
                   type="button"
                   onClick={() => vote(b, "tie")}
-                  className={`rounded-xl border py-2.5 text-[11px] font-bold ${votes[b.id] === "tie" ? "border-gold text-gold" : "border-border text-foreground"}`}
+                  variant="outline"
+                  size="sm"
+                  className={`px-1 text-[10px] ${bracket?.matches.find(match => match.id === b.id)?.extraRound ? "border-gold text-gold" : "border-border text-foreground"}`}
                 >
                   Tie / One More
-                </button>
+                </Button>
               </div>
             </div>
           ))}

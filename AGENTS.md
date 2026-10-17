@@ -8,3 +8,7 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Battle bracket sample state lives in JamsProvider and uses the pure advancement reducer in src/lib/jams/brackets.ts, so organizer decisions and spectator views stay consistent during the session.
+- Bracket views are absolute overlays mounted in the JAMS phone shell, keeping all scrolling and tournament content inside the app frame.
+- Bracket samples reuse existing creator identities and media, and are explicitly labeled samples; they are not an official live feed or persisted multi-user results.

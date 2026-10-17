@@ -3,6 +3,8 @@ import { useEvents } from "@/lib/jams/data"
 import { useJams } from "../jams-context"
 import { SponsorTicker } from "../sponsor-ticker"
 import { StoriesRail } from "../stories-rail"
+import { Button } from "@/components/ui/button"
+import { Network } from "lucide-react"
 
 function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
@@ -12,7 +14,8 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
 
 export function HomeView() {
   const events = useEvents()
-  const { navigate, openStream, showToast, openWelcome, dancerProfile } = useJams()
+  const { navigate, openStream, showToast, openWelcome, dancerProfile, openBrackets, brackets } = useJams()
+  const liveMatch = brackets[0]?.matches.find(match => match.status === "live")
 
   const featured = events.find((e) => e.isFeatured) ?? events[0]
 
@@ -47,6 +50,7 @@ export function HomeView() {
           {featured?.day} {featured?.month} • {featured?.time} • {featured?.location}
         </p>
         <p className="mb-4 text-xs leading-relaxed text-muted-foreground">{featured?.description}</p>
+        {liveMatch ? <div className="mb-3 flex items-start gap-2 text-[11px] text-foreground"><span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-accent motion-safe:animate-pulse-live" /><span>Live: {liveMatch.red?.displayName} vs {liveMatch.blue?.displayName}</span></div> : null}
         <div className="flex gap-2.5">
           <button
             type="button"
@@ -63,6 +67,7 @@ export function HomeView() {
             View On Map
           </button>
         </div>
+        <Button onClick={openBrackets} variant="outline" className="mt-2.5 h-11 w-full border-gold/50 text-gold hover:bg-gold/10 hover:text-gold"><Network /> Live Brackets</Button>
       </div>
 
       <SponsorTicker />
