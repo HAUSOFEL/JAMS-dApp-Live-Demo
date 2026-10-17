@@ -169,10 +169,10 @@ export type BracketVote = "red" | "blue" | "tie"
 export interface BracketCompetitor {
   id: string
   creatorId: string
-  avatarUrl?: string
+  avatarUrl?: string | undefined
   handle: string
   displayName: string
-  crewName?: string
+  crewName?: string | undefined
   seed: number
 }
 
@@ -180,12 +180,12 @@ export interface BracketMatch {
   id: string
   roundId: BracketRoundId
   matchNumber: number
-  red?: BracketCompetitor
-  blue?: BracketCompetitor
+  red?: BracketCompetitor | undefined
+  blue?: BracketCompetitor | undefined
   sourceMatchIds?: [string, string]
   score: { red: number; blue: number }
   status: "live" | "on_deck" | "completed" | "upcoming"
-  winnerId?: string
+  winnerId?: string | undefined
   scheduledTime: string
   extraRound?: boolean
 }

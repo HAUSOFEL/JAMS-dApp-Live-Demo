@@ -10,7 +10,7 @@ interface Battle {
   round: string
   red: string
   blue: string
-  winner?: string
+  winner?: string | undefined
 }
 
 const PRIZES = [

@@ -12,7 +12,7 @@ export function MatchStatus({ match }: { match: BracketMatch }) {
   </span>
 }
 
-function Dancer({ dancer, corner, winner, compact, source }: { dancer?: BracketCompetitor; corner: "red" | "blue"; winner: boolean; compact: boolean; source?: string }) {
+function Dancer({ dancer, corner, winner, compact, source }: { dancer: BracketCompetitor | undefined; corner: "red" | "blue"; winner: boolean; compact: boolean; source: string | undefined }) {
   const { openProfile } = useJams()
   if (!dancer) return <div className={`flex min-w-0 items-center gap-2 ${compact ? "py-2" : "flex-col py-4 text-center"}`}>
     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-dashed border-border text-muted-foreground">?</span>
