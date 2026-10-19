@@ -31,7 +31,7 @@ export function EventDetail({
   const [tab, setTab] = useState<Tab>("overview")
   if (!marker) return null
   const saved = savedEventIds.includes(marker.id)
-  const claimed = claimedPasses.some((p) => p.eventId === marker.id)
+  const claimed = claimedPasses.some((p) => p.title === marker.title)
   const workshop = marker.kind === "workshop"
 
   const share = async () => {
