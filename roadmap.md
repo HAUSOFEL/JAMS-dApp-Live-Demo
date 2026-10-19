@@ -1,5 +1,5 @@
 # Battle brackets
-- [ ] Add sample bracket data and shared winner progression.
-- [ ] Build phone-contained matchup cards and tournament tree.
-- [ ] Add Home entry and connect organizer judging.
-- [ ] Test advancement and verify the preview flow.
+- [x] Add sample bracket data and shared winner progression.
+- [x] Build phone-contained matchup cards and tournament tree.
+- [x] Add Home entry and connect organizer judging.
+- [x] Test advancement and verify the preview flow.
