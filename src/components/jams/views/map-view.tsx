@@ -7,6 +7,7 @@ import { PinIcon, CloseIcon, BookmarkIcon, PlusIcon } from "../icons"
 import { MapBasemap, type MapLayerId } from "../map/map-layers"
 import { PoiMarker } from "../map/city-overlays"
 import { EventPassClaim } from "../map/event-pass-claim"
+import { EventDetail } from "../map/event-detail"
 
 
 type FilterId = "all" | "live" | "event" | "workshop" | "food" | "cafe" | "transit" | "park" | "art"
@@ -53,6 +54,7 @@ export function MapView() {
   const [selected, setSelected] = useState<MapMarker | null>(null)
   const [selectedPoi, setSelectedPoi] = useState<CityPoi | null>(null)
   const [claimMarker, setClaimMarker] = useState<MapMarker | null>(null)
+  const [detailMarker, setDetailMarker] = useState<MapMarker | null>(null)
   const [filter, setFilter] = useState<FilterId>("all")
   const [layer] = useState<MapLayerId>("street")
   const [zoom, setZoom] = useState(1)
@@ -320,7 +322,14 @@ export function MapView() {
               </div>
 
               <h3 className="mb-1 text-base font-bold text-foreground">{selected.title}</h3>
-              <p className="mb-3 text-[13px] text-muted-foreground">{selected.description}</p>
+              <p className="mb-2 text-[13px] text-muted-foreground">{selected.description}</p>
+              <button
+                type="button"
+                onClick={() => setDetailMarker(selected)}
+                className="mb-3 text-xs font-bold text-gold underline-offset-2 hover:underline"
+              >
+                View full event details →
+              </button>
 
               <div className="flex flex-col gap-2 pb-1">
                 <button
@@ -423,6 +432,13 @@ export function MapView() {
             ))}
           </div>
         ) : null}
+
+        <EventDetail
+          marker={detailMarker}
+          onClose={() => setDetailMarker(null)}
+          onClaim={setClaimMarker}
+          directionsHref={detailMarker ? directionsUrl(detailMarker.title) : "#"}
+        />
 
         <EventPassClaim
           marker={claimMarker}
