@@ -43,7 +43,7 @@ export function EventDetail({
   }
 
   return (
-    <div className="absolute inset-0 z-[60] flex flex-col bg-background animate-in fade-in slide-in-from-bottom-4 duration-200">
+    <div className="absolute inset-0 z-[45] flex flex-col bg-background animate-in fade-in slide-in-from-bottom-4 duration-200">
       <div className="relative h-44 shrink-0 bg-gradient-primary">
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
         <div className="absolute inset-x-3 top-3 flex justify-between">
