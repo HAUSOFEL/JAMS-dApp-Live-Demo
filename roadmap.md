@@ -5,5 +5,5 @@
 - [x] Test advancement and verify the preview flow.
 
 # Event details entry points
-- [ ] Share the event screen across Map, Home and notifications.
-- [ ] Verify correct events, ticket actions and return navigation.
+- [x] Share the event screen across Map, Home and notifications.
+- [x] Verify correct events, ticket actions and return navigation.
