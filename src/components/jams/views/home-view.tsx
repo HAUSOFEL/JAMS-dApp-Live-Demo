@@ -15,7 +15,7 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
 export function HomeView() {
   const events = useEvents()
   const markers = useMapMarkers()
-  const { navigate, openEvent, openStream, showToast, openWelcome, dancerProfile, openBrackets, brackets } = useJams()
+  const { navigate, openEvent, openStream, showToast, openWelcome, dancerProfile, openBrackets, brackets, openModal } = useJams()
   const liveMatch = brackets[0]?.matches.find(match => match.status === "live")
 
   const featured = events.find((e) => e.isFeatured) ?? events[0]
