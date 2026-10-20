@@ -15,7 +15,7 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
 export function HomeView() {
   const events = useEvents()
   const markers = useMapMarkers()
-  const { navigate, openEvent, openStream, showToast, openWelcome, dancerProfile, openBrackets, brackets } = useJams()
+  const { navigate, openEvent, openStream, showToast, openWelcome, dancerProfile, openBrackets, brackets, openModal } = useJams()
   const liveMatch = brackets[0]?.matches.find(match => match.status === "live")
 
   const featured = events.find((e) => e.isFeatured) ?? events[0]
@@ -85,10 +85,7 @@ export function HomeView() {
         </p>
         <button
           type="button"
-          onClick={() => {
-            navigate("chat")
-            showToast("Opened LFG / Propose a Jam channel")
-          }}
+          onClick={() => openModal("propose")}
           className="w-full rounded-xl border border-primary/60 py-3 text-[13px] font-bold text-primary transition-all hover:border-primary hover:glow-primary"
         >
           Propose a Jam
