@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { useJams } from "./jams-context"
+import { useMapMarkers } from "@/lib/jams/data"
 import {
   BellIcon,
   CheckCircleIcon,
@@ -23,6 +24,7 @@ interface JamsNotification {
   time: string
   action: string
   unread: boolean
+  eventId?: string
 }
 
 const NOTIFICATIONS: JamsNotification[] = [
@@ -33,7 +35,8 @@ const NOTIFICATIONS: JamsNotification[] = [
     title: "Door check-in confirmed",
     body: "You're in at Stage 1: Live Cypher — Gate B scanned your pass.",
     time: "2m ago",
-    action: "View pass QR",
+    action: "View event details",
+    eventId: "m1",
     unread: true,
   },
   {
@@ -53,7 +56,8 @@ const NOTIFICATIONS: JamsNotification[] = [
     title: "Bracket update: Top 8",
     body: "BGirl Aria advances. Your next battle slot is 21:40 on Main Stage.",
     time: "34m ago",
-    action: "Open live bracket",
+    action: "View event details",
+    eventId: "m1",
     unread: true,
   },
   {
@@ -73,7 +77,8 @@ const NOTIFICATIONS: JamsNotification[] = [
     title: "Event pass claimed",
     body: "Workshop pass for KWC Practice Hub is now in your wallet.",
     time: "3h ago",
-    action: "View pass QR",
+    action: "View event details",
+    eventId: "m2",
     unread: false,
   },
   {
@@ -110,7 +115,8 @@ function iconTone(icon: JamsNotification["icon"]) {
 }
 
 export function NotificationHub({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { navigate, openModal, openStream, showToast } = useJams()
+  const { navigate, openEvent, openModal, openStream, showToast } = useJams()
+  const markers = useMapMarkers()
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("all")
   const [readIds, setReadIds] = useState<string[]>([])
   const sheetRef = useRef<HTMLElement>(null)
@@ -147,15 +153,18 @@ export function NotificationHub({ open, onClose }: { open: boolean; onClose: () 
     setReadIds((prev) => (prev.includes(n.id) ? prev : [...prev, n.id]))
     onClose()
 
+    if (n.eventId) {
+      const event = markers.find((marker) => marker.id === n.eventId)
+      if (event) openEvent(event)
+      else showToast("This event is no longer available")
+      return
+    }
+
     switch (n.icon) {
       case "checkin":
       case "pass":
-        navigate("map")
-        showToast("Opening your event pass QR")
-        break
       case "bracket":
-        navigate("map")
-        showToast("Live bracket update opened")
+        showToast("This event is no longer available")
         break
       case "tip":
         openModal("menu")

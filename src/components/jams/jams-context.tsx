@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import type { BattleBracket, BracketVote, ClaimedPass, DancerProfile, ModalId, TabId } from "@/lib/jams/types";
+import type { BattleBracket, BracketVote, ClaimedPass, DancerProfile, MapMarker, ModalId, TabId } from "@/lib/jams/types";
 import { applyBracketVote, initialBrackets } from "@/lib/jams/brackets";
 
 const PROFILE_KEY = "jams.dancerProfile";
@@ -12,6 +12,9 @@ interface JamsContextValue {
 
   activeTab: TabId;
   navigate: (tab: TabId) => void;
+  activeEvent: MapMarker | null;
+  openEvent: (event: MapMarker) => void;
+  closeEvent: () => void;
 
   /** When set, the Reels view opens focused on this stream id. */
   focusedStreamId: string | null;
@@ -83,6 +86,7 @@ function writeStorage(key: string, value: unknown) {
 export function JamsProvider({ children }: { children: React.ReactNode }) {
   const [authed, setAuthed] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>("home");
+  const [activeEvent, setActiveEvent] = useState<MapMarker | null>(null);
   const [focusedStreamId, setFocusedStreamId] = useState<string | null>(null);
   const [profileCreatorId, setProfileCreatorId] = useState<string | null>(null);
   const [followedCreatorIds, setFollowedCreatorIds] = useState<string[]>([]);
@@ -109,23 +113,32 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const navigate = useCallback((tab: TabId) => {
+    setActiveEvent(null);
     setProfileCreatorId(null);
     setActiveTab(tab);
   }, []);
 
   const openStream = useCallback((streamId: string) => {
+    setActiveEvent(null);
     setProfileCreatorId(null);
     setFocusedStreamId(streamId);
     setActiveTab("reels");
   }, []);
 
   const openProfile = useCallback((creatorId: string) => {
+    setActiveEvent(null);
     setModal(null);
     setBracketOpen(false);
     setProfileCreatorId(creatorId);
   }, []);
 
   const closeProfile = useCallback(() => setProfileCreatorId(null), []);
+  const openEvent = useCallback((event: MapMarker) => {
+    setProfileCreatorId(null);
+    setModal(null);
+    setActiveEvent(event);
+  }, []);
+  const closeEvent = useCallback(() => setActiveEvent(null), []);
 
   const login = useCallback(() => {
     setAuthed(true);
@@ -135,6 +148,7 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const logout = useCallback(() => {
+    setActiveEvent(null);
     setAuthed(false);
     setModal(null);
     setProfileCreatorId(null);
@@ -193,6 +207,9 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
       logout,
       activeTab,
       navigate,
+      activeEvent,
+      openEvent,
+      closeEvent,
       focusedStreamId,
       openStream,
       profileCreatorId,
@@ -235,6 +252,9 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
       logout,
       activeTab,
       navigate,
+      activeEvent,
+      openEvent,
+      closeEvent,
       focusedStreamId,
       openStream,
       profileCreatorId,
