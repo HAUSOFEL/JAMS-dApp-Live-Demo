@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { useWallet } from "@/lib/jams/data"
 import { BottomSheet } from "./bottom-sheet"
+import { ProposeJamSheet } from "./propose-jam"
 import { useJams } from "./jams-context"
 import { BlinksIcon, CopyIcon, DashboardIcon, QrScanIcon, TicketIcon, WalletIcon } from "./icons"
 
@@ -204,6 +205,8 @@ export function AppModals() {
           ))}
         </div>
       </BottomSheet>
+
+      <ProposeJamSheet />
     </>
   )
 }
