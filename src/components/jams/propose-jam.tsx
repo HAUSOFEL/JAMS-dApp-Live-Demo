@@ -88,7 +88,7 @@ export function ProposeJamSheet() {
     true,
   ][step]
 
-  const host = d.host || (dancerProfile ? String((dancerProfile as unknown as Record<string, unknown>).name ?? "You") : "You")
+  const host = d.host || dancerProfile?.displayName || "You"
 
   return (
     <BottomSheet
