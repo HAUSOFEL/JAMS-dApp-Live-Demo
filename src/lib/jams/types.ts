@@ -57,6 +57,8 @@ export interface JamEvent {
   day: string
   time: string
   isFeatured?: boolean
+  /** Stable link to this event's map/detail record. */
+  mapMarkerId?: string
 }
 
 /** Maps to an `event_locations` row for the unified interactive map. */

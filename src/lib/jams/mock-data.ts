@@ -99,6 +99,7 @@ export const mockEvents: JamEvent[] = [
     day: "12",
     time: "2:00 PM - 8:00 PM",
     isFeatured: true,
+    mapMarkerId: "m1",
   },
   {
     id: "e2",

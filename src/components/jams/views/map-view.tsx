@@ -7,7 +7,6 @@ import { PinIcon, CloseIcon, BookmarkIcon, PlusIcon } from "../icons"
 import { MapBasemap, type MapLayerId } from "../map/map-layers"
 import { PoiMarker } from "../map/city-overlays"
 import { EventPassClaim } from "../map/event-pass-claim"
-import { EventDetail } from "../map/event-detail"
 
 
 type FilterId = "all" | "live" | "event" | "workshop" | "food" | "cafe" | "transit" | "park" | "art"
@@ -50,11 +49,10 @@ function clampOffset(o: { x: number; y: number }, z: number, el: HTMLElement | n
 
 export function MapView() {
   const markers = useMapMarkers()
-  const { openStream, navigate, toggleSavedEvent, savedEventIds, showToast } = useJams()
+  const { openStream, openEvent, navigate, toggleSavedEvent, savedEventIds, showToast } = useJams()
   const [selected, setSelected] = useState<MapMarker | null>(null)
   const [selectedPoi, setSelectedPoi] = useState<CityPoi | null>(null)
   const [claimMarker, setClaimMarker] = useState<MapMarker | null>(null)
-  const [detailMarker, setDetailMarker] = useState<MapMarker | null>(null)
   const [filter, setFilter] = useState<FilterId>("all")
   const [layer] = useState<MapLayerId>("street")
   const [zoom, setZoom] = useState(1)
@@ -325,7 +323,7 @@ export function MapView() {
               <p className="mb-2 text-[13px] text-muted-foreground">{selected.description}</p>
               <button
                 type="button"
-                onClick={() => setDetailMarker(selected)}
+                onClick={() => openEvent(selected)}
                 className="mb-3 text-xs font-bold text-gold underline-offset-2 hover:underline"
               >
                 View full event details →
@@ -432,13 +430,6 @@ export function MapView() {
             ))}
           </div>
         ) : null}
-
-        <EventDetail
-          marker={detailMarker}
-          onClose={() => setDetailMarker(null)}
-          onClaim={setClaimMarker}
-          directionsHref={detailMarker ? directionsUrl(detailMarker.title) : "#"}
-        />
 
         <EventPassClaim
           marker={claimMarker}

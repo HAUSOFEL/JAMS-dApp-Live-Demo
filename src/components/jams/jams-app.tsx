@@ -14,6 +14,7 @@ import { MapView } from "./views/map-view"
 import { ProfileView } from "./views/profile-view"
 import { ReelsView } from "./views/reels-view"
 import { BattleBracketDrawer } from "./bracket/battle-bracket-panel"
+import { EventDetailOverlay } from "./map/event-detail-overlay"
 
 /** Views that render their own full-bleed layout (no padded scroll wrapper). */
 const FULL_BLEED = new Set(["reels", "map", "profile"])
@@ -50,6 +51,7 @@ function Shell() {
       <div className="relative flex flex-1 flex-col overflow-hidden">
         {authed ? <ActiveView /> : <LoginView />}
         {authed && profileCreatorId ? <ProfileView creatorId={profileCreatorId} /> : null}
+        {authed ? <EventDetailOverlay /> : null}
       </div>
 
       {authed ? <BottomNav /> : null}
