@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
-export type ChatChannel = { id: string; name: string; icon: string; description: string; membersOnline?: number }
+import type { ChatChannel } from "@/lib/jams/types"
 
 type Msg = { id: string; author: string; text: string; time: string; mine?: boolean; pinned?: boolean }
 
