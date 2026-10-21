@@ -5,11 +5,14 @@ import { BottomSheet } from "./bottom-sheet"
 import { ProposeJamSheet } from "./propose-jam"
 import { useJams } from "./jams-context"
 import { BlinksIcon, CopyIcon, DashboardIcon, QrScanIcon, TicketIcon, WalletIcon } from "./icons"
+import { CREW_ROLES, getCrewRole } from "@/lib/jams/crew-roles"
 
 export function AppModals() {
-  const { modal, closeModal, logout, navigate, showToast, openCrewTool } = useJams()
+  const { modal, closeModal, logout, navigate, showToast, openCrewTool, openBrackets, crewRole, setCrewRole } = useJams()
   const wallet = useWallet()
   const [showAccountDetails, setShowAccountDetails] = useState(false)
+  const [roleOpen, setRoleOpen] = useState(false)
+  const role = getCrewRole(crewRole)
 
   async function copyAddress() {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
@@ -91,6 +94,31 @@ export function AppModals() {
             </button>
           </div>
 
+          {/* Active role */}
+          <div className="flex flex-col gap-2.5">
+            <span className="text-[11px] font-bold tracking-[0.16em] text-muted-foreground">YOUR ROLE</span>
+            <div className="flex items-center justify-between gap-3 rounded-2xl border border-gold/50 bg-secondary p-3 glow-gold">
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-foreground">{role.title}</p>
+                <p className="truncate text-[11px] text-muted-foreground">{role.description}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setRoleOpen(true)}
+                className="shrink-0 rounded-full border border-gold px-3 py-1.5 text-[11px] font-bold text-gold"
+              >
+                Switch Role
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => (role.hero === "brackets" ? openBrackets() : openCrewTool(role.hero))}
+              className="w-full rounded-xl bg-gradient-primary px-4 py-3 text-sm font-bold text-primary-foreground"
+            >
+              {role.heroLabel}
+            </button>
+          </div>
+
           {/* Crew tools */}
           <div className="flex flex-col gap-2.5">
             <span className="text-[11px] font-bold tracking-[0.16em] text-muted-foreground">CREW TOOLS</span>
@@ -140,6 +168,50 @@ export function AppModals() {
           </button>
         </div>
       </BottomSheet>
+
+      {/* Role Switcher */}
+      <BottomSheet
+        open={modal === "menu" && roleOpen}
+        title="Switch Crew Role"
+        description="Pick your job tonight. Your portal tools adjust to match."
+        onClose={() => setRoleOpen(false)}
+      >
+        <div className="flex flex-col gap-2.5" role="radiogroup" aria-label="Crew role">
+          {CREW_ROLES.map((r) => {
+            const active = r.id === crewRole
+            return (
+              <button
+                key={r.id}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                onClick={() => {
+                  setCrewRole(r.id)
+                  setRoleOpen(false)
+                  showToast(`You're now ${r.title}`)
+                }}
+                className={`flex flex-col gap-2 rounded-2xl border p-3.5 text-left transition-colors ${
+                  active ? "border-gold bg-gold/10 glow-gold" : "border-border bg-secondary hover:border-accent"
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-bold text-foreground">{r.title}</span>
+                  {active ? (
+                    <span className="rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold text-background">ACTIVE</span>
+                  ) : null}
+                </div>
+                <p className="text-xs text-muted-foreground">{r.description}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {r.tags.map((t) => (
+                    <span key={t} className="rounded-full border border-accent/50 px-2 py-0.5 text-[10px] font-bold text-accent">{t}</span>
+                  ))}
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      </BottomSheet>
+
 
       {/* Creator Studio */}
       <BottomSheet
