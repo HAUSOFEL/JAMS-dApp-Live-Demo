@@ -1,11 +1,17 @@
 
+import { useState } from "react"
 import { useChannels } from "@/lib/jams/data"
 import { useJams } from "../jams-context"
 import { ChatIcon, ExternalLinkIcon } from "../icons"
+import { ChatThread } from "./chat-thread"
 
 export function ChatView() {
   const channels = useChannels()
   const { showToast } = useJams()
+  const [openId, setOpenId] = useState<string | null>(null)
+  const open = channels.find((c) => c.id === openId)
+
+  if (open) return <ChatThread channel={open} onBack={() => setOpenId(null)} />
 
   return (
     <div className="animate-fade-in">
@@ -57,7 +63,7 @@ export function ChatView() {
         <button
           key={channel.id}
           type="button"
-          onClick={() => showToast(`Joined ${channel.name}`)}
+          onClick={() => setOpenId(channel.id)}
           className={`mb-2.5 flex w-full items-center gap-3.5 rounded-2xl border bg-surface-2 p-4 text-left transition-colors hover:bg-accent ${
             channel.highlighted ? "border-l-[3px] border-l-primary border-y-border border-r-border" : "border-border"
           }`}
