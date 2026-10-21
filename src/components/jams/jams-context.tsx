@@ -1,9 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { BattleBracket, BracketVote, ClaimedPass, DancerProfile, MapMarker, ModalId, TabId } from "@/lib/jams/types";
 import { applyBracketVote, initialBrackets } from "@/lib/jams/brackets";
+import { isCrewRole, type CrewRoleId } from "@/lib/jams/crew-roles";
 
 const PROFILE_KEY = "jams.dancerProfile";
 const PASSES_KEY = "jams.claimedPasses";
+const ROLE_KEY = "jams.activeCrewRole";
 
 interface JamsContextValue {
   authed: boolean;
@@ -58,6 +60,10 @@ interface JamsContextValue {
 
   toast: string | null;
   showToast: (message: string) => void;
+
+  /** Active crew role; personalizes the Crew Portal. */
+  crewRole: CrewRoleId;
+  setCrewRole: (role: CrewRoleId) => void;
 }
 
 export type CrewToolId = "scanner" | "events" | "dashboard" | null;
@@ -99,11 +105,19 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
   const [brackets, setBrackets] = useState(initialBrackets);
   const [bracketOpen, setBracketOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [crewRole, setCrewRoleState] = useState<CrewRoleId>("organizer");
 
   // Hydrate saved answers/tickets after mount so SSR markup stays stable.
   useEffect(() => {
     setDancerProfile(readStorage<DancerProfile | null>(PROFILE_KEY, null));
     setClaimedPasses(readStorage<ClaimedPass[]>(PASSES_KEY, []));
+    const savedRole = readStorage<string>(ROLE_KEY, "organizer");
+    if (isCrewRole(savedRole)) setCrewRoleState(savedRole);
+  }, []);
+
+  const setCrewRole = useCallback((role: CrewRoleId) => {
+    setCrewRoleState(role);
+    writeStorage(ROLE_KEY, role);
   }, []);
 
   const showToast = useCallback((message: string) => {
@@ -245,6 +259,8 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
       },
       toast,
       showToast,
+      crewRole,
+      setCrewRole,
     }),
     [
       authed,
@@ -277,6 +293,8 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
       bracketOpen,
       toast,
       showToast,
+      crewRole,
+      setCrewRole,
     ],
   );
 
