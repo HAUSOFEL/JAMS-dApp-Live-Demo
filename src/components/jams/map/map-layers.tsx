@@ -19,10 +19,10 @@ const COLS = [0, 9, 20, 31, 43, 54, 66, 77, 89, 100]
 const ROWS = [0, 8, 18, 29, 40, 51, 62, 73, 84, 100]
 for (let c = 0; c < COLS.length - 1; c++) {
   for (let r = 0; r < ROWS.length - 1; r++) {
-    const x = COLS[c] + 1.2
-    const y = ROWS[r] + 1.2
-    const w = COLS[c + 1] - COLS[c] - 2.4
-    const h = ROWS[r + 1] - ROWS[r] - 2.4
+    const x = COLS[c]! + 1.2
+    const y = ROWS[r]! + 1.2
+    const w = COLS[c + 1]! - COLS[c]! - 2.4
+    const h = ROWS[r + 1]! - ROWS[r]! - 2.4
     BLOCKS.push([x, y, w, h])
     // split some blocks into smaller lots for texture
     if ((c + r) % 3 === 0 && w > 6) BLOCKS.push([x + w / 2 - 0.3, y, 0.6, h])
