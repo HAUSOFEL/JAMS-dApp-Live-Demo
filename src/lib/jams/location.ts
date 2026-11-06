@@ -34,7 +34,7 @@ export const CITY_HUBS: CityHub[] = [
 
 export const DEFAULT_HUB_ID = "kw"
 
-export const getHub = (id: string) => CITY_HUBS.find((h) => h.id === id) ?? CITY_HUBS[0]
+export const getHub = (id: string): CityHub => CITY_HUBS.find((h) => h.id === id) ?? CITY_HUBS[0]!
 
 export function distanceKm(aLat: number, aLng: number, bLat: number, bLng: number) {
   const R = 6371
@@ -45,7 +45,7 @@ export function distanceKm(aLat: number, aLng: number, bLat: number, bLng: numbe
   return 2 * R * Math.asin(Math.sqrt(h))
 }
 
-export function nearestHub(lat: number, lng: number) {
+export function nearestHub(lat: number, lng: number): CityHub {
   return CITY_HUBS.reduce((best, h) =>
     distanceKm(lat, lng, h.lat, h.lng) < distanceKm(lat, lng, best.lat, best.lng) ? h : best,
   )
