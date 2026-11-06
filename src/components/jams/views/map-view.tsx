@@ -25,9 +25,14 @@ const POI_FILTER: Partial<Record<FilterId, PoiCategory>> = {
   food: "food", cafe: "cafe", transit: "transit", park: "park", art: "art",
 }
 const ZONES = [
-  { name: "Uptown Main Stage", x: 30, y: 32, r: 30, cls: "border-accent/60 bg-accent/10" },
-  { name: "Midtown Cypher", x: 50, y: 50, r: 22, cls: "border-primary/60 bg-primary/10" },
-  { name: "Downtown Workshops", x: 68, y: 64, r: 30, cls: "border-gold/60 bg-gold/10" },
+  { id: "main", name: "Main Stage Arena", icon: "🏆", color: "#DB0A40", x: 30, y: 32, lx: 30, ly: 20, cls: "border-accent/70",
+    d: "M16 22 Q 22 16, 34 18 T 44 26 Q 46 36, 40 44 T 24 46 Q 14 40, 16 22 Z" },
+  { id: "cypher", name: "Midtown Cypher", icon: "🔥", color: "#0055FF", x: 54, y: 48, lx: 56, ly: 44, cls: "border-primary/70",
+    d: "M46 42 Q 54 38, 62 42 T 64 52 Q 58 58, 50 56 T 46 42 Z" },
+  { id: "workshop", name: "Workshop Studios", icon: "🎓", color: "#FFCC00", x: 70, y: 70, lx: 72, ly: 76, cls: "border-gold/70",
+    d: "M60 64 Q 70 58, 82 62 T 86 76 Q 78 86, 66 82 T 60 64 Z" },
+  { id: "food", name: "Food & Merch Alley", icon: "🍜", color: "#DB0A40", x: 18, y: 78, lx: 18, ly: 76, cls: "border-accent/50",
+    d: "M8 72 L 30 70 L 32 80 L 10 84 Z" },
 ]
 const directionsUrl = (q: string) =>
   `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${q}, Kitchener-Waterloo, ON`)}`
@@ -164,20 +169,31 @@ export function MapView() {
         >
           <MapBasemap layer={layer} />
 
+          <svg aria-hidden="true" className="pointer-events-none absolute inset-0 z-[2] h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <defs>
+              {ZONES.map((z) => (
+                <radialGradient key={z.id} id={`zone-${z.id}`} cx={`${z.x}%`} cy={`${z.y}%`} r="22%" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor={z.color} stopOpacity="0.35" />
+                  <stop offset="100%" stopColor={z.color} stopOpacity="0.06" />
+                </radialGradient>
+              ))}
+            </defs>
+            {ZONES.map((z) => (
+              <g key={z.id}>
+                <path d={z.d} fill="none" stroke={z.color} strokeOpacity={0.25} strokeWidth={1.6} strokeLinejoin="round" />
+                <path d={z.d} fill={`url(#zone-${z.id})`} stroke={z.color} strokeWidth={0.4} strokeDasharray="1.2 0.8" strokeLinejoin="round" />
+              </g>
+            ))}
+          </svg>
           {ZONES.map((z) => (
-            <div
-              key={z.name}
+            <span
+              key={z.id}
               aria-hidden="true"
-              className={`pointer-events-none absolute z-[2] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed ${z.cls}`}
-              style={{ left: `${z.x}%`, top: `${z.y}%`, width: `${z.r}%`, aspectRatio: "1" }}
+              className={`pointer-events-none absolute z-[3] -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border bg-background/85 px-2 py-0.5 text-[8px] font-extrabold uppercase tracking-widest text-foreground shadow-lg backdrop-blur ${z.cls}`}
+              style={{ left: `${z.lx}%`, top: `${z.ly}%`, scale: `${1 / zoom}` }}
             >
-              <span
-                className="absolute left-1/2 top-1 -translate-x-1/2 whitespace-nowrap rounded-full bg-background/80 px-2 py-0.5 text-[8px] font-extrabold uppercase tracking-widest text-foreground"
-                style={{ scale: `${1 / zoom}` }}
-              >
-                {z.name}
-              </span>
-            </div>
+              {z.icon} {z.name}
+            </span>
           ))}
 
 
