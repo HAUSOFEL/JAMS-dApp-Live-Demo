@@ -44,9 +44,9 @@ export const getHub = (id: string): CityHub => {
 export function parseSavedLocation(value: unknown): UserLocation | null {
   if (!value || typeof value !== "object") return null
   const loc = value as Record<string, unknown>
-  if (!CITY_HUBS.some((h) => h.id === loc.hubId)) return null
-  if (loc.accuracy !== "precise" && loc.accuracy !== "approximate" && loc.accuracy !== "manual") return null
-  return { hubId: String(loc.hubId), accuracy: loc.accuracy }
+  if (!CITY_HUBS.some((h) => h.id === loc['hubId'])) return null
+  if (loc['accuracy'] !== "precise" && loc['accuracy'] !== "approximate" && loc['accuracy'] !== "manual") return null
+  return { hubId: String(loc['hubId']), accuracy: loc['accuracy'] }
 }
 
 export function distanceKm(aLat: number, aLng: number, bLat: number, bLng: number) {
