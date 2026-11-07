@@ -13,3 +13,4 @@
 - Bracket views are absolute overlays mounted in the JAMS phone shell, keeping all scrolling and tournament content inside the app frame.
 - Bracket samples reuse existing creator identities and media, and are explicitly labeled samples; they are not an official live feed or persisted multi-user results.
 - Event details use a shared overlay in the shell content area and explicit map-record IDs from Home and notifications, so each entry opens the same event and closing preserves the originating tab.
+- Location discovery remains a client-side sample-city selector until a worldwide map and event service exist; label the displayed festival city separately, validate stored choices, and store only city/accuracy rather than GPS coordinates to avoid misleading discovery and unnecessary sensitive storage.

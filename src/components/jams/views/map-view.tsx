@@ -7,6 +7,7 @@ import { PinIcon, CloseIcon, BookmarkIcon, PlusIcon } from "../icons"
 import { MapBasemap, type MapLayerId } from "../map/map-layers"
 import { PoiMarker } from "../map/city-overlays"
 import { EventPassClaim } from "../map/event-pass-claim"
+import { LocationPill, LocationSheet, NoJamsBanner, useUserLocation } from "../map/location-picker"
 
 
 type FilterId = "all" | "live" | "event" | "workshop" | "food" | "cafe" | "transit" | "park" | "art"
@@ -54,7 +55,16 @@ function clampOffset(o: { x: number; y: number }, z: number, el: HTMLElement | n
 
 export function MapView() {
   const markers = useMapMarkers()
-  const { openStream, openEvent, navigate, toggleSavedEvent, savedEventIds, showToast } = useJams()
+  const { openStream, openEvent, openModal, navigate, toggleSavedEvent, savedEventIds, showToast } = useJams()
+  const { location, ready, save } = useUserLocation()
+  const [locationOpen, setLocationOpen] = useState(false)
+  const prompted = useRef(false)
+
+  useEffect(() => {
+    if (!ready || prompted.current) return
+    prompted.current = true
+    if (!location) setLocationOpen(true)
+  }, [ready, location])
   const [selected, setSelected] = useState<MapMarker | null>(null)
   const [selectedPoi, setSelectedPoi] = useState<CityPoi | null>(null)
   const [claimMarker, setClaimMarker] = useState<MapMarker | null>(null)
@@ -255,8 +265,13 @@ export function MapView() {
           })}
         </div>
 
+        <div className="absolute inset-x-3 top-3 z-[12] flex min-w-0 flex-col items-start gap-1">
+          <LocationPill location={location} onClick={() => setLocationOpen(true)} />
+          <span className="rounded bg-surface/95 px-2 py-1 text-[10px] text-muted-foreground">Kitchener-Waterloo · Sample festival map</span>
+        </div>
+
         {/* Filter chips */}
-        <div className="absolute inset-x-0 top-3 z-[12] flex gap-1.5 overflow-x-auto px-3 pr-16 [scrollbar-width:none]" role="group" aria-label="Map filters">
+        <div className="absolute inset-x-0 top-24 z-[12] flex gap-1.5 overflow-x-auto px-3 pr-16 [scrollbar-width:none]" role="group" aria-label="Map filters">
           {FILTERS.map((f) => (
             <button
               key={f.id}
@@ -275,7 +290,7 @@ export function MapView() {
         </div>
 
         {/* Zoom control */}
-        <div className="absolute right-3 top-14 z-[12] flex flex-col gap-1 rounded-2xl border border-border bg-surface/95 p-1.5 shadow-lg backdrop-blur">
+        <div className="absolute right-3 top-36 z-[12] flex flex-col gap-1 rounded-2xl border border-border bg-surface/95 p-1.5 shadow-lg backdrop-blur">
           <button
             type="button"
             onClick={() => zoomByButton(1.4)}
@@ -302,6 +317,12 @@ export function MapView() {
           </button>
         </div>
 
+
+        {location && !selected && !selectedPoi ? (
+          <div className="absolute inset-x-3 bottom-[190px] z-[13]">
+            <NoJamsBanner location={location} onPropose={() => openModal("propose")} />
+          </div>
+        ) : null}
 
         {/* Event details card overlay */}
         {selected ? (
@@ -453,6 +474,18 @@ export function MapView() {
           onToast={showToast}
         />
       </div>
+      <LocationSheet
+        open={locationOpen}
+        onClose={() => setLocationOpen(false)}
+        onSave={(next) => {
+          save(next)
+          setLocationOpen(false)
+          setSelected(null)
+          setSelectedPoi(null)
+          setFilter("all")
+          resetView()
+        }}
+      />
     </div>
   )
 }
