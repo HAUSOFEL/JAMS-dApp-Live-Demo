@@ -23,7 +23,7 @@ function formatCount(n: number) {
   return `${n}`;
 }
 
-type ProfileTab = "grid" | "reels" | "tickets" | "collectibles" | "saved";
+type ProfileTab = "grid" | "reels" | "tickets" | "saved";
 
 export function ProfileView({ creatorId, showBack = true }: { creatorId: string; showBack?: boolean }) {
   const profile = useCreatorProfile(creatorId);
@@ -66,17 +66,6 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
         ? posts.filter((p: ProfilePost) => p.isReel)
         : [];
 
-  const collectibles = [
-    { id: "c1", name: "Founding Bboy", rarity: "legendary", color: "#F5C518" },
-    { id: "c2", name: "Cypher King", rarity: "rare", color: "#DC2626" },
-    { id: "c3", name: "Windmill Master", rarity: "legendary", color: "#F5C518" },
-    { id: "c4", name: "Floor General", rarity: "rare", color: "#DC2626" },
-    { id: "c5", name: "Jam Pioneer", rarity: "legendary", color: "#F5C518" },
-    { id: "c6", name: "Beat Stomper", rarity: "rare", color: "#DC2626" },
-    { id: "c7", name: "Culture Keeper", rarity: "legendary", color: "#F5C518" },
-    { id: "c8", name: "Street Scholar", rarity: "rare", color: "#DC2626" },
-    { id: "c9", name: "Golden Frame", rarity: "legendary", color: "#F5C518" },
-  ]
 
   function handlePostTap(post: ProfilePost) {
     if (post.streamId) {
@@ -259,7 +248,6 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
               ["grid", "Posts", GridIcon],
               ["reels", "Reels", ReelsIcon],
               ["tickets", "Tickets", TicketIcon],
-              ["collectibles", "Collectibles", null],
               ["saved", "Saved", BookmarkIcon],
             ] as const
           ).map(([id, label, Icon]) => (
@@ -333,43 +321,6 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
               Tickets are private.
             </p>
           )
-        ) : /* Collectibles */
-        tab === "collectibles" ? (
-          <div className="p-3">
-            <div className="grid grid-cols-3 gap-2">
-              {collectibles.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex flex-col items-center gap-1.5 rounded-xl border border-white/10 bg-slate-900 p-2.5"
-                  style={{ backgroundColor: "#091B36" }}
-                >
-                  <div
-                    className="flex h-14 w-14 items-center justify-center rounded-lg text-2xl"
-                    style={{
-                      background: `linear-gradient(135deg, ${item.color}33, ${item.color}11)`,
-                      border: `1px solid ${item.color}55`,
-                    }}
-                  >
-                    <span style={{ color: item.color }} className="text-lg font-black">
-                      {item.name.charAt(0)}
-                    </span>
-                  </div>
-                  <p className="text-center text-[9px] font-bold leading-tight text-foreground">
-                    {item.name}
-                  </p>
-                  <span
-                    className="rounded-full px-1.5 py-0.5 text-[7px] font-black uppercase"
-                    style={{
-                      color: item.color,
-                      border: `1px solid ${item.color}44`,
-                    }}
-                  >
-                    {item.rarity}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
         ) : /* Saved events */
         tab === "saved" ? (
           savedEvents.length ? (
