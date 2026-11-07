@@ -34,7 +34,20 @@ export const CITY_HUBS: CityHub[] = [
 
 export const DEFAULT_HUB_ID = "kw"
 
-export const getHub = (id: string): CityHub => CITY_HUBS.find((h) => h.id === id) ?? CITY_HUBS[0]!
+export const getHub = (id: string): CityHub => {
+  const hub = CITY_HUBS.find((h) => h.id === id) ?? CITY_HUBS.find((h) => h.id === DEFAULT_HUB_ID)
+  if (!hub) throw new Error("Missing default city hub")
+  return hub
+}
+
+/** Only persist the city choice, never precise coordinates. */
+export function parseSavedLocation(value: unknown): UserLocation | null {
+  if (!value || typeof value !== "object") return null
+  const loc = value as Record<string, unknown>
+  if (!CITY_HUBS.some((h) => h.id === loc.hubId)) return null
+  if (loc.accuracy !== "precise" && loc.accuracy !== "approximate" && loc.accuracy !== "manual") return null
+  return { hubId: String(loc.hubId), accuracy: loc.accuracy }
+}
 
 export function distanceKm(aLat: number, aLng: number, bLat: number, bLng: number) {
   const R = 6371
@@ -53,7 +66,7 @@ export function nearestHub(lat: number, lng: number): CityHub {
 
 /** Approximate city from the device time zone — no GPS or network lookup. */
 export function approximateHubFromTimeZone(tz: string) {
-  return CITY_HUBS.find((h) => h.timeZones?.includes(tz)) ?? getHub(DEFAULT_HUB_ID)
+  return CITY_HUBS.find((h) => h.timeZones?.includes(tz)) ?? null
 }
 
 /** Nearest city that has jams, with distance from the given hub. */

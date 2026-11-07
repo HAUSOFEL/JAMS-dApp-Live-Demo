@@ -7,3 +7,8 @@
 # Event details entry points
 - [x] Share the event screen across Map, Home and notifications.
 - [x] Verify correct events, ticket actions and return navigation.
+
+# Location discovery phases 1 & 2
+- [ ] Connect first-visit location prompt and editable city selection to Map.
+- [ ] Show honest sample-city fallback and connect empty state to Propose a Jam.
+- [ ] Test manual, approximate, precise and denied-location flows.
