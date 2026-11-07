@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCreatorProfile, useEvents, useReels } from "@/lib/jams/data";
 import type { ProfilePost } from "@/lib/jams/types";
 import { useJams } from "../jams-context";
@@ -42,6 +42,14 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
     showToast,
   } = useJams();
   const [tab, setTab] = useState<ProfileTab>("grid");
+  const [openPostId, setOpenPostId] = useState<string | null>(null);
+  const [likedIds, setLikedIds] = useState<string[]>([]);
+  useEffect(() => {
+    if (!openPostId) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpenPostId(null);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [openPostId]);
 
   const liveReel = useMemo(
     () => reels.find((r) => r.creator.id === creatorId && r.isLive),
@@ -72,8 +80,14 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
       openStream(post.streamId);
       return;
     }
-    showToast(post.isReel ? "Opening reel..." : "Opening post...");
+    setOpenPostId(post.id);
   }
+
+  const openIndex = openPostId ? visiblePosts.findIndex((p) => p.id === openPostId) : -1;
+  const openPost = openIndex >= 0 ? visiblePosts[openIndex] : null;
+  const reelVideo = openPost?.isReel
+    ? reels.filter((r) => r.videoUrl)[openIndex % Math.max(1, reels.filter((r) => r.videoUrl).length)]?.videoUrl
+    : undefined;
 
   return (
     <div className="animate-slide-in-right absolute inset-0 z-30 flex flex-col bg-background">
@@ -405,6 +419,103 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
           <p className="px-6 py-12 text-center text-xs text-muted-foreground">No reels posted yet.</p>
         )}
       </div>
+
+      {openPost ? (
+        <div
+          role="dialog"
+          aria-label={openPost.isReel ? "Reel" : "Post"}
+          className="animate-slide-in-right absolute inset-0 z-40 flex flex-col bg-background"
+        >
+          <header className="flex shrink-0 items-center gap-3 border-b border-border bg-surface px-4 py-3">
+            <button
+              type="button"
+              onClick={() => setOpenPostId(null)}
+              aria-label="Close post"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-foreground"
+            >
+              <ChevronLeftIcon className="h-4 w-4" />
+            </button>
+            <span className="text-sm font-bold text-foreground">@{creator.handle}</span>
+            <span className="ml-auto text-[11px] text-muted-foreground">
+              {openIndex + 1} / {visiblePosts.length}
+            </span>
+          </header>
+          <div className="relative flex-1 overflow-hidden bg-black">
+            <span className="absolute inset-0" style={{ background: openPost.gradient }} />
+            {reelVideo ? (
+              <video
+                key={openPost.id}
+                src={reelVideo}
+                poster={openPost.imageUrl}
+                autoPlay
+                muted
+                loop
+                playsInline
+                controls
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : openPost.imageUrl ? (
+              <img src={openPost.imageUrl} alt="" className="absolute inset-0 h-full w-full object-contain" />
+            ) : null}
+            {openIndex > 0 ? (
+              <button
+                type="button"
+                aria-label="Previous post"
+                onClick={() => setOpenPostId(visiblePosts[openIndex - 1]!.id)}
+                className="absolute left-2 top-1/2 flex h-9 w-9 -translate-y-1/2 rotate-0 items-center justify-center rounded-full bg-background/70 text-foreground"
+              >
+                <ChevronLeftIcon className="h-4 w-4" />
+              </button>
+            ) : null}
+            {openIndex < visiblePosts.length - 1 ? (
+              <button
+                type="button"
+                aria-label="Next post"
+                onClick={() => setOpenPostId(visiblePosts[openIndex + 1]!.id)}
+                className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-background/70 text-foreground"
+              >
+                <ChevronLeftIcon className="h-4 w-4 rotate-180" />
+              </button>
+            ) : null}
+          </div>
+          <div className="shrink-0 space-y-2 border-t border-border bg-surface px-4 pb-24 pt-3">
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                aria-label="Like"
+                onClick={() =>
+                  setLikedIds((ids) =>
+                    ids.includes(openPost.id) ? ids.filter((i) => i !== openPost.id) : [...ids, openPost.id],
+                  )
+                }
+                className={likedIds.includes(openPost.id) ? "text-accent" : "text-foreground"}
+              >
+                <HeartIcon className="h-6 w-6" />
+              </button>
+              <button
+                type="button"
+                aria-label="Share post"
+                onClick={async () => {
+                  if (navigator.clipboard) {
+                    await navigator.clipboard.writeText(`https://jams.app/@${creator.handle}/p/${openPost.id}`);
+                    showToast("Post link copied");
+                  }
+                }}
+                className="text-foreground"
+              >
+                <ShareIcon className="h-6 w-6" />
+              </button>
+            </div>
+            <p className="text-xs font-bold text-foreground">
+              {formatCount(openPost.likes + (likedIds.includes(openPost.id) ? 1 : 0))} likes
+            </p>
+            <p className="text-xs text-muted-foreground">
+              <span className="font-bold text-foreground">@{creator.handle}</span>{" "}
+              {openPost.isReel ? "New clip from the cypher 🔥" : "Moments from the jam."}
+            </p>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
