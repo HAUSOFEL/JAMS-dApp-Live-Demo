@@ -1,5 +1,8 @@
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import { Volume2, VolumeX } from "lucide-react"
+import { useReelsMuted } from "@/lib/jams/stores"
+import { appUrl, shareLink, shareToastText } from "@/lib/jams/share"
 import type { Reel } from "@/lib/jams/types"
 import { useJams } from "../jams-context"
 import { CommentIcon, EyeIcon, HeartIcon, ShareIcon, TipIcon } from "../icons"
@@ -18,22 +21,47 @@ export function ReelCard({ reel, onOpenComments }: ReelCardProps) {
   const { openProfile, openModal, showToast } = useJams()
   const [liked, setLiked] = useState(false)
 
+  const [muted, setMuted] = useReelsMuted()
+  const [pop, setPop] = useState(0)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+
+  // Only the reel on screen plays (so sound never overlaps between reels).
+  useEffect(() => {
+    const el = sectionRef.current
+    const v = videoRef.current
+    if (!el || !v) return
+    const io = new IntersectionObserver(([e]) => {
+      if (e?.isIntersecting) v.play().catch(() => {})
+      else v.pause()
+    }, { threshold: 0.6 })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
+  function toggleSound() {
+    const next = !muted
+    setMuted(next)
+    const v = videoRef.current
+    if (v) { v.muted = next; v.play().catch(() => {}) }
+    setPop(Date.now())
+  }
+  useEffect(() => {
+    if (!pop) return
+    const t = setTimeout(() => setPop(0), 700)
+    return () => clearTimeout(t)
+  }, [pop])
+
   async function handleShare() {
-    const shareData = { title: `JAMS • ${reel.title}`, url: typeof window !== "undefined" ? window.location.href : "" }
-    if (typeof navigator !== "undefined" && navigator.share) {
-      try {
-        await navigator.share(shareData)
-      } catch {
-        /* dismissed */
-      }
-    } else if (typeof navigator !== "undefined" && navigator.clipboard) {
-      await navigator.clipboard.writeText(shareData.url)
-      showToast("Reel link copied to clipboard")
-    }
+    const msg = shareToastText(
+      await shareLink({ title: `JAMS • ${reel.title}`, text: `${reel.title} by @${reel.creator.handle}`, url: appUrl(`/?reel=${reel.id}`) }),
+    )
+    if (msg) showToast(msg)
   }
 
   return (
     <section
+      ref={sectionRef}
       className="relative flex h-full w-full shrink-0 snap-start items-center justify-center overflow-hidden bg-[#051329]"
       aria-label={reel.title}
     >
@@ -41,16 +69,35 @@ export function ReelCard({ reel, onOpenComments }: ReelCardProps) {
       <div className="absolute inset-0 opacity-50" style={{ background: reel.gradient }} aria-hidden="true" />
       {reel.videoUrl || reel.posterUrl ? (
         <video
+          ref={videoRef}
           className="absolute inset-0 h-full w-full object-cover"
           src={reel.videoUrl}
           poster={reel.posterUrl}
           autoPlay
-          muted
+          muted={muted}
           loop
           playsInline
           preload="metadata"
           aria-hidden="true"
         />
+      ) : null}
+      {reel.videoUrl ? (
+        <>
+          <button type="button" aria-label={muted ? "Unmute reel" : "Mute reel"} onClick={toggleSound} className="absolute inset-0 z-[4] cursor-pointer" />
+          <button
+            type="button"
+            aria-label={muted ? "Unmute" : "Mute"}
+            onClick={toggleSound}
+            className="absolute right-4 top-16 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-background/60 text-foreground backdrop-blur"
+          >
+            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </button>
+          {pop ? (
+            <span aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 z-10 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-background/60 text-foreground backdrop-blur animate-in zoom-in-75 fade-in duration-150">
+              {muted ? <VolumeX className="h-7 w-7" /> : <Volume2 className="h-7 w-7" />}
+            </span>
+          ) : null}
+        </>
       ) : null}
       <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background/80" aria-hidden="true" />
       <div
