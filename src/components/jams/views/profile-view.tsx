@@ -3,6 +3,10 @@ import { useCreatorProfile, useEvents, useReels } from "@/lib/jams/data";
 import type { ProfilePost } from "@/lib/jams/types";
 import { useJams } from "../jams-context";
 import { QrPass } from "../map/event-pass-claim";
+import { EditProfileSheet } from "../edit-profile-sheet";
+import { useProfileEdits, useReelsMuted } from "@/lib/jams/stores";
+import { appUrl, shareLink, shareToastText } from "@/lib/jams/share";
+import { Volume2, VolumeX } from "lucide-react";
 import {
   BookmarkIcon,
   ChevronLeftIcon,
@@ -26,7 +30,10 @@ function formatCount(n: number) {
 type ProfileTab = "grid" | "reels" | "tickets" | "saved";
 
 export function ProfileView({ creatorId, showBack = true }: { creatorId: string; showBack?: boolean }) {
-  const profile = useCreatorProfile(creatorId);
+  const rawProfile = useCreatorProfile(creatorId);
+  const [edits] = useProfileEdits();
+  const [editing, setEditing] = useState(false);
+  const [muted, setMuted] = useReelsMuted();
   const reels = useReels();
   const events = useEvents();
   const {
@@ -62,9 +69,28 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
     [events, savedEventIds, isOwnProfile],
   );
 
-  if (!profile) return null;
+  if (!rawProfile) return null;
+  const profile = isOwnProfile && edits
+    ? {
+        ...rawProfile,
+        bio: edits.bio,
+        crew: edits.crew || undefined,
+        location: edits.location || undefined,
+        creator: {
+          ...rawProfile.creator,
+          displayName: edits.displayName,
+          handle: edits.handle,
+          avatarUrl: edits.avatarUrl || undefined,
+          initials: edits.displayName.slice(0, 2).toUpperCase(),
+        },
+      }
+    : rawProfile;
 
   const { creator, stats, posts } = profile;
+  const share = async (title: string, path: string) => {
+    const msg = shareToastText(await shareLink({ title, url: appUrl(path) }));
+    if (msg) showToast(msg);
+  };
   const following = followedCreatorIds.includes(creator.id);
 
   const visiblePosts: ProfilePost[] =
@@ -198,6 +224,22 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
                 <PinIcon className="h-3 w-3 text-primary" /> {profile.location}
               </p>
             ) : null}
+            {isOwnProfile && edits?.styles.length ? (
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {edits.styles.map((s) => (
+                  <span key={s} className="rounded-full border border-border px-2 py-0.5 text-[10px] font-semibold text-foreground">{s}</span>
+                ))}
+              </div>
+            ) : null}
+            {isOwnProfile && edits?.links.length ? (
+              <div className="mt-2 flex flex-col gap-0.5">
+                {edits.links.map((l) => (
+                  <a key={l.url} href={l.url} target="_blank" rel="noreferrer noopener" className="truncate text-[11px] font-bold text-primary">
+                    🔗 {l.label || l.url.replace(/^https?:\/\//, "")}
+                  </a>
+                ))}
+              </div>
+            ) : null}
           </div>
 
           {/* Actions */}
@@ -205,7 +247,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
             <button
               type="button"
               onClick={() =>
-                isOwnProfile ? showToast("Profile editing coming soon") : toggleFollow(creator.id)
+                isOwnProfile ? setEditing(true) : toggleFollow(creator.id)
               }
               className={`flex-1 rounded-xl py-2.5 text-[13px] font-bold transition-colors ${
                 isOwnProfile || following
@@ -224,12 +266,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
             </button>
             <button
               type="button"
-              onClick={async () => {
-                if (typeof navigator !== "undefined" && navigator.clipboard) {
-                  await navigator.clipboard.writeText(`https://jams.app/@${creator.handle}`);
-                  showToast("Profile link copied");
-                }
-              }}
+              onClick={() => share(`${creator.displayName} on JAMS`, `/?profile=${creator.id}`)}
               aria-label="Share profile"
               className="flex h-[42px] w-[42px] items-center justify-center rounded-xl border border-border bg-secondary text-foreground"
             >
@@ -448,12 +485,24 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
                 src={reelVideo}
                 poster={openPost.imageUrl}
                 autoPlay
-                muted
+                muted={muted}
                 loop
                 playsInline
-                controls
-                className="absolute inset-0 h-full w-full object-cover"
+                onClick={() => setMuted(!muted)}
+                className="absolute inset-0 h-full w-full cursor-pointer object-cover"
               />
+            ) : null}
+            {reelVideo ? (
+              <button
+                type="button"
+                aria-label={muted ? "Unmute" : "Mute"}
+                onClick={() => setMuted(!muted)}
+                className="absolute bottom-3 right-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-background/70 text-foreground backdrop-blur"
+              >
+                {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+              </button>
+            ) : null}
+            {reelVideo ? null
             ) : openPost.imageUrl ? (
               <img src={openPost.imageUrl} alt="" className="absolute inset-0 h-full w-full object-contain" />
             ) : null}
@@ -495,12 +544,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
               <button
                 type="button"
                 aria-label="Share post"
-                onClick={async () => {
-                  if (navigator.clipboard) {
-                    await navigator.clipboard.writeText(`https://jams.app/@${creator.handle}/p/${openPost.id}`);
-                    showToast("Post link copied");
-                  }
-                }}
+                onClick={() => share(`Post by @${creator.handle}`, `/?profile=${creator.id}&post=${openPost.id}`)}
                 className="text-foreground"
               >
                 <ShareIcon className="h-6 w-6" />
