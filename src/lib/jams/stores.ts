@@ -46,7 +46,7 @@ export interface ProfileEdits {
 const str = (v: unknown, max: number) => (typeof v === "string" ? v.slice(0, max) : "")
 export function validateProfileEdits(v: unknown): ProfileEdits | null {
   if (!v || typeof v !== "object") return null
-  const o = v as Record<string, unknown>
+  const o = v as Partial<Record<keyof ProfileEdits, unknown>>
   const avatar = str(o.avatarUrl, 500)
   return {
     displayName: str(o.displayName, 40),
