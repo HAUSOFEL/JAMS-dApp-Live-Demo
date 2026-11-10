@@ -36,10 +36,8 @@ export function EventDetail({
 
   const share = async () => {
     const text = `${marker.title} · ${marker.time ?? ""}`
-    try {
-      if (navigator.share) await navigator.share({ title: marker.title, text })
-      else { await navigator.clipboard.writeText(text); showToast("Event info copied") }
-    } catch { /* user cancelled */ }
+    const msg = shareToastText(await shareLink({ title: marker.title, text, url: appUrl(`/?event=${marker.id}`) }))
+    if (msg) showToast(msg)
   }
 
   return (

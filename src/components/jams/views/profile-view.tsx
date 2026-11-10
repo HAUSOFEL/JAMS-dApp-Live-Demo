@@ -559,6 +559,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
           </div>
         </div>
       ) : null}
+      {editing ? <EditProfileSheet profile={rawProfile} onClose={() => setEditing(false)} /> : null}
     </div>
   );
 }
