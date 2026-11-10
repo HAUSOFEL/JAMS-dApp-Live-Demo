@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { BottomSheet } from "./bottom-sheet"
+import { appUrl, shareLink, shareToastText } from "@/lib/jams/share"
 import { useJams } from "./jams-context"
 
 const CATEGORIES = ["1v1 Battle", "Open Cypher", "Workshop", "Block Jam"] as const
@@ -123,8 +124,10 @@ export function ProposeJamSheet() {
           <button
             type="button"
             onClick={() => {
-              if (navigator.share) navigator.share({ title: d.title, text: `${d.title} — ${d.spot}, ${d.city}` }).catch(() => {})
-              else showToast("Link copied")
+              void shareLink({ title: d.title, text: `${d.title} — ${d.spot}, ${d.city}`, url: appUrl("/") }).then((r) => {
+                const msg = shareToastText(r)
+                if (msg) showToast(msg)
+              })
             }}
             className="w-full rounded-xl border border-gold/50 py-3 text-sm font-bold text-gold"
           >

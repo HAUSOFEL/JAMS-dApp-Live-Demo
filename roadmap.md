@@ -12,3 +12,7 @@
 - [x] Connect first-visit location prompt and editable city selection to Map.
 - [x] Show honest sample-city fallback and connect empty state to Propose a Jam.
 - [x] Test manual, approximate and precise flows, simulated denial recovery, saved choices and phone containment.
+# Reels sound, profile editing, sharing
+- [x] Instagram-style mute/unmute on reels and profile reel viewer.
+- [x] Edit Profile screen (photo, name, username, bio, crew, scene, styles, links).
+- [x] Working share buttons on reels, profile, posts, events and proposed jams.
