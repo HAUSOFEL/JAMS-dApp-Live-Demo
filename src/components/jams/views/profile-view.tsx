@@ -502,8 +502,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
                 {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
               </button>
             ) : null}
-            {reelVideo ? null
-            ) : openPost.imageUrl ? (
+            {reelVideo ? null : openPost.imageUrl ? (
               <img src={openPost.imageUrl} alt="" className="absolute inset-0 h-full w-full object-contain" />
             ) : null}
             {openIndex > 0 ? (
