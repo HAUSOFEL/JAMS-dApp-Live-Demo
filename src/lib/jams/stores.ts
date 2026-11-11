@@ -41,6 +41,7 @@ export interface ProfileEdits {
   location: string
   styles: string[]
   links: { label: string; url: string }[]
+  privateFollowLists?: boolean
 }
 
 const str = (v: unknown, max: number) => (typeof v === "string" ? v.slice(0, max) : "")
@@ -55,6 +56,7 @@ export function validateProfileEdits(v: unknown): ProfileEdits | null {
     bio: str(o.bio, 150),
     crew: str(o.crew, 40),
     location: str(o.location, 60),
+    privateFollowLists: o.privateFollowLists === true,
     styles: Array.isArray(o.styles) ? o.styles.filter((s): s is string => typeof s === "string").slice(0, 8) : [],
     links: Array.isArray(o.links)
       ? o.links
