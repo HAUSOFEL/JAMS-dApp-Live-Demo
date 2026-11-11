@@ -152,10 +152,9 @@ function UploadStudio({ onClose }: { onClose: () => void }) {
     addUpload({
       id: `up-${Date.now()}`,
       gradient: "linear-gradient(135deg,var(--primary),var(--accent))",
-      imageUrl: file.isVideo ? undefined : file.url,
-      videoUrl: file.isVideo ? file.url : undefined,
+      ...(file.isVideo ? { videoUrl: file.url } : { imageUrl: file.url }),
       isReel: file.isVideo,
-      caption: caption.trim() || undefined,
+      ...(caption.trim() ? { caption: caption.trim() } : {}),
       likes: 0,
     })
     showToast(file.isVideo ? "Reel posted to your profile" : "Photo posted to your profile")
