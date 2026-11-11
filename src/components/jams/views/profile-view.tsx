@@ -1,3 +1,4 @@
+import { useUploads } from "@/lib/jams/uploads";
 import { useEffect, useMemo, useState } from "react";
 import { useCreatorProfile, useEvents, useReels } from "@/lib/jams/data";
 import type { ProfilePost } from "@/lib/jams/types";
@@ -48,6 +49,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
     claimedPasses,
     showToast,
   } = useJams();
+  const uploads = useUploads();
   const [tab, setTab] = useState<ProfileTab>("grid");
   const [openPostId, setOpenPostId] = useState<string | null>(null);
   const [likedIds, setLikedIds] = useState<string[]>([]);
@@ -86,7 +88,8 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
       }
     : rawProfile;
 
-  const { creator, stats, posts } = profile;
+  const { creator, stats } = profile;
+  const posts = isOwnProfile ? [...uploads, ...profile.posts] : profile.posts;
   const share = async (title: string, path: string) => {
     const msg = shareToastText(await shareLink({ title, url: appUrl(path) }));
     if (msg) showToast(msg);
@@ -111,9 +114,9 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
 
   const openIndex = openPostId ? visiblePosts.findIndex((p) => p.id === openPostId) : -1;
   const openPost = openIndex >= 0 ? visiblePosts[openIndex] : null;
-  const reelVideo = openPost?.isReel
+  const reelVideo = openPost?.videoUrl ?? (openPost?.isReel
     ? reels.filter((r) => r.videoUrl)[openIndex % Math.max(1, reels.filter((r) => r.videoUrl).length)]?.videoUrl
-    : undefined;
+    : undefined);
 
   return (
     <div className="animate-slide-in-right absolute inset-0 z-30 flex flex-col bg-background">
@@ -554,7 +557,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
             </p>
             <p className="text-xs text-muted-foreground">
               <span className="font-bold text-foreground">@{creator.handle}</span>{" "}
-              {openPost.isReel ? "New clip from the cypher 🔥" : "Moments from the jam."}
+              {openPost.caption || (openPost.isReel ? "New clip from the cypher 🔥" : "Moments from the jam.")}
             </p>
           </div>
         </div>
