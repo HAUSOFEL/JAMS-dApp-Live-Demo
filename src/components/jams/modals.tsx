@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useWallet } from "@/lib/jams/data"
 import { BottomSheet } from "./bottom-sheet"
 import { ProposeJamSheet } from "./propose-jam"
+import { CreatorStudioPanel } from "./creator-studio"
 import { useJams } from "./jams-context"
 import { BlinksIcon, CopyIcon, DashboardIcon, QrScanIcon, TicketIcon, WalletIcon } from "./icons"
 import { CREW_ROLES, getCrewRole } from "@/lib/jams/crew-roles"
@@ -12,6 +13,7 @@ export function AppModals() {
   const wallet = useWallet()
   const [showAccountDetails, setShowAccountDetails] = useState(false)
   const [roleOpen, setRoleOpen] = useState(false)
+  const [studio, setStudio] = useState<"live" | "upload" | null>(null)
   const role = getCrewRole(crewRole)
 
   async function copyAddress() {
@@ -213,6 +215,8 @@ export function AppModals() {
       </BottomSheet>
 
 
+      {studio ? <CreatorStudioPanel mode={studio} onClose={() => setStudio(null)} /> : null}
+
       {/* Creator Studio */}
       <BottomSheet
         open={modal === "creator"}
@@ -225,8 +229,7 @@ export function AppModals() {
             type="button"
             onClick={() => {
               closeModal()
-              navigate("reels")
-              showToast("Initializing live cypher stream on Solana...")
+              setStudio("live")
             }}
             className="flex items-center gap-3 rounded-2xl border border-border bg-secondary px-4 py-4 text-left text-sm font-bold text-foreground transition-colors hover:border-primary"
           >
@@ -237,7 +240,7 @@ export function AppModals() {
             type="button"
             onClick={() => {
               closeModal()
-              showToast("Opening device file picker...")
+              setStudio("upload")
             }}
             className="flex items-center gap-3 rounded-2xl border border-border bg-secondary px-4 py-4 text-left text-sm font-bold text-foreground transition-colors hover:border-primary"
           >

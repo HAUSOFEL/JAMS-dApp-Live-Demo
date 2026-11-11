@@ -115,8 +115,8 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
   const openIndex = openPostId ? visiblePosts.findIndex((p) => p.id === openPostId) : -1;
   const openPost = openIndex >= 0 ? visiblePosts[openIndex] : null;
   const reelVideo = openPost?.videoUrl ?? (openPost?.isReel
-    ? reels.filter((r) => r.videoUrl)[openIndex % Math.max(1, reels.filter((r) => r.videoUrl).length)]?.videoUrl)
-    : undefined;
+    ? reels.filter((r) => r.videoUrl)[openIndex % Math.max(1, reels.filter((r) => r.videoUrl).length)]?.videoUrl
+    : undefined);
 
   return (
     <div className="animate-slide-in-right absolute inset-0 z-30 flex flex-col bg-background">
