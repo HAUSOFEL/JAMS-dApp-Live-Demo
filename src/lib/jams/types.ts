@@ -109,6 +109,9 @@ export interface ProfilePost {
   likes: number
   isLive?: boolean
   isReel?: boolean
+  /** Video source for uploaded reels. */
+  videoUrl?: string
+  caption?: string
   /** Optional link into the Reels feed when tapped. */
   streamId?: string
 }
