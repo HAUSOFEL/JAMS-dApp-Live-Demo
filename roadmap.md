@@ -18,6 +18,6 @@
 - [x] Working share buttons on reels, profile, posts, events and proposed jams.
 
 # Profile connections repair
-- [ ] Connect follower/following counters and repair follow/unfollow and follower removal.
-- [ ] Add saved follow-list privacy setting and fix the privacy tests.
-- [ ] Verify own/other profile lists and privacy in the preview.
+- [x] Connect follower/following counters and repair follow/unfollow and follower removal.
+- [x] Add saved follow-list privacy setting and fix the privacy tests.
+- [x] Verify own/other profile lists and privacy in the preview.
