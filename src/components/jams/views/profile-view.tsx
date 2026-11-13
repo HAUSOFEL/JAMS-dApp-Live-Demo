@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useProfileEdits, useReelsMuted } from "@/lib/jams/stores";
 import { appUrl, shareLink, shareToastText } from "@/lib/jams/share";
 import { Volume2, VolumeX } from "lucide-react";
+import { HIGHLIGHTS, HighlightViewer, highlightSlides } from "../profile/highlight-viewer";
 import {
   BookmarkIcon,
   ChevronLeftIcon,
@@ -58,6 +59,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
   const [tab, setTab] = useState<ProfileTab>("grid");
   const [openPostId, setOpenPostId] = useState<string | null>(null);
   const [likedIds, setLikedIds] = useState<string[]>([]);
+  const [highlightIdx, setHighlightIdx] = useState<number | null>(null);
   useEffect(() => {
     if (!openPostId) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpenPostId(null);
@@ -289,19 +291,23 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
 
           {/* Highlights */}
           <div className="no-scrollbar mt-4 flex gap-3.5 overflow-x-auto pb-1">
-            {["Jams", "Battles", "Workshops", "Sets"].map((label) => (
+            {HIGHLIGHTS.map(({ label }, i) => {
+              const cover = highlightSlides(posts, i)[0]?.imageUrl
+              return (
               <button
                 key={label}
                 type="button"
-                onClick={() => showToast(`${label} highlights coming soon`)}
+                aria-label={`Open ${label} highlight`}
+                onClick={() => (cover ? setHighlightIdx(i) : showToast(`No ${label} stories saved yet`))}
                 className="flex min-w-[62px] flex-col items-center gap-1.5"
               >
-                <span className="flex h-[58px] w-[58px] items-center justify-center rounded-full border border-border bg-surface-2 text-[10px] font-bold uppercase text-muted-foreground">
-                  {label.slice(0, 3)}
+                <span className="flex h-[58px] w-[58px] items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-surface-2 p-[2px] text-[10px] font-bold uppercase text-muted-foreground">
+                  {cover ? <img src={cover} alt="" className="h-full w-full rounded-full object-cover" loading="lazy" /> : label.slice(0, 3)}
                 </span>
                 <span className="text-[10px] text-muted-foreground">{label}</span>
               </button>
-            ))}
+              )
+            })}
           </div>
         </div>
 
@@ -573,6 +579,9 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
         </div>
       ) : null}
       {editing ? <EditProfileSheet profile={rawProfile} onClose={() => setEditing(false)} /> : null}
+      {highlightIdx !== null ? (
+        <HighlightViewer posts={posts} startIndex={highlightIdx} handle={creator.handle} avatarUrl={creator.avatarUrl} onClose={() => setHighlightIdx(null)} />
+      ) : null}
       {followTab ? <FollowListSheet key={creatorId} ownerId={creatorId} initialTab={followTab} onClose={() => setFollowTab(null)} /> : null}
     </div>
   );
