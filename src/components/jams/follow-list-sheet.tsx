@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
-import { allCreators, canViewLists, PRIVATE_LIST_CREATORS, sampleFollowers, sampleFollowing } from "@/lib/jams/follow-graph"
+import { allCreators, canViewLists, followerIds, followingIds, PRIVATE_LIST_CREATORS } from "@/lib/jams/follow-graph"
+import { Button } from "@/components/ui/button"
 import { useProfileEdits } from "@/lib/jams/stores"
 import { useJams } from "./jams-context"
 import { ChevronLeftIcon, SearchIcon } from "./icons"
@@ -7,11 +8,10 @@ import { ChevronLeftIcon, SearchIcon } from "./icons"
 export type FollowTab = "followers" | "following"
 
 export function FollowListSheet({ ownerId, initialTab, onClose }: { ownerId: string; initialTab: FollowTab; onClose: () => void }) {
-  const { followedCreatorIds, toggleFollow, openProfile, showToast } = useJams()
+  const { followedCreatorIds, toggleFollow, openProfile, removedFollowerIds, removeFollower } = useJams()
   const [edits] = useProfileEdits()
   const [tab, setTab] = useState<FollowTab>(initialTab)
   const [q, setQ] = useState("")
-  const [removed, setRemoved] = useState<string[]>([])
   const isOwn = ownerId === "me"
   const isPrivate = isOwn ? !!edits?.privateFollowLists : PRIVATE_LIST_CREATORS.has(ownerId)
   const visible = canViewLists(ownerId, "me", isPrivate)
@@ -23,16 +23,12 @@ export function FollowListSheet({ ownerId, initialTab, onClose }: { ownerId: str
   }, [onClose])
 
   const creators = useMemo(() => new Map(allCreators().map((c) => [c.id, c])), [])
-  const myFollowers = useMemo(() => new Set(sampleFollowers("me")), [])
+  const myFollowers = new Set(followerIds("me", followedCreatorIds, removedFollowerIds))
   const ids = useMemo(() => {
-    if (tab === "followers") return sampleFollowers(ownerId).filter((id) => !(isOwn && removed.includes(id)))
-    if (isOwn) return Array.from(new Set([...sampleFollowing("me"), ...followedCreatorIds])).filter((id) => id !== "me")
-    return sampleFollowing(ownerId)
-  }, [tab, ownerId, isOwn, removed, followedCreatorIds])
+    return tab === "followers" ? followerIds(ownerId, followedCreatorIds, removedFollowerIds) : followingIds(ownerId, followedCreatorIds, removedFollowerIds)
+  }, [tab, ownerId, removedFollowerIds, followedCreatorIds])
   const rows = ids.map((id) => creators.get(id)).filter((c): c is NonNullable<typeof c> => !!c)
     .filter((c) => !q || `${c.displayName} ${c.handle}`.toLowerCase().includes(q.toLowerCase()))
-
-  const amFollowing = (id: string) => followedCreatorIds.includes(id) || (sampleFollowing("me").includes(id) && !followedCreatorIds.includes(`un:${id}`))
 
   return (
     <div role="dialog" aria-modal="true" aria-label="Followers and following" className="absolute inset-0 z-50 flex flex-col bg-background animate-in slide-in-from-bottom-4 fade-in duration-200">
@@ -64,6 +60,7 @@ export function FollowListSheet({ ownerId, initialTab, onClose }: { ownerId: str
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search" className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground/60" />
           </label>
           {rows.length === 0 ? <p className="py-10 text-center text-xs text-muted-foreground">No dancers here yet.</p> : null}
+          <p className="mb-2 text-[11px] text-muted-foreground">Sample connections · Changes last for this session.</p>
           <ul className="space-y-1">
             {rows.map((c) => {
               const following = isOwn && tab === "following" ? true : followedCreatorIds.includes(c.id)
@@ -82,15 +79,13 @@ export function FollowListSheet({ ownerId, initialTab, onClose }: { ownerId: str
                     </span>
                   </button>
                   {c.id === "me" ? null : isOwn && tab === "followers" ? (
-                    <button type="button" onClick={() => { setRemoved((r) => [...r, c.id]); showToast(`Removed @${c.handle} from your followers`) }}
-                      className="rounded-lg bg-secondary px-3 py-1.5 text-xs font-bold text-foreground">Remove</button>
+                    <Button type="button" size="sm" variant="secondary" aria-label={`Remove @${c.handle} from followers`} onClick={() => removeFollower(c.id)}>Remove</Button>
                   ) : isOwn && tab === "following" ? (
-                    <UnfollowButton onUnfollow={() => toggleFollow(c.id)} />
+                    <Button type="button" size="sm" variant="secondary" aria-label={`Unfollow @${c.handle}`} onClick={() => toggleFollow(c.id)}>Unfollow</Button>
                   ) : (
-                    <button type="button" onClick={() => toggleFollow(c.id)}
-                      className={`rounded-lg px-3 py-1.5 text-xs font-bold ${following ? "bg-secondary text-foreground" : "bg-primary text-primary-foreground"}`}>
+                    <Button type="button" size="sm" variant={following ? "secondary" : "default"} onClick={() => toggleFollow(c.id)}>
                       {following ? "Following" : "Follow"}
-                    </button>
+                    </Button>
                   )}
                 </li>
               )
@@ -100,9 +95,4 @@ export function FollowListSheet({ ownerId, initialTab, onClose }: { ownerId: str
       )}
     </div>
   )
-  void amFollowing
-}
-
-function UnfollowButton({ onUnfollow }: { onUnfollow: () => void }) {
-  return <button type="button" onClick={onUnfollow} className="rounded-lg bg-secondary px-3 py-1.5 text-xs font-bold text-foreground">Unfollow</button>
 }

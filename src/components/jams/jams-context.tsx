@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import type { BattleBracket, BracketVote, ClaimedPass, DancerProfile, MapMarker, ModalId, TabId } from "@/lib/jams/types";
 import { applyBracketVote, initialBrackets } from "@/lib/jams/brackets";
 import { isCrewRole, type CrewRoleId } from "@/lib/jams/crew-roles";
+import { sampleFollowing, toggleFollowing } from "@/lib/jams/follow-graph";
 
 const PROFILE_KEY = "jams.dancerProfile";
 const PASSES_KEY = "jams.claimedPasses";
@@ -29,6 +30,8 @@ interface JamsContextValue {
 
   followedCreatorIds: string[];
   toggleFollow: (creatorId: string) => void;
+  removedFollowerIds: string[];
+  removeFollower: (creatorId: string) => void;
 
   modal: ModalId;
   openModal: (modal: Exclude<ModalId, null>) => void;
@@ -95,7 +98,8 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
   const [activeEvent, setActiveEvent] = useState<MapMarker | null>(null);
   const [focusedStreamId, setFocusedStreamId] = useState<string | null>(null);
   const [profileCreatorId, setProfileCreatorId] = useState<string | null>(null);
-  const [followedCreatorIds, setFollowedCreatorIds] = useState<string[]>([]);
+  const [followedCreatorIds, setFollowedCreatorIds] = useState<string[]>(() => sampleFollowing("me"));
+  const [removedFollowerIds, setRemovedFollowerIds] = useState<string[]>([]);
   const [modal, setModal] = useState<ModalId>(null);
   const [savedEventIds, setSavedEventIds] = useState<string[]>([]);
   const [dancerProfile, setDancerProfile] = useState<DancerProfile | null>(null);
@@ -197,11 +201,16 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
       setFollowedCreatorIds((prev) => {
         const has = prev.includes(creatorId);
         showToast(has ? "Unfollowed creator" : "Following creator");
-        return has ? prev.filter((x) => x !== creatorId) : [...prev, creatorId];
+        return toggleFollowing(prev, creatorId);
       });
     },
     [showToast],
   );
+
+  const removeFollower = useCallback((creatorId: string) => {
+    setRemovedFollowerIds((prev) => prev.includes(creatorId) ? prev : [...prev, creatorId]);
+    showToast("Follower removed from your sample list");
+  }, [showToast]);
 
   const toggleSavedEvent = useCallback(
     (id: string) => {
@@ -231,6 +240,8 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
       closeProfile,
       followedCreatorIds,
       toggleFollow,
+      removedFollowerIds,
+      removeFollower,
       modal,
       openModal: (m) => setModal(m),
       closeModal: () => setModal(null),
@@ -278,6 +289,8 @@ export function JamsProvider({ children }: { children: React.ReactNode }) {
       closeProfile,
       followedCreatorIds,
       toggleFollow,
+      removedFollowerIds,
+      removeFollower,
       modal,
       savedEventIds,
       toggleSavedEvent,

@@ -3,6 +3,7 @@ import type { CreatorProfile } from "@/lib/jams/types"
 import { type ProfileEdits, useProfileEdits, validateProfileEdits } from "@/lib/jams/stores"
 import { useJams } from "./jams-context"
 import { ChevronLeftIcon } from "./icons"
+import { Button } from "@/components/ui/button"
 
 const STYLES = ["Breaking", "Popping", "Locking", "Krump", "Hip Hop", "House", "Waacking", "Vogue"]
 const input =
@@ -62,9 +63,9 @@ export function EditProfileSheet({ profile, onClose }: { profile: CreatorProfile
           <ChevronLeftIcon className="h-4 w-4" />
         </button>
         <h2 className="text-sm font-bold text-foreground">Edit profile</h2>
-        <button type="button" onClick={submit} className="ml-auto rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-primary-foreground">
+        <Button type="button" size="sm" onClick={submit} className="ml-auto font-bold">
           Done
-        </button>
+        </Button>
       </header>
 
       <div className="no-scrollbar flex-1 space-y-4 overflow-y-auto px-4 pb-28 pt-5">
@@ -120,6 +121,14 @@ export function EditProfileSheet({ profile, onClose }: { profile: CreatorProfile
             ) : null}
           </div>
         </Field>
+        <section className="space-y-2 border-t border-border pt-4">
+          <h3 className="text-xs font-bold text-foreground">Account privacy</h3>
+          <label className="flex items-center justify-between gap-3 text-sm text-foreground">
+            <span>Keep follower &amp; following lists private</span>
+            <input type="checkbox" role="switch" checked={d.privateFollowLists === true} onChange={(e) => set("privateFollowLists", e.target.checked)} className="h-5 w-5 shrink-0 accent-primary" />
+          </label>
+          <p className="text-[11px] text-muted-foreground">You can always view and manage your own lists. Sample privacy only; no online accounts are changed.</p>
+        </section>
         <p className="text-[11px] text-muted-foreground">Changes are saved on this device.</p>
       </div>
     </div>

@@ -5,6 +5,9 @@ import type { ProfilePost } from "@/lib/jams/types";
 import { useJams } from "../jams-context";
 import { QrPass } from "../map/event-pass-claim";
 import { EditProfileSheet } from "../edit-profile-sheet";
+import { FollowListSheet, type FollowTab } from "../follow-list-sheet";
+import { followerIds, followingIds } from "@/lib/jams/follow-graph";
+import { Button } from "@/components/ui/button";
 import { useProfileEdits, useReelsMuted } from "@/lib/jams/stores";
 import { appUrl, shareLink, shareToastText } from "@/lib/jams/share";
 import { Volume2, VolumeX } from "lucide-react";
@@ -34,6 +37,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
   const rawProfile = useCreatorProfile(creatorId);
   const [edits] = useProfileEdits();
   const [editing, setEditing] = useState(false);
+  const [followTab, setFollowTab] = useState<FollowTab | null>(null);
   const [muted, setMuted] = useReelsMuted();
   const reels = useReels();
   const events = useEvents();
@@ -44,6 +48,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
     openModal,
     followedCreatorIds,
     toggleFollow,
+    removedFollowerIds,
     savedEventIds,
     toggleSavedEvent,
     claimedPasses,
@@ -197,14 +202,19 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
             <dl className="flex flex-1 justify-between text-center">
               {[
                 ["Posts", stats.posts],
-                ["Followers", stats.followers],
-                ["Following", stats.following],
+                ["Followers", followerIds(creatorId, followedCreatorIds, removedFollowerIds).length],
+                ["Following", followingIds(creatorId, followedCreatorIds, removedFollowerIds).length],
               ].map(([label, value]) => (
                 <div key={label as string} className="flex-1">
-                  <dd className="text-base font-extrabold text-foreground">
-                    {formatCount(value as number)}
+                  <dt className="sr-only">{label}</dt>
+                  <dd>
+                    {label === "Posts" ? <><span className="block text-base font-extrabold text-foreground">{formatCount(value as number)}</span><span className="text-[11px] text-muted-foreground">Posts</span></> : (
+                      <Button type="button" variant="ghost" aria-label={`View ${label}`} onClick={() => setFollowTab(label === "Followers" ? "followers" : "following")} className="h-auto w-full flex-col gap-0 px-0 py-1">
+                        <span className="text-base font-extrabold text-foreground">{formatCount(value as number)}</span>
+                        <span className="text-[11px] text-muted-foreground">{label}</span>
+                      </Button>
+                    )}
                   </dd>
-                  <dt className="text-[11px] text-muted-foreground">{label}</dt>
                 </div>
               ))}
             </dl>
@@ -512,7 +522,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
               <button
                 type="button"
                 aria-label="Previous post"
-                onClick={() => setOpenPostId(visiblePosts[openIndex - 1]!.id)}
+                onClick={() => { const previous = visiblePosts[openIndex - 1]; if (previous) setOpenPostId(previous.id); }}
                 className="absolute left-2 top-1/2 flex h-9 w-9 -translate-y-1/2 rotate-0 items-center justify-center rounded-full bg-background/70 text-foreground"
               >
                 <ChevronLeftIcon className="h-4 w-4" />
@@ -522,7 +532,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
               <button
                 type="button"
                 aria-label="Next post"
-                onClick={() => setOpenPostId(visiblePosts[openIndex + 1]!.id)}
+                onClick={() => { const next = visiblePosts[openIndex + 1]; if (next) setOpenPostId(next.id); }}
                 className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-background/70 text-foreground"
               >
                 <ChevronLeftIcon className="h-4 w-4 rotate-180" />
@@ -563,6 +573,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
         </div>
       ) : null}
       {editing ? <EditProfileSheet profile={rawProfile} onClose={() => setEditing(false)} /> : null}
+      {followTab ? <FollowListSheet key={creatorId} ownerId={creatorId} initialTab={followTab} onClose={() => setFollowTab(null)} /> : null}
     </div>
   );
 }
