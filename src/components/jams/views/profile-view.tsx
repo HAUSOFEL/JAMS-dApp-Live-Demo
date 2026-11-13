@@ -579,6 +579,9 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
         </div>
       ) : null}
       {editing ? <EditProfileSheet profile={rawProfile} onClose={() => setEditing(false)} /> : null}
+      {highlightIdx !== null ? (
+        <HighlightViewer posts={posts} startIndex={highlightIdx} handle={creator.handle} avatarUrl={creator.avatarUrl} onClose={() => setHighlightIdx(null)} />
+      ) : null}
       {followTab ? <FollowListSheet key={creatorId} ownerId={creatorId} initialTab={followTab} onClose={() => setFollowTab(null)} /> : null}
     </div>
   );
