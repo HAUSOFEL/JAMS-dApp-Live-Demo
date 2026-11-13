@@ -14,9 +14,10 @@ export function highlightSlides(posts: ProfilePost[], index: number) {
   const media = posts.filter((p) => p.imageUrl)
   if (!media.length) return []
   const h = HIGHLIGHTS[index]
+  if (!h) return []
   return h.lines.map((caption, i) => ({
     id: `${h.label}-${i}`,
-    imageUrl: media[(index * 3 + i) % media.length].imageUrl!,
+    imageUrl: media[(index * 3 + i) % media.length]?.imageUrl ?? "",
     caption,
     ago: `${(index + 1) * (i + 2)}w ago`,
   }))
@@ -26,7 +27,7 @@ const DURATION = 5000
 
 export function HighlightViewer({
   posts, startIndex, handle, avatarUrl, onClose,
-}: { posts: ProfilePost[]; startIndex: number; handle: string; avatarUrl?: string; onClose: () => void }) {
+}: { posts: ProfilePost[]; startIndex: number; handle: string; avatarUrl?: string | undefined; onClose: () => void }) {
   const [hi, setHi] = useState(startIndex)
   const [slide, setSlide] = useState(0)
   const [paused, setPaused] = useState(false)
@@ -62,7 +63,7 @@ export function HighlightViewer({
 
   const current = slides[slide]
   return (
-    <div role="dialog" aria-label={`${HIGHLIGHTS[hi].label} highlight`} className="absolute inset-0 z-50 flex flex-col bg-background">
+    <div role="dialog" aria-label={`${HIGHLIGHTS[hi]?.label} highlight`} className="absolute inset-0 z-50 flex flex-col bg-background">
       <div className="absolute inset-x-0 top-0 z-10 space-y-2 bg-gradient-to-b from-background/80 to-transparent p-3">
         <div className="flex gap-1">
           {slides.map((s, i) => (
@@ -73,7 +74,7 @@ export function HighlightViewer({
         </div>
         <div className="flex items-center gap-2">
           {avatarUrl ? <img src={avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" /> : null}
-          <p className="text-sm font-bold text-foreground">{HIGHLIGHTS[hi].label}</p>
+          <p className="text-sm font-bold text-foreground">{HIGHLIGHTS[hi]?.label}</p>
           <p className="text-xs text-muted-foreground">@{handle} · {current?.ago}</p>
           <button type="button" aria-label="Close highlight" onClick={onClose} className="ml-auto p-1 text-foreground"><X className="h-5 w-5" /></button>
         </div>
