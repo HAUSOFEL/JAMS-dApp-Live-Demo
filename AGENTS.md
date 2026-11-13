@@ -14,3 +14,4 @@
 - Bracket samples reuse existing creator identities and media, and are explicitly labeled samples; they are not an official live feed or persisted multi-user results.
 - Event details use a shared overlay in the shell content area and explicit map-record IDs from Home and notifications, so each entry opens the same event and closing preserves the originating tab.
 - Location discovery remains a client-side sample-city selector until a worldwide map and event service exist; label the displayed festival city separately, validate stored choices, and store only city/accuracy rather than GPS coordinates to avoid misleading discovery and unnecessary sensitive storage.
+- Sample follow relationships and follower removals live in JamsProvider with pure follow-graph helpers so profile counters and connection sheets agree throughout a session; device-saved privacy is demonstration-only, not server authorization.

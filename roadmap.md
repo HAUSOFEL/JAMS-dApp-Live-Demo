@@ -16,3 +16,8 @@
 - [x] Instagram-style mute/unmute on reels and profile reel viewer.
 - [x] Edit Profile screen (photo, name, username, bio, crew, scene, styles, links).
 - [x] Working share buttons on reels, profile, posts, events and proposed jams.
+
+# Profile connections repair
+- [ ] Connect follower/following counters and repair follow/unfollow and follower removal.
+- [ ] Add saved follow-list privacy setting and fix the privacy tests.
+- [ ] Verify own/other profile lists and privacy in the preview.
