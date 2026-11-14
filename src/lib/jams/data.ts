@@ -1,5 +1,6 @@
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useSyncExternalStore } from "react"
+import { loadWallet, subscribeWallet } from "./wallet"
 import {
   BLINK_ENDPOINT,
   mockChannels,
@@ -117,8 +118,8 @@ export function useSponsors(): Sponsor[] {
 }
 
 export function useWallet(): WalletSession {
-  const [wallet] = useState<WalletSession>(mockWallet)
-  return wallet
+  const stored = useSyncExternalStore(subscribeWallet, loadWallet, () => null)
+  return stored ? { ...mockWallet, address: stored.address, balanceSol: 0 } : mockWallet
 }
 
 /**

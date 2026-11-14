@@ -1,13 +1,17 @@
 
 import { useState } from "react"
 import { useJams } from "../jams-context"
+import { getOrCreateWallet, parseSecret, saveWallet } from "@/lib/jams/wallet"
 
 export function LoginView() {
   const { login, showToast } = useJams()
   const [email, setEmail] = useState("")
   const [emailOpen, setEmailOpen] = useState(false)
+  const [importOpen, setImportOpen] = useState(false)
+  const [importKey, setImportKey] = useState("")
 
   function handleLogin(message = "Welcome to JAMS") {
+    getOrCreateWallet()
     login()
     showToast(message)
   }
@@ -69,15 +73,44 @@ export function LoginView() {
       </div>
 
       <p className="mt-8 text-[11px] leading-relaxed text-muted-foreground text-balance">
-        No crypto setup needed — your tickets and collectibles are handled for you.
+        No crypto setup needed — we create a wallet for you that you can export anytime.
       </p>
-      <button
-        type="button"
-        onClick={() => handleLogin("Wallet connected")}
-        className="mt-2 text-[11px] font-semibold text-muted-foreground underline underline-offset-4"
-      >
-        Advanced: use my own wallet
-      </button>
+      {importOpen ? (
+        <div className="mt-3 flex w-full flex-col gap-2">
+          <textarea
+            value={importKey}
+            onChange={(e) => setImportKey(e.target.value)}
+            placeholder="Paste your Solana private key"
+            aria-label="Private key"
+            rows={3}
+            className="w-full rounded-xl border border-border bg-secondary px-3 py-2 font-mono text-[11px] text-foreground outline-none focus:border-primary"
+          />
+          <button
+            type="button"
+            disabled={!importKey.trim()}
+            onClick={() => {
+              try {
+                saveWallet(parseSecret(importKey))
+                setImportKey("")
+                handleLogin("Wallet imported")
+              } catch {
+                showToast("That key doesn't look right")
+              }
+            }}
+            className="w-full rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground disabled:opacity-40"
+          >
+            Import wallet
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setImportOpen(true)}
+          className="mt-2 text-[11px] font-semibold text-muted-foreground underline underline-offset-4"
+        >
+          Advanced: import my own wallet
+        </button>
+      )}
     </div>
   )
 }
