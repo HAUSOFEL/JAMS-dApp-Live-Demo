@@ -5,6 +5,7 @@ import { BottomSheet } from "./bottom-sheet"
 import { ProposeJamSheet } from "./propose-jam"
 import { CreatorStudioPanel } from "./creator-studio"
 import { useJams } from "./jams-context"
+import { ExportWalletSheet } from "./wallet/export-wallet-sheet"
 import { BlinksIcon, CopyIcon, DashboardIcon, QrScanIcon, TicketIcon, WalletIcon } from "./icons"
 import { CREW_ROLES, getCrewRole } from "@/lib/jams/crew-roles"
 
@@ -13,6 +14,7 @@ export function AppModals() {
   const wallet = useWallet()
   const [showAccountDetails, setShowAccountDetails] = useState(false)
   const [roleOpen, setRoleOpen] = useState(false)
+  const [exportOpen, setExportOpen] = useState(false)
   const [studio, setStudio] = useState<"live" | "upload" | null>(null)
   const role = getCrewRole(crewRole)
 
@@ -31,6 +33,7 @@ export function AppModals() {
 
   return (
     <>
+      <ExportWalletSheet open={exportOpen} onClose={() => setExportOpen(false)} />
       {/* Crew Portal / System Menu */}
       <BottomSheet
         open={modal === "menu"}
@@ -80,6 +83,13 @@ export function AppModals() {
                     <span className="text-[11px] text-muted-foreground">{wallet.chain}</span>
                     <span className="text-[11px] font-bold text-foreground">{wallet.balanceSol} SOL</span>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setExportOpen(true)}
+                    className="mt-1 w-full rounded-xl border border-gold/50 px-3 py-2 text-[11px] font-bold text-gold"
+                  >
+                    Back up & export wallet
+                  </button>
                 </div>
               ) : null}
             </div>
