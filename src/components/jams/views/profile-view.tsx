@@ -8,10 +8,10 @@ import { EditProfileSheet } from "../edit-profile-sheet";
 import { FollowListSheet, type FollowTab } from "../follow-list-sheet";
 import { followerIds, followingIds } from "@/lib/jams/follow-graph";
 import { Button } from "@/components/ui/button";
-import { useProfileEdits, useReelsMuted } from "@/lib/jams/stores";
+import { useProfileEdits, useReelsMuted, useSavedHighlights } from "@/lib/jams/stores";
 import { appUrl, shareLink, shareToastText } from "@/lib/jams/share";
 import { Volume2, VolumeX } from "lucide-react";
-import { HIGHLIGHTS, HighlightViewer, highlightSlides } from "../profile/highlight-viewer";
+import { HIGHLIGHTS, HighlightViewer, agoLabel, highlightSlides, storySlides, type Slide } from "../profile/highlight-viewer";
 import {
   BookmarkIcon,
   ChevronLeftIcon,
@@ -60,6 +60,10 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
   const [openPostId, setOpenPostId] = useState<string | null>(null);
   const [likedIds, setLikedIds] = useState<string[]>([]);
   const [highlightIdx, setHighlightIdx] = useState<number | null>(null);
+  const [storyOpen, setStoryOpen] = useState(false);
+  const [avatarChoice, setAvatarChoice] = useState(false);
+  const [pickHighlight, setPickHighlight] = useState(false);
+  const [savedRaw, toggleSaved] = useSavedHighlights();
   useEffect(() => {
     if (!openPostId) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpenPostId(null);
@@ -73,6 +77,12 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
   );
 
   const isOwnProfile = creatorId === "me";
+  const savedSlides = useMemo(() => {
+    const out: Record<number, Slide[]> = {};
+    if (!isOwnProfile) return out;
+    for (const [k, list] of Object.entries(savedRaw)) out[Number(k)] = list.map((x) => ({ id: x.id, imageUrl: x.imageUrl, caption: x.caption, ago: agoLabel(x.savedAt) }));
+    return out;
+  }, [savedRaw, isOwnProfile]);
   const savedEvents = useMemo(
     () => (isOwnProfile ? events.filter((e) => savedEventIds.includes(e.id)) : []),
     [events, savedEventIds, isOwnProfile],
@@ -119,6 +129,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
     setOpenPostId(post.id);
   }
 
+  const hasStory = storySlides(posts).length > 0;
   const openIndex = openPostId ? visiblePosts.findIndex((p) => p.id === openPostId) : -1;
   const openPost = openIndex >= 0 ? visiblePosts[openIndex] : null;
   const reelVideo = openPost?.videoUrl ?? (openPost?.isReel
@@ -169,11 +180,16 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
           <div className="flex items-center gap-5">
             <button
               type="button"
-              onClick={() => (liveReel ? openStream(liveReel.id) : showToast("No live story"))}
-              aria-label={`${creator.displayName} story`}
+              onClick={() =>
+                liveReel && hasStory ? setAvatarChoice(true)
+                : liveReel ? openStream(liveReel.id)
+                : hasStory ? setStoryOpen(true)
+                : showToast("No story right now")}
+              aria-label={liveReel ? `${creator.displayName} is live` : hasStory ? `View ${creator.displayName} story` : `${creator.displayName} photo`}
               className={`relative h-[86px] w-[86px] shrink-0 rounded-full p-[3px] ${
                 liveReel
                   ? "animate-pulse-ring bg-[linear-gradient(45deg,var(--live),var(--primary),var(--chart-3))]"
+                  : hasStory ? "bg-[linear-gradient(45deg,var(--gold),var(--accent),var(--primary))]"
                   : "bg-secondary"
               }`}
             >
@@ -292,7 +308,7 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
           {/* Highlights */}
           <div className="no-scrollbar mt-4 flex gap-3.5 overflow-x-auto pb-1">
             {HIGHLIGHTS.map(({ label }, i) => {
-              const cover = highlightSlides(posts, i)[0]?.imageUrl
+              const cover = highlightSlides(posts, i, savedSlides[i])[0]?.imageUrl
               return (
               <button
                 key={label}
@@ -559,6 +575,11 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
               >
                 <HeartIcon className="h-6 w-6" />
               </button>
+              {isOwnProfile && openPost.imageUrl ? (
+                <button type="button" aria-label="Add to highlight" onClick={() => setPickHighlight((v) => !v)} className="ml-auto rounded-full border border-gold/60 px-3 py-1 text-[11px] font-bold text-gold">
+                  + Highlight
+                </button>
+              ) : null}
               <button
                 type="button"
                 aria-label="Share post"
@@ -568,6 +589,24 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
                 <ShareIcon className="h-6 w-6" />
               </button>
             </div>
+            {pickHighlight && isOwnProfile && openPost.imageUrl ? (
+              <div role="group" aria-label="Choose highlight" className="flex flex-wrap gap-2">
+                {HIGHLIGHTS.map(({ label }, i) => {
+                  const sid = `mine-${openPost.id}`;
+                  const on = (savedRaw[i] ?? []).some((x) => x.id === sid);
+                  return (
+                    <button key={label} type="button" aria-pressed={on}
+                      onClick={() => {
+                        const added = toggleSaved(i, { id: sid, imageUrl: openPost.imageUrl ?? "", caption: openPost.caption || "Saved from my posts" });
+                        showToast(added ? `Added to ${label}` : `Removed from ${label}`);
+                      }}
+                      className={`rounded-full border px-3 py-1 text-[11px] font-bold ${on ? "border-primary bg-primary text-primary-foreground" : "border-border text-foreground"}`}>
+                      {on ? "✓ " : ""}{label}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
             <p className="text-xs font-bold text-foreground">
               {formatCount(openPost.likes + (likedIds.includes(openPost.id) ? 1 : 0))} likes
             </p>
@@ -580,7 +619,18 @@ export function ProfileView({ creatorId, showBack = true }: { creatorId: string;
       ) : null}
       {editing ? <EditProfileSheet profile={rawProfile} onClose={() => setEditing(false)} /> : null}
       {highlightIdx !== null ? (
-        <HighlightViewer posts={posts} startIndex={highlightIdx} handle={creator.handle} avatarUrl={creator.avatarUrl} onClose={() => setHighlightIdx(null)} />
+        <HighlightViewer posts={posts} saved={savedSlides} startIndex={highlightIdx} handle={creator.handle} avatarUrl={creator.avatarUrl} onClose={() => setHighlightIdx(null)} />
+      ) : null}
+      {storyOpen ? (
+        <HighlightViewer story posts={posts} startIndex={0} handle={creator.handle} avatarUrl={creator.avatarUrl} onClose={() => setStoryOpen(false)} />
+      ) : null}
+      {avatarChoice && liveReel ? (
+        <div role="dialog" aria-label="Watch live or view story" className="absolute inset-0 z-50 flex items-end bg-background/70" onClick={() => setAvatarChoice(false)}>
+          <div className="w-full space-y-2 rounded-t-2xl border-t border-border bg-surface p-4 pb-24" onClick={(e) => e.stopPropagation()}>
+            <Button type="button" className="w-full" onClick={() => { setAvatarChoice(false); openStream(liveReel.id); }}>Watch Live Cypher</Button>
+            <Button type="button" variant="secondary" className="w-full" onClick={() => { setAvatarChoice(false); setStoryOpen(true); }}>View Story</Button>
+          </div>
+        </div>
       ) : null}
       {followTab ? <FollowListSheet key={creatorId} ownerId={creatorId} initialTab={followTab} onClose={() => setFollowTab(null)} /> : null}
     </div>
