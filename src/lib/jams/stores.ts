@@ -73,3 +73,20 @@ export function useProfileEdits() {
   const edits = useSyncExternalStore(profileStore.subscribe, profileStore.get, () => null)
   return [edits, (e: ProfileEdits) => profileStore.set(e)] as const
 }
+
+/** Own highlight saves (device-only sample): highlight index -> saved story slides. */
+export interface SavedStory { id: string; imageUrl: string; caption: string; savedAt: number }
+type SavedHighlights = Record<string, SavedStory[]>
+const highlightStore = createStore<SavedHighlights>({}, "jams.myHighlights", (v) =>
+  v && typeof v === "object" && !Array.isArray(v) ? (v as SavedHighlights) : null)
+export function useSavedHighlights() {
+  const saved = useSyncExternalStore(highlightStore.subscribe, highlightStore.get, () => highlightStore.initial)
+  const toggle = (index: number, story: Omit<SavedStory, "savedAt">) => {
+    const cur = highlightStore.get()
+    const list = cur[index] ?? []
+    const exists = list.some((s) => s.id === story.id)
+    highlightStore.set({ ...cur, [index]: exists ? list.filter((s) => s.id !== story.id) : [{ ...story, savedAt: Date.now() }, ...list] })
+    return !exists
+  }
+  return [saved, toggle] as const
+}

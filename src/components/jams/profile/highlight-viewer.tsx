@@ -10,38 +10,53 @@ export const HIGHLIGHTS = [
 ] as const
 
 /** Splits a profile's photos across the four highlight circles (sample saved stories). */
-export function highlightSlides(posts: ProfilePost[], index: number) {
+export interface Slide { id: string; imageUrl: string; caption: string; ago: string }
+
+export function agoLabel(ms: number) {
+  const m = Math.max(1, Math.round((Date.now() - ms) / 60000))
+  return m < 60 ? `${m}m ago` : m < 1440 ? `${Math.round(m / 60)}h ago` : `${Math.round(m / 1440)}d ago`
+}
+
+/** Recent-story sample for a creator's avatar ring: latest three photos. */
+export function storySlides(posts: ProfilePost[]): Slide[] {
+  return posts.filter((p) => p.imageUrl && !p.isLive).slice(0, 3).map((p, i) => ({
+    id: `story-${p.id}`, imageUrl: p.imageUrl ?? "", caption: p.caption || "Today at the cypher", ago: `${(i + 1) * 3}h ago`,
+  }))
+}
+
+export function highlightSlides(posts: ProfilePost[], index: number, saved: Slide[] = []): Slide[] {
   const media = posts.filter((p) => p.imageUrl)
   if (!media.length) return []
   const h = HIGHLIGHTS[index]
   if (!h) return []
-  return h.lines.map((caption, i) => ({
+  return [...saved, ...h.lines.map((caption, i) => ({
     id: `${h.label}-${i}`,
     imageUrl: media[(index * 3 + i) % media.length]?.imageUrl ?? "",
     caption,
     ago: `${(index + 1) * (i + 2)}w ago`,
-  }))
+  }))]
 }
 
 const DURATION = 5000
 
 export function HighlightViewer({
-  posts, startIndex, handle, avatarUrl, onClose,
-}: { posts: ProfilePost[]; startIndex: number; handle: string; avatarUrl?: string | undefined; onClose: () => void }) {
+  posts, startIndex, handle, avatarUrl, onClose, saved, story,
+}: { posts: ProfilePost[]; startIndex: number; handle: string; avatarUrl?: string | undefined; onClose: () => void; saved?: Record<number, Slide[]>; story?: boolean }) {
   const [hi, setHi] = useState(startIndex)
   const [slide, setSlide] = useState(0)
   const [paused, setPaused] = useState(false)
   const [progress, setProgress] = useState(0)
-  const slides = highlightSlides(posts, hi)
+  const slides = story ? storySlides(posts) : highlightSlides(posts, hi, saved?.[hi])
+  const last = story ? 0 : HIGHLIGHTS.length - 1
 
   const next = () => {
     if (slide < slides.length - 1) setSlide(slide + 1)
-    else if (hi < HIGHLIGHTS.length - 1) { setHi(hi + 1); setSlide(0) }
+    else if (hi < last) { setHi(hi + 1); setSlide(0) }
     else onClose()
   }
   const prev = () => {
     if (slide > 0) setSlide(slide - 1)
-    else if (hi > 0) { setHi(hi - 1); setSlide(2) }
+    else if (!story && hi > 0) { setHi(hi - 1); setSlide(Math.max(0, highlightSlides(posts, hi - 1, saved?.[hi - 1]).length - 1)) }
   }
 
   useEffect(() => { setProgress(0) }, [hi, slide])
@@ -63,7 +78,7 @@ export function HighlightViewer({
 
   const current = slides[slide]
   return (
-    <div role="dialog" aria-label={`${HIGHLIGHTS[hi]?.label} highlight`} className="absolute inset-0 z-50 flex flex-col bg-background">
+    <div role="dialog" aria-label={story ? "Story" : `${HIGHLIGHTS[hi]?.label} highlight`} className="absolute inset-0 z-50 flex flex-col bg-background">
       <div className="absolute inset-x-0 top-0 z-10 space-y-2 bg-gradient-to-b from-background/80 to-transparent p-3">
         <div className="flex gap-1">
           {slides.map((s, i) => (
@@ -74,7 +89,7 @@ export function HighlightViewer({
         </div>
         <div className="flex items-center gap-2">
           {avatarUrl ? <img src={avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" /> : null}
-          <p className="text-sm font-bold text-foreground">{HIGHLIGHTS[hi]?.label}</p>
+          <p className="text-sm font-bold text-foreground">{story ? "Story" : HIGHLIGHTS[hi]?.label}</p>
           <p className="text-xs text-muted-foreground">@{handle} · {current?.ago}</p>
           <button type="button" aria-label="Close highlight" onClick={onClose} className="ml-auto p-1 text-foreground"><X className="h-5 w-5" /></button>
         </div>
